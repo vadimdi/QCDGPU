@@ -43,7 +43,7 @@ char version[] = "1.3";     /**< version of programm */
 char fil[]     = "d:\\init.dat"; /**< init.dat file loading by default */
 char fprefix[] = "su3-";     /**< prefix for data-files */
 
-char fload[] = "su3-13-Jan-30-12-45-28.qcg"; /**< file with configuration to be load by default*/
+char fload[] = "su3-13-Oct-08-00-00-00.qcg"; /**< file with configuration to be load by default*/
 
 #ifdef _WIN32
             char path[]   = "d:\\";                         /**< path for output file *//*< path for output file (corresponding to Windows/Linux OS) **/
@@ -85,7 +85,7 @@ int main(int argc, char ** argv)
         model0->fstate = (char*) calloc((strlen(fload) + 1),sizeof(char));  // setup filename for state file
         strcpy_s(model0->fstate,(strlen(fload) + 1),fload);
 
-        model0->desired_platform = 1;
+        model0->desired_platform = 0;
         model0->desired_device   = 0;
         model0->device_select    = true;
         model0->GPU0->GPU_debug.rebuild_binary = false;

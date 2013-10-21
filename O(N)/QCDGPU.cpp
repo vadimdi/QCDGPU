@@ -42,11 +42,11 @@ char fil[]     = "d:\\init.dat";
 
 #if (MODEL_ON==1)
 char fprefix[] = "o1-";    // prefix for data-files
-#else //if (MODEL_ON==2)
+#else //if (MODEL_ON>=2)
 char fprefix[] = "su3-";    // prefix for data-files
 #endif
 
-char fload[]   = "su3-13-Jan-30-12-45-28.qcg"; // file to be load
+char fload[]   = "su3-13-Oct-08-00-00-00.qcg"; // file to be load
 
 #ifdef _WIN32
             char path[]   = "d:\\";                         // path for output
@@ -198,7 +198,7 @@ lattice->global_run->check_prngs         = true;   // check PRNG production
     lattice->compute_devices[0]->device_select = true;
     lattice->compute_devices[0]->host          = 0;
     lattice->compute_devices[0]->device        = 0;
-    lattice->compute_devices[0]->platform      = 1;
+    lattice->compute_devices[0]->platform      = 0;
     lattice->compute_devices[0]->performance   = 1.0;
     lattice->compute_devices[0]->lattice_parts = 1;               // if compute_devices_number=1, then is copied from big_lattice_parts
     lattice->compute_devices[0]->lattice_domain_size[0] =  18;    // X (other directions are copied from global_run_lattice_full_site)
