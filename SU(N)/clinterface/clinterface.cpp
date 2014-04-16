@@ -1,15 +1,15 @@
-﻿/******************************************************************************
+/******************************************************************************
  * @file     clinterface.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.0
+ * @version  1.4
  *
  * @brief    [QCDGPU]
  *           Interface for OpenCL AMD APP & nVidia SDK environment
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -771,7 +771,7 @@ int             GPU::program_create(const char* source,const char* options){
      }
 
     if((GPU_active_file > GPU_inf_max_n)||(!cl_program_file)){
-        printf("\nprogram%u.bin is compiling... \n",GPU_active_program);
+        printf("\nprogram%u.bin is being compiled... \n",GPU_active_program);
         GPU_programs[GPU_active_program].program = clCreateProgramWithSource(GPU_context, 1,&GPU_programs[GPU_active_program].source_ptr, NULL, &GPU_error);
         OpenCL_Check_Error(GPU_error,"clCreateProgramWithSource failed");
         OpenCL_Check_Error(clBuildProgram(GPU_programs[GPU_active_program].program, 1, &GPU_device, GPU_programs[GPU_active_program].options, NULL, NULL),"clBuildProgram failed");
@@ -899,8 +899,11 @@ int             GPU::kernel_init(const char* kernel_name, unsigned int work_dime
     OpenCL_Check_Error(clGetKernelWorkGroupInfo(GPU_kernels[GPU_current_kernel].kernel,GPU_device,CL_KERNEL_LOCAL_MEM_SIZE,sizeof(GPU_kernels[GPU_current_kernel].kernel_local_mem_size),&GPU_kernels[GPU_current_kernel].kernel_local_mem_size,NULL),"clGetKernelWorkGroupInfo failed");
     size_t kernel_work_group_size = 0;
     OpenCL_Check_Error(clGetKernelWorkGroupInfo(GPU_kernels[GPU_current_kernel].kernel,GPU_device,CL_KERNEL_WORK_GROUP_SIZE,sizeof(size_t),&kernel_work_group_size,NULL),"clGetKernelWorkGroupInfo failed");
-    kernel_work_group_size = 1<<((int) floor(log((double) kernel_work_group_size)/log(2.0)));
+    kernel_work_group_size = (unsigned int) (1<<((int) floor(log((double) kernel_work_group_size)/log(2.0))));
+    
     if (GPU_info.device_vendor == GPU::GPU_vendor_Intel) kernel_work_group_size =  64;
+    
+    if((GPU_limit_max_workgroup_size)&&(GPU_limit_max_workgroup_size < kernel_work_group_size)) kernel_work_group_size = GPU_limit_max_workgroup_size;
 
     // setup kernel's size
     size_t* temporary_local_size  = (size_t*) calloc(work_dimensions+1,sizeof(size_t));
@@ -992,7 +995,7 @@ int             GPU::kernel_run(int kernel_id)
         // run without profiling
         size_t local_workgroup_size;
         OpenCL_Check_Error(clGetKernelWorkGroupInfo(GPU_kernels[kernel_id].kernel,GPU_device,CL_KERNEL_WORK_GROUP_SIZE,sizeof(size_t),&local_workgroup_size,NULL),"clGetKernelWorkGroupInfo failed");
-
+        
         OpenCL_Check_Error(clEnqueueNDRangeKernel(GPU_queue,GPU_kernels[kernel_id].kernel,GPU_kernels[kernel_id].work_dimensions,NULL,GPU_kernels[kernel_id].global_size,GPU_kernels[kernel_id].local_size, 0, NULL, &kernel_event),"clEnqueueNDRangeKernel failed");
         OpenCL_Check_Error(clWaitForEvents(1, &kernel_event),"clWaitForEvents failed");
     }
@@ -1312,7 +1315,7 @@ int             GPU::print_mapped_buffer_float4(int buffer_id,unsigned int numbe
     unsigned int* ptr = GPU_buffers[buffer_id].mapped_ptr;
     if (ptr==NULL) return GPU_error_no_buffer;
     for (unsigned int i = 0; i<number_of_elements; i++){
-        printf("[%4u] %f \t %f \t %f \t %f\n", i, convert_to_float(ptr[4*offset*i]), convert_to_float(ptr[4*offset*i+1]), convert_to_float(ptr[4*offset*i+2]), convert_to_float(ptr[4*offset*i+3]));
+        printf("[%4u] %f \t %f \t %f \t %f\n", i, convert_to_float(ptr[4*(i + offset)]), convert_to_float(ptr[4*(i + offset)+1]), convert_to_float(ptr[4*(i + offset)+2]), convert_to_float(ptr[4*(i + offset)+3]));
     }
     return 0;
 }
@@ -1537,7 +1540,7 @@ void            GPU::MD5_update(const char* input, unsigned int len)
 }
 
 char*           GPU::MD5_getresult(void){
-  char* buf = (char*) calloc(34,sizeof(char));
+  char* buf = (char*) calloc(34,sizeof(int));
   if (MD5_finalized) {
     for (int i=0; i<16; i++)
         sprintf_s(buf+i*2, sizeof(buf), "%02x", MD5_result[i]);
