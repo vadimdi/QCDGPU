@@ -2,14 +2,14 @@
  * @file     suncl.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.0
+ * @version  1.4
  *
  * @brief    [QCDGPU]
  *           Lattice simulation procedures
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -122,8 +122,10 @@ const char* REIM[] = {"re","im"};         // markers for re / im
         delete[] lattice_domain_size;
         delete[] lattice_full_size;
         delete PRNG0;
+           PRNG0 = 0;
         delete D_A;
-        delete Analysis;
+           D_A = 0;
+        free(Analysis);
         free(lattice_group_elements);
 
         if (GPU0->GPU_debug.profiling) GPU0->print_time_detailed();
@@ -135,6 +137,7 @@ const char* REIM[] = {"re","im"};         // markers for re / im
         GPU0->device_finalize(0);
 
         delete GPU0;
+           GPU0 = 0;
 }
 void        model::lattice_get_init_file(char* file){
         int parameters_items = 0;
@@ -243,7 +246,7 @@ char*       model::lattice_make_header(void){
     header = (char*) calloc(header_size, sizeof(char));
     int j = 0;
 
-    j  += sprintf_s(header+j,header_size-j, " GPU SU(%u) simulator %s\n\n",lattice_group,version);
+    j  += sprintf_s(header+j,header_size-j, " GPU SU(%u) simulator %s (su23-10_win)\n\n",lattice_group,version);
     j  += sprintf_s(header+j,header_size-j, " Monte Carlo simulation of %uD SU(%u) LGT\n\n",lattice_nd,lattice_group);
     j  += sprintf_s(header+j,header_size-j, " ***************************************************\n");
     j  += sprintf_s(header+j,header_size-j, " Active OpenCL platform   : %s\n",GPU0->platform_get_name(GPU0->GPU_platform));
@@ -252,9 +255,14 @@ char*       model::lattice_make_header(void){
     j  += sprintf_s(header+j,header_size-j, " lattice size                : %3u x %3u x %3u x %3u\n",lattice_full_size[0],lattice_full_size[1],lattice_full_size[2],lattice_full_size[3]);
     j  += sprintf_s(header+j,header_size-j, " init                        : %i\n",INIT);
     if (ints == model_start_hot)
-        j  += sprintf_s(header+j,header_size-j," ints (0=hot, 1=cold)        : 0\n");
+        j  += sprintf_s(header+j,header_size-j," ints (0=hot, 1=cold, 2=gid) : 0\n");
        else
-        j  += sprintf_s(header+j,header_size-j," ints (0=hot, 1=cold)        : 1\n");
+    {
+           if(ints==model_start_cold)
+               j  += sprintf_s(header+j,header_size-j," ints (0=hot, 1=cold, 2=gid) : 1\n");
+           else
+               j  += sprintf_s(header+j,header_size-j," ints (0=hot, 1=cold, 2=gid) : 2\n");
+    }
     j  += PRNG0->print_generator((header+j),(header_size-j));
     j  += sprintf_s(header+j,header_size-j, " nav                         : %i\n",NAV);
     j  += sprintf_s(header+j,header_size-j, " niter                       : %i\n",NITER);
@@ -276,7 +284,7 @@ void        model::lattice_init(void)
 
     bool supported_devices = false;
     if (!device_select) {
-        // auto-select first GPU_vendor_nVidia device
+        // auto-select
         supported_devices = GPU0->device_auto_select(GPU_CL::GPU::GPU_vendor_any,GPU_CL::GPU::GPU_vendor_any);
     } else {
         // manual selection of platform and device
@@ -1031,7 +1039,11 @@ void        model::model_lattice_init(void){
     //_____________________________________________ PRNG preparation
         PRNG0->PRNG_instances   = 0;    // number of instances of generator (or 0 for autoselect)
         // number of samples produced by each generator (quads)
-        PRNG0->PRNG_samples     = GPU0->buffer_size_align((unsigned int) ceil(double(3 * lattice_table_row_size_half * (NHIT + 1)))); // 3*NHIT+1 PRNs per link
+        if (ints == model_start_hot)
+            PRNG0->PRNG_samples     = GPU0->buffer_size_align((unsigned int) ceil(double(lattice_table_row_size * lattice_nd + 3 * lattice_table_row_size_half * (NHIT + 1))));
+        else
+            PRNG0->PRNG_samples     = GPU0->buffer_size_align((unsigned int) ceil(double(3 * lattice_table_row_size_half * (NHIT + 1)))); // 3*NHIT+1 PRNs per link
+        
         PRNG0->GPU0 = GPU0;
         prngstep = lattice_table_row_size_half;
     //-----------------------------------------------------------------
@@ -1122,6 +1134,8 @@ void        model::lattice_make_programs(void)
     int options_length_common  = sprintf_s(options_common,sizeof(options_common),"-Werror");
     if (GPU0->GPU_info.device_vendor == GPU_CL::GPU::GPU_vendor_Intel)
         options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D INTEL_ON");
+    if(ints==model_start_gid)
+        options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D GID_UPD");
     options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D SUN=%u",         lattice_group);
     options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D ND=%u",          lattice_nd);
     options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D N1=%u",          lattice_domain_n1);
@@ -1149,9 +1163,8 @@ void        model::lattice_make_programs(void)
     // SU(3)__________________________________________________________________________________
 
     const size_t init_global_size[]               = {lattice_table_exact_row_size};
-    const size_t init_hot_global_size[]           = {3*lattice_table_row_size};
+    const size_t init_hot_global_size[]           = {lattice_group_elements[lattice_group-1]*lattice_table_row_size};
     const size_t monte_global_size[]              = {lattice_table_exact_row_size_half};
-    const size_t boundary_global_size[]           = {lattice_boundary_size};
 
     const size_t measurement3_global_size[]       = {lattice_table_exact_row_size};
     const size_t polyakov3_global_size[]          = {lattice_polyakov_size};
@@ -1159,17 +1172,18 @@ void        model::lattice_make_programs(void)
 
     const size_t reduce_measurement_global_size[] = {GPU0->GPU_info.max_workgroup_size};
     const size_t reduce_polyakov_global_size[]    = {GPU0->GPU_info.max_workgroup_size};
-    const size_t reduce_local_size[3]             = {};
+    const size_t reduce_local_size[3]             = {GPU0->GPU_info.max_workgroup_size};
 
-    const size_t local_size_lattice_measurement[] = {local_size_intel};
-    const size_t local_size_lattice_polyakov[]    = {local_size_intel};
-    const size_t local_size_lattice_wilson[]      = {local_size_intel};
+    const size_t local_size_lattice_measurement[] = {GPU0->GPU_info.max_workgroup_size};
+    const size_t local_size_lattice_polyakov[]    = {GPU0->GPU_info.max_workgroup_size};
+    const size_t local_size_lattice_wilson[]      = {GPU0->GPU_info.max_workgroup_size};
 
 
     if (ints==model_start_gid) {            // gid init
                 sun_init_id = GPU0->kernel_init("lattice_init_gid",1,init_global_size,NULL);
                 argument_id = GPU0->kernel_init_buffer(sun_init_id,lattice_table);
     } else if (ints==model_start_cold) {    // cold init
+
                 sun_init_id = GPU0->kernel_init("lattice_init_cold",1,init_global_size,NULL);
                 argument_id = GPU0->kernel_init_buffer(sun_init_id,lattice_table);
     } else {                                // hot init
@@ -1292,7 +1306,7 @@ void        model::lattice_make_programs(void)
                           argument_plq_index = GPU0->kernel_init_constant(sun_measurement_plq_reduce_id,&mesurement_plq_param);
     }
 
-    int lattice_measurement_size_correction = max(size_reduce_measurement_double2,size_reduce_measurement_plq_double2);
+//    int lattice_measurement_size_correction = max(size_reduce_measurement_double2,size_reduce_measurement_plq_double2);
 
     sun_measurement_reduce_id = GPU0->kernel_init("reduce_measurement_double2",1,reduce_measurement_global_size,reduce_local_size);
                   argument_id = GPU0->kernel_init_buffer(sun_measurement_reduce_id,lattice_measurement);
@@ -1430,7 +1444,7 @@ void        model::lattice_create_buffers(void)
         lattice_parameters      = GPU0->buffer_init(GPU0->buffer_type_Constant, size_lattice_parameters, plattice_parameters_double, sizeof(cl_double));  // Lattice counters and indices
     }
     lattice_measurement         = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_measurement,      plattice_measurement,       sizeof(cl_double2)); // Lattice measurement
-    lattice_lds                 = GPU0->buffer_init(GPU0->buffer_type_LDS,lds_size,                      0,                          sizeof(cl_double2)); // LDS for reduction
+    lattice_lds                 = GPU0->buffer_init(GPU0->buffer_type_LDS,lds_size,                      NULL /* 0 // 26.03.14 */,                          sizeof(cl_double2)); // LDS for reduction
     lattice_energies            = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies,         plattice_energies,          sizeof(cl_double2)); // Lattice energies
     if ((get_plaquettes_avr) || (get_Fmunu) || (get_F0mu))
         lattice_energies_plq    = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies_plq,     plattice_energies_plq,      sizeof(cl_double2)); // Lattice energies (plaquettes)
@@ -1439,12 +1453,6 @@ void        model::lattice_create_buffers(void)
     if (PL_level > 0)
         lattice_polyakov_loop   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop, sizeof(cl_double2)); // Polyakov loops
 
-    plattice_measurement    = (cl_double2*) calloc(size_lattice_measurement,  sizeof(cl_double2));
-    plattice_energies       = (cl_double2*) calloc(size_lattice_energies,     sizeof(cl_double2));
-    plattice_energies_plq   = (cl_double2*) calloc(size_lattice_energies_plq, sizeof(cl_double2));
-    plattice_wilson_loop    = (cl_double*)  calloc(size_lattice_wilson_loop,  sizeof(cl_double));
-    plattice_polyakov_loop  = NULL;
-        if (PL_level > 0) plattice_polyakov_loop = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
 }
 
 void        model::lattice_simulate(void)
@@ -1471,6 +1479,7 @@ void        model::lattice_simulate(void)
     printf("\nrun kernels on GPU (%f seconds)\n",GPU0->get_timer_CPU(TIMER_FOR_ELAPSED));
     GPU0->start_timer_CPU(TIMER_FOR_SIMULATIONS); // start GPU execution timer
     GPU0->start_timer_CPU(TIMER_FOR_SAVE);        // start timer for lattice_state save
+
     if (ints==model_start_hot) PRNG0->produce();
 
     int NAV_start  = 0;
@@ -1486,7 +1495,6 @@ void        model::lattice_simulate(void)
             GPU0->kernel_run(sun_init_Z_id);        // Lattice initialization
             if (!turnoff_prns) PRNG0->produce();
             GPU0->kernel_run(sun_init_T_id);        // Lattice initialization
-            if (!turnoff_prns) PRNG0->produce();
         } else
             GPU0->kernel_run(sun_init_id);          // Lattice initialization
         GPU0->print_stage("lattice initialized");
@@ -1494,6 +1502,8 @@ void        model::lattice_simulate(void)
         if ((get_plaquettes_avr)||(get_Fmunu)||(get_F0mu)) {
             GPU0->kernel_run(sun_measurement_plq_id);          // Lattice measurement (plaquettes)
             GPU0->print_stage("measurement done (plaquettes)");
+//         GPU0->buffer_map(lattice_measurement);
+//         GPU0->print_mapped_buffer_double2(lattice_measurement,5);
                 plq_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_measurement_plq_reduce_id,&plq_index,argument_plq_index);
             GPU0->kernel_run(sun_measurement_plq_reduce_id);    // Lattice measurement reduction (plaquettes)
@@ -1543,7 +1553,6 @@ void        model::lattice_simulate(void)
         wilson_index = ITER_start + 1;
     }
 
-
     // perform thermalization
     for (int i=NAV_start; i<NAV; i++){
            if (!turnoff_prns) PRNG0->produce();
@@ -1589,8 +1598,8 @@ void        model::lattice_simulate(void)
             if (!turnoff_updates) GPU0->kernel_run(sun_update_odd_Z_id);     // Lattice measurement staples
                if (!turnoff_prns) PRNG0->produce();
             if (!turnoff_updates) GPU0->kernel_run(sun_update_odd_T_id);     // Lattice measurement staples
-               if (!turnoff_prns) PRNG0->produce();
 
+               if (!turnoff_prns) PRNG0->produce();
             if (!turnoff_updates) GPU0->kernel_run(sun_update_even_X_id);    // Lattice measurement staples
                if (!turnoff_prns) PRNG0->produce();
             if (!turnoff_updates) GPU0->kernel_run(sun_update_even_Y_id);    // Lattice measurement staples
@@ -1598,7 +1607,7 @@ void        model::lattice_simulate(void)
             if (!turnoff_updates) GPU0->kernel_run(sun_update_even_Z_id);    // Lattice measurement staples
                if (!turnoff_prns) PRNG0->produce();
             if (!turnoff_updates) GPU0->kernel_run(sun_update_even_T_id);    // Lattice measurement staples
-
+            
             if (!turnoff_gramschmidt)
                 GPU0->kernel_run(sun_GramSchmidt_id);           // Lattice reunitarization
 
