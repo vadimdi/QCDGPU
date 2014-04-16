@@ -1,10 +1,7 @@
-CC = g++
-CFLAGS = -I$(AMDAPPSDKROOT)/include -g
-# -Wall
-LDFLAGS = -L$(AMDAPPSDKROOT)/lib/x86_64 -lOpenCL
+all: amd intel nvidia
 
-# project name
-TARGET = QCDGPU
+CC = g++
+CFLAGS = -Wextra -W -O2
 
 SRCS =  QCDGPU.cpp \
 	clinterface/clinterface.cpp \
@@ -26,20 +23,51 @@ HDRS =  QCDGPU.h \
 	suncl/su3cpu.h \
 	data_analysis/data_analysis.h
 
-OBJS = $(SRCS:.cpp=.o)
-
-$(TARGET): $(SRCS) $(HDRS)
+is_64=$(shell s=`uname -m`; if (echo $$s | grep x86_64 > /dev/null); then echo 1; fi)
 
 ifndef AMDAPPSDKROOT
-	@echo >&2
-	@echo "AMD APP SDK not installed" >&2
-	@exit 1
+AMDAPPSDKROOT=/opt/AMDAPP/
+endif
+		
+# amd
+SDK_INC_AMD=$(AMDAPPSDKROOT)/include
+ifeq ($(is_64), 1)
+SDK_LIB_AMD=$(AMDAPPSDKROOT)/lib/x86_64/
 else
-	$(CC) $(CFLAGS) $(SRCS) -o $(TARGET) $(LDFLAGS)
+SDK_LIB_AMD=$(AMDAPPSDKROOT)/lib/x86/
 endif
 
+# intel
+SDK_INC_INTEL=/usr/include/
+ifeq ($(is_64), 1)
+SDK_LIB_INTEL=/usr/lib64/
+endif
+
+# nvidia
+SDK_INC_NVIDIA=/usr/local/cuda/include/
+SDK_LIB_NVIDIA=/usr/lib/
+
+OBJS_AMD=$(patsubst %.c,%.amd.o,$(SRCS))
+OBJS_INTEL=$(patsubst %.c,%.intel.o,$(SRCS))
+OBJS_NVIDIA=$(patsubst %.c,%.nvidia.o,$(SRCS))
+
+TARGET=$(patsubst %.cpp,%,$(wildcard *.cpp))
+
+amd:	$(join $(TARGET),.amd)
+intel:	$(join $(TARGET),.intel)
+nvidia:	$(join $(TARGET),.nvidia)
+
+%.amd:	$(SRCS) $(HDRS)
+	$(CC) $(CFLAGS) $(SRCS) -I$(SDK_INC_AMD) -L$(SDK_LIB_AMD) -Wl,-rpath,$(SDK_LIB_AMD)  -o $@ -lOpenCL
+
+%.intel:$(SRCS) $(HDRS)
+	$(CC) $(CFLAGS) $(SRCS) -I$(SDK_INC_INTEL) -L$(SDK_LIB_INTEL) -Wl,-rpath,$(PATH_TO_INTEL_LIB) -o $@ -lOpenCL
+
+%.nvidia:$(SRCS) $(HDRS)
+	$(CC) $(CFLAGS) $(SRCS) -I$(SDK_INC_NVIDIA) -L$(SDK_LIB_NVIDIA) -o $@ -lOpenCL
+
 clobber:
-	rm -rf $(TARGET) $(OBJS)
+	rm -rf $(TARGET).amd $(TARGET).intel $(TARGET).nvidia $(OBJS_AMD) $(OBJS_INTEL) $(OBJS_NVIDIA)
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET).amd $(TARGET).intel $(TARGET).nvidia
