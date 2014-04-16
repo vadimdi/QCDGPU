@@ -2,14 +2,14 @@
  * @file     su2_matrix_memory.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.0
+ * @version  1.4
  *
  * @brief    [QCDGPU]
  *           Matrix memory organization for the SU(2) gauge group
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -34,8 +34,23 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *****************************************************************************/
+
 #ifndef SU2_MATRIX_MEMORY_CL
 #define SU2_MATRIX_MEMORY_CL
+
+                    __attribute__((always_inline)) __private gpu_su_2
+matrix_times2(gpu_su_2* u,gpu_su_2* v)
+{
+    gpu_su_2 a;
+
+        a.uv1.x = -(*u).uv1.w * (*v).uv1.w + (*u).uv1.x * (*v).uv1.x - (*u).uv1.y * (*v).uv1.y - (*u).uv1.z * (*v).uv1.z;
+        a.uv1.z =  (*u).uv1.y * (*v).uv1.w + (*u).uv1.z * (*v).uv1.x - (*u).uv1.w * (*v).uv1.y + (*u).uv1.x * (*v).uv1.z;
+
+        a.uv1.y = -(*u).uv1.z * (*v).uv1.w + (*u).uv1.y * (*v).uv1.x + (*u).uv1.x * (*v).uv1.y + (*u).uv1.w * (*v).uv1.z;
+        a.uv1.w =  (*u).uv1.x * (*v).uv1.w + (*u).uv1.w * (*v).uv1.x + (*u).uv1.z * (*v).uv1.y - (*u).uv1.y * (*v).uv1.z;
+
+    return a;
+}
 
                     __attribute__((always_inline)) __private gpu_su_2
 lattice_table_2(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint gindex,const uint dir,const su2_twist * twist)
@@ -46,22 +61,27 @@ lattice_table_2(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint
         case Y: m.uv1 = lattice_table[gindex +  1 * ROWSIZE];
 
 #ifdef  TBC
-//twist here if coord.z=N3
-    if ((*coord).z == (N3-1)){
+//twist here if coord.x=N1; H = (0, 0, Hz)
+    	gpu_su_2 Omega;	
+	gpu_su_2 tmp;
+	
+    if ((*coord).x == (N1-1)){
 
-        hgpu_float tmp_x;
-        hgpu_float tmp_z;
+	hgpu_float cosphi, sinphi;
+	sinphi = (hgpu_float) sin((*twist).phi);
+	cosphi = (hgpu_float) cos((*twist).phi);
+		
+	Omega.uv1.x = cosphi;
+	Omega.uv1.z = sinphi;
+	
+	Omega.uv1.y = 0.0;
+	Omega.uv1.w = 0.0;
 
-        hgpu_float cosphi, sinphi;
-        sinphi = (hgpu_float) sin((*twist).phi);
-        cosphi = (hgpu_float) cos((*twist).phi);
+	tmp = matrix_times2(&Omega, &m);
 
-        tmp_x = m.uv1.x * cosphi - m.uv1.z * sinphi;
-        tmp_z = m.uv1.z * cosphi + m.uv1.x * sinphi;
-
-        m.uv1.x = tmp_x;
-        m.uv1.z = tmp_z;
+	m.uv1 = tmp.uv1;
     }
+
 #endif
             break;
         case Z: m.uv1 = lattice_table[gindex +  2 * ROWSIZE]; break;
