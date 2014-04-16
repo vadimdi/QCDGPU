@@ -2,14 +2,14 @@
  * @file     data_analysis.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.0
+ * @version  1.4
  *
  * @brief    [QCDGPU]
- *           Data analysis blok
+ *           Data analysis block
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -39,6 +39,9 @@
 
 #define VDELTA_DOUBLE  0.00000000001 // accuracy for results verification (double precision)
 #define VDELTA_SINGLE  0.00005       // accuracy for results verification (single precision)
+#define CHECKING_PRECISION_SINGLE   (1E-6)  // precision for checking results (single precision)
+#define CHECKING_PRECISION_DOUBLE   (1E-12) // precision for checking results (double precision)
+
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
@@ -71,19 +74,21 @@ using analysis_CL::analysis;
 
 bool        analysis::CPU_GPU_verification_single(double a, double b, const char* err_str){
     bool result = true;
-    if (abs(1.0-b/a)>VDELTA_SINGLE) {
-        if (err_str) printf("%s test failed!\n",err_str);
-        result = false;
-    }
+    if ((abs(a)>CHECKING_PRECISION_SINGLE) && (abs(b)>CHECKING_PRECISION_SINGLE))
+        if (abs(1.0-b/a)>VDELTA_SINGLE) {
+            if (err_str) printf("%s test failed!\n",err_str);
+            result = false;
+        }
     results_verification &= result;
     return result;
 }
 bool        analysis::CPU_GPU_verification_double(double a, double b, const char* err_str){
     bool result = true;
-    if (abs(1.0-b/a)>VDELTA_DOUBLE) {
-        if (err_str) printf("%s test failed!\n",err_str);
-        result = false;
-    }
+    if ((abs(a)>CHECKING_PRECISION_DOUBLE) && (abs(b)>CHECKING_PRECISION_DOUBLE))
+        if (abs(1.0-b/a)>VDELTA_DOUBLE) {
+            if (err_str) printf("%s test failed!\n",err_str);
+            result = false;
+        }
     results_verification &= result;
     return result;
 }
