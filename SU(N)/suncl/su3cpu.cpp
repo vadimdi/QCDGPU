@@ -2,14 +2,14 @@
  * @file     suncpu.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.0
+ * @version  1.4
  *
  * @brief    [QCDGPU]
  *           Procedures for host simulations (SU(3) gauge group)
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -165,12 +165,11 @@ SU::su_3        SU::lattice_matrix_reconstruct3(SU::su_3 a){
 
 SU::su_3        SU::lattice_table_3(model* lat,coords_4 coords,unsigned int gindex,int dir){
     SU::su_3 result;
-    SU::su_3 m_omega,u1;
+    SU::su_3 m_omega;
     result = lattice_data[gindex + lat->lattice_table_row_size * dir];
     if ((dir==1) && (coords.z == (lat->lattice_domain_size[2]-1))) {
         double phi_p_omega_2   = 0.5 * (lat->PHI   + lat->OMEGA);
         double omega_m_phi_2   = 0.5 * (lat->OMEGA - lat->PHI);
-	SU::su_3 tmp = result;
 
         m_omega.u1.re = cos(phi_p_omega_2);
         m_omega.u1.im = sin(phi_p_omega_2);
@@ -938,7 +937,8 @@ SU::su_2        SU::lattice_heatbath2(model* lat,SU::su_2 a,double beta,cl_float
     bool flag = false;
     cl_float4 rnd;
     double Mx,My,Mz,Mw;
-    double det,bdet,cosrnd,delta;
+    double det,bdet,cosrnd;
+    double delta = 0.0;
     double costh,sinth,cosal,sinal,phi,sinphi,cosphi;
     int i = 0;
 
