@@ -2,14 +2,14 @@
  * @file     su3cl.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.0
+ * @version  1.4
  *
  * @brief    [QCDGPU]
  *           Defines general procedures for lattice update (SU(2) gauge theory)
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +40,7 @@
                     __attribute__((always_inline)) void
 lattice_gid_to_coords(const uint * gindex,coords_4 * coord)
 {
-    coords_4 tmp;
+    coords_4 tmp;                     //gdi = y + z * N2 + t * N2N3 + x * N2N3N4
     uint z1,z2,z3,z4;
     uint gdi = (*gindex);
 
@@ -68,7 +68,7 @@ lattice_coords_to_gid(uint * gindex,const coords_4 * coord)
                     __attribute__((always_inline)) void
 lattice_gid_to_gid_xyz(const uint * gindex,uint * gnew)
 {
-    coords_4 tmp;
+    coords_4 tmp;                  // gdi = y + z * N2 + x * N2N3 + t * N1N2N3
     uint gtmp;
     uint z1,z2,z3,z4;
     uint gdi = (*gindex);
@@ -83,7 +83,7 @@ lattice_gid_to_gid_xyz(const uint * gindex,uint * gnew)
     tmp.x = z3;
     tmp.y = z1;
     tmp.z = z2;
-    tmp.t = z4;
+    tmp.t = z4;                    // gnew = y + z * N2 + t * N2N3 + x * N2N3N4
 
     lattice_coords_to_gid(&gtmp,&tmp);
     (*gnew) = gtmp;
