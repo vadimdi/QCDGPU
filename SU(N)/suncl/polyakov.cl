@@ -2,14 +2,14 @@
  * @file     polyakov.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.0
+ * @version  1.4
  *
  * @brief    [QCDGPU]
  *           Measurement of the Polyakov loop
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -69,8 +69,8 @@ lattice_polyakov(__global hgpu_float4  * lattice_table,
     hgpu_double polyakov_loop_p4 = 0.0;
 
     uint gindex;
-    uint gdi = GID;
-    lattice_gid_to_gid_xyz(&gdi,&gindex);
+    uint gdi = GID;             //gdi = y + z * N2 + x * N2N3 + t * N1N2N3
+    lattice_gid_to_gid_xyz(&gdi,&gindex); // <-- to use function lattice_gid_to_coords(&gindex, ...)
 
     gpu_su_2 m0,m1;
     su_2 v0,v1,v2;
