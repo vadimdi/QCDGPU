@@ -2,14 +2,14 @@
  * @file     suncpu.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.0
+ * @version  1.4
  *
  * @brief    [QCDGPU]
  *           Procedures for host simulations (SU(2) gauge group)
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -162,16 +162,22 @@ SU::su_2        SU::lattice_matrix_reconstruct2(SU::su_2 a){
 
 SU::su_2        SU::lattice_table_2(model* lat,coords_4 coords,unsigned int gindex,int dir){
     SU::su_2 result;
-    result = lattice_data[gindex + lat->lattice_table_row_size * dir];
-    if ((dir==1) && (coords.z == (lat->lattice_domain_size[2]-1))) {
-        double phi   = lat->PHI;
-        double tmp;
 
-        tmp = result.u1.re * cos(phi) - result.u1.im * sin(phi);
-        result.u1.im = result.u1.im * cos(phi) + result.u1.re * sin(phi);
-        result.u1.re = tmp;
-        result.v2.re = result.u1.re;
-        result.v2.im = -result.u1.im;
+    result = lattice_data[gindex + lat->lattice_table_row_size * dir];
+    if ((dir==1) && (coords.x == (lat->lattice_domain_size[0]-1))) {
+        double phi   = lat->PHI;
+
+        SU::su_2 Omega;
+        Omega.u1.re = cos(phi);
+        Omega.u1.im = sin(phi);
+        Omega.u2.re = 0.0;
+        Omega.u2.im = 0.0;
+        Omega.v1.re = 0.0;
+        Omega.v1.im = 0.0;
+        Omega.v2.re = Omega.u1.re;
+        Omega.v2.im = -Omega.u1.im;
+
+        result = lattice_matrix_times2(Omega,result);
     }
     return result;
 }
@@ -381,7 +387,6 @@ SU::su_2        SU::lattice_matrix_hermitian(SU::su_2 a){
 
 SU::su_2        SU::lattice_GramSchmidt_2(SU::su_2 a){
     su_2 result;
-        hgpu_complex sp;
         double norm_u = sqrt(a.u1.re * a.u1.re + a.u2.re * a.u2.re + a.u1.im * a.u1.im + a.u2.im * a.u2.im);
 
         result.u1.re = a.u1.re / norm_u;
@@ -552,7 +557,8 @@ SU::su_2        SU::lattice_heatbath2(model* lat,SU::su_2 a,double beta,cl_float
     bool flag = false;
     cl_float4 rnd;
     double Mx,My,Mz,Mw;
-    double det,bdet,cosrnd,delta;
+    double det,bdet,cosrnd;
+    double delta = 0.0;
     double costh,sinth,cosal,sinal,phi,sinphi,cosphi;
     int i = 0;
 
