@@ -1586,7 +1586,7 @@ double          GPU::time_megabytes_per_second(double elapsed_time,double size){
 
 int             GPU::str_char_replace(char* str, char search, char replace){
       int result = 0;
-        for (int i = 0; i<strlen(str); i++)
+        for (size_t i = 0; i<strlen(str); i++)
             if (str[i]==search){
                 str[i] = replace;
                 result++;
