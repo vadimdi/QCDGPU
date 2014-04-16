@@ -2,14 +2,14 @@
  * @file     random.h
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.0
+ * @version  1.4
  *
  * @brief    [QCDGPU]
  *           Pseudo-random numbers generators library (header)
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -34,6 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *****************************************************************************/
+
 #ifndef prngs_h
 #define prngs_h
 
@@ -43,20 +44,20 @@ namespace PRNG_CL{
 class PRNG {
         public:
             typedef enum enum_PRNG_generators{
-                PRNG_generator_none,                    // none
-                PRNG_generator_any,                     // any generator
-                PRNG_generator_XOR128,                  // XOR128 generator
-                PRNG_generator_RANLUX0,                 // RANLUX (level 0) generator
-                PRNG_generator_RANLUX1,                 // RANLUX (level 1) generator
-                PRNG_generator_RANLUX2,                 // RANLUX (level 2) generator
-                PRNG_generator_RANLUX3,                 // RANLUX (level 3) generator
-                PRNG_generator_RANLUX4,                 // RANLUX (level 4) generator
+				PRNG_generator_none,                    // none
+				PRNG_generator_any,                     // any generator
+				PRNG_generator_XOR128,                  // XOR128 generator
+				PRNG_generator_RANLUX0,                 // RANLUX (level 0) generator
+				PRNG_generator_RANLUX1,                 // RANLUX (level 1) generator
+				PRNG_generator_RANLUX2,                 // RANLUX (level 2) generator
+				PRNG_generator_RANLUX3,                 // RANLUX (level 3) generator
+				PRNG_generator_RANLUX4,                 // RANLUX (level 4) generator
                 PRNG_generator_RANLUX,                  // RANLUX (arbitrary level) generator
                 PRNG_generator_RANMAR,                  // RANMAR generator
                 PRNG_generator_PM,                      // Park-Miller generator
-                PRNG_generator_XOR7,                    // XORSeven generator
+				PRNG_generator_XOR7,                    // XORSeven generator
                 PRNG_generator_RANECU                   // RANECU generator
-            } PRNG_generators;
+			} PRNG_generators;
 
        PRNG_generators PRNG_generator;      // working PRNG
 
@@ -114,7 +115,7 @@ PRNG::PRNG_generators convert_uint_to_generator(unsigned int generator);
 
         // ___ RANLUX___________________________________________________________________
          #define  RL_icons  2147483563
-         #define  RL_itwo24 16777216    // 1<<24
+         #define  RL_itwo24	16777216	// 1<<24
          #define  RL_twom24  0.000000059604644775390625f
          #define  RL_twom12  0.000244140625f
            float  RL_seeds[24];
