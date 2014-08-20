@@ -2,7 +2,7 @@
  * @file     sun_measurements_cl.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Measurements of the Wilson action, plaquette average and components of the chromoelectromagnetic field tensor
@@ -182,6 +182,427 @@ lattice_measurement(__global hgpu_float4  * lattice_table,
 }
 
                                         __kernel void
+lattice_action_diff_x(__global hgpu_float4  * lattice_table,
+                    __global hgpu_double2 * lattice_measurement,
+                    __global hgpu_float   * lattice_parameters,
+                    __local hgpu_double2  * lattice_lds)
+{
+#if SUN == 2
+    hgpu_double2 out  = (hgpu_double2) 0.0;
+    hgpu_double2 out2 = (hgpu_double2) 0.0;
+    hgpu_double retrac_spat = 0.0;
+    hgpu_double retrac_temp = 0.0;
+    
+    uint gindex;// -- index on the ordinar lattice
+    uint gdiK = GID;// -- index on the enlarged lattice
+    
+    hgpu_float bet = lattice_parameters[0];
+    su2_twist twist;
+    twist.phi   = lattice_parameters[1];
+    
+    lattice_gidK_x_to_gid(&gdiK,&gindex); // => 1 workgroup corresponds to the same x for N2 = N1 {z1 {=gid} = z3 * N2*PLK; N2 * PLK ~ workgroup_size}.
+    
+    if (gindex<SITES) {
+        coords_4 coord;
+        coords_4 coordX,coordY,coordZ,coordT;
+        uint gdiX,gdiY,gdiZ,gdiT;
+
+        gpu_su_2 m1,m2,m3,m4,m5,m6;
+
+        lattice_gid_to_coords(&gindex,&coord);
+
+        // prepare neighbours
+        lattice_neighbours_gid(&coord,&coordX,&gdiX,X);
+        lattice_neighbours_gid(&coord,&coordY,&gdiY,Y);
+        lattice_neighbours_gid(&coord,&coordZ,&gdiZ,Z);
+        lattice_neighbours_gid(&coord,&coordT,&gdiT,T);
+
+            m1 = lattice_table_2(lattice_table,&coord, gindex,X,&twist);    // [p,x]
+            m2 = lattice_table_2(lattice_table,&coordX,gdiX,Y,&twist);   // [p+X,Y]
+            m3 = lattice_table_2(lattice_table,&coordY,gdiY,X,&twist);   // [p+Y,X]
+            m4 = lattice_table_2(lattice_table,&coord, gindex,Y,&twist);    // [p,Y]
+        retrac_spat = lattice_retrace_plaquette2(&m1,&m2,&m3,&m4); // x-y: [p,X]-[p+X,Y]-[p+Y,X]*-[p,Y]
+
+            m2 = lattice_table_2(lattice_table,&coordX,gdiX,Z,&twist);   // [p+X,Z]
+            m3 = lattice_table_2(lattice_table,&coordZ,gdiZ,X,&twist);   // [p+Z,X]
+            m5 = lattice_table_2(lattice_table,&coord, gindex,Z,&twist);    // [p,Z]
+        retrac_spat += lattice_retrace_plaquette2(&m1,&m2,&m3,&m5); // x-z: [p,X]-[p+X,Z]-[p+Z,X]*-[p,Z]*
+
+            m2 = lattice_table_2(lattice_table,&coordX,gdiX,T,&twist);   // [p+X,T]
+            m3 = lattice_table_2(lattice_table,&coordT,gdiT,X,&twist);   // [p+T,X]
+            m6 = lattice_table_2(lattice_table,&coord, gindex,T,&twist);    // [p,T]
+        retrac_temp = lattice_retrace_plaquette2(&m1,&m2,&m3,&m6); // x-t: [p,X]-[p+X,T]-[p+T,X]*-[p,T]*
+
+            m2 = lattice_table_2(lattice_table,&coordY,gdiY,Z,&twist);   // [p+Y,Z]
+            m3 = lattice_table_2(lattice_table,&coordZ,gdiZ,Y,&twist);   // [p+Z,Y]
+        retrac_spat += lattice_retrace_plaquette2(&m4,&m2,&m3,&m5); // y-z: [p,Y]-[p+Y,Z]-[p+Z,Y]*-[p,Z]*
+
+            m2 = lattice_table_2(lattice_table,&coordY,gdiY,T,&twist);   // [p+Y,T]
+            m3 = lattice_table_2(lattice_table,&coordT,gdiT,Y,&twist);   // [p+T,Y]
+        retrac_temp += lattice_retrace_plaquette2(&m4,&m2,&m3,&m6); // y-t: [p,Y]-[p+Y,T]-[p+T,Y]*-[p,T]*
+
+            m2 = lattice_table_2(lattice_table,&coordZ,gdiZ,T,&twist);   // [p+Z,T]
+            m3 = lattice_table_2(lattice_table,&coordT,gdiT,Z,&twist);   // [p+T,Z]
+        retrac_temp += lattice_retrace_plaquette2(&m5,&m2,&m3,&m6); // z-t: [p,Z]-[p+Z,T]-[p+T,Z]*-[p,T]*
+
+        out.x = bet * (6.0 - retrac_spat);
+        out.y = bet * (6.0 - retrac_temp);
+    }
+    
+    // first reduction
+    reduce_first_step_val_double2(lattice_lds,&out, &out2);
+    if(TID == 0) lattice_measurement[BID] = out2;
+#elif SUN == 3
+    hgpu_double2 out  = (hgpu_double2) 0.0;
+    hgpu_double2 out2 = (hgpu_double2) 0.0;
+    hgpu_double retrac_spat = 0.0;
+    hgpu_double retrac_temp = 0.0;
+    
+    uint gindex;// -- index on the ordinar lattice
+    uint gdiK = GID;// -- index on the enlarged lattice
+    
+    hgpu_float bet = lattice_parameters[0];
+    su3_twist twist;
+    twist.phi   = lattice_parameters[1];
+    twist.omega   = lattice_parameters[2];
+    
+    lattice_gidK_x_to_gid(&gdiK,&gindex);
+    
+    if (gindex<SITES) {
+        coords_4 coord;
+        coords_4 coordX,coordY,coordZ,coordT;
+        uint gdiX,gdiY,gdiZ,gdiT;
+
+        gpu_su_3 m1,m2,m3,m4,m5,m6;
+
+        lattice_gid_to_coords(&gindex,&coord);
+
+        // prepare neighbours
+        lattice_neighbours_gid(&coord,&coordX,&gdiX,X);
+        lattice_neighbours_gid(&coord,&coordY,&gdiY,Y);
+        lattice_neighbours_gid(&coord,&coordZ,&gdiZ,Z);
+        lattice_neighbours_gid(&coord,&coordT,&gdiT,T);
+
+            m1 = lattice_table_3(lattice_table,&coord, gindex,X,&twist);    // [p,x]
+            m2 = lattice_table_3(lattice_table,&coordX,gdiX,Y,&twist);   // [p+X,Y]
+            m3 = lattice_table_3(lattice_table,&coordY,gdiY,X,&twist);   // [p+Y,X]
+            m4 = lattice_table_3(lattice_table,&coord, gindex,Y,&twist);    // [p,Y]
+        retrac_spat = lattice_retrace_plaquette3(&m1,&m2,&m3,&m4); // x-y: [p,X]-[p+X,Y]-[p+Y,X]*-[p,Y]
+
+            m2 = lattice_table_3(lattice_table,&coordX,gdiX,Z,&twist);   // [p+X,Z]
+            m3 = lattice_table_3(lattice_table,&coordZ,gdiZ,X,&twist);   // [p+Z,X]
+            m5 = lattice_table_3(lattice_table,&coord, gindex,Z,&twist);    // [p,Z]
+        retrac_spat += lattice_retrace_plaquette3(&m1,&m2,&m3,&m5); // x-z: [p,X]-[p+X,Z]-[p+Z,X]*-[p,Z]*
+
+            m2 = lattice_table_3(lattice_table,&coordX,gdiX,T,&twist);   // [p+X,T]
+            m3 = lattice_table_3(lattice_table,&coordT,gdiT,X,&twist);   // [p+T,X]
+            m6 = lattice_table_3(lattice_table,&coord, gindex,T,&twist);    // [p,T]
+        retrac_temp = lattice_retrace_plaquette3(&m1,&m2,&m3,&m6); // x-t: [p,X]-[p+X,T]-[p+T,X]*-[p,T]*
+
+            m2 = lattice_table_3(lattice_table,&coordY,gdiY,Z,&twist);   // [p+Y,Z]
+            m3 = lattice_table_3(lattice_table,&coordZ,gdiZ,Y,&twist);   // [p+Z,Y]
+        retrac_spat += lattice_retrace_plaquette3(&m4,&m2,&m3,&m5); // y-z: [p,Y]-[p+Y,Z]-[p+Z,Y]*-[p,Z]*
+
+            m2 = lattice_table_3(lattice_table,&coordY,gdiY,T,&twist);   // [p+Y,T]
+            m3 = lattice_table_3(lattice_table,&coordT,gdiT,Y,&twist);   // [p+T,Y]
+        retrac_temp += lattice_retrace_plaquette3(&m4,&m2,&m3,&m6); // y-t: [p,Y]-[p+Y,T]-[p+T,Y]*-[p,T]*
+
+            m2 = lattice_table_3(lattice_table,&coordZ,gdiZ,T,&twist);   // [p+Z,T]
+            m3 = lattice_table_3(lattice_table,&coordT,gdiT,Z,&twist);   // [p+T,Z]
+        retrac_temp += lattice_retrace_plaquette3(&m5,&m2,&m3,&m6); // z-t: [p,Z]-[p+Z,T]-[p+T,Z]*-[p,T]*
+
+        out.x = bet * (9.0 - retrac_spat);
+        out.y = bet * (9.0 - retrac_temp);
+    }
+    
+    // first reduction
+    reduce_first_step_val_double2(lattice_lds,&out, &out2);
+    if(TID == 0) lattice_measurement[BID] = out2;
+    
+#endif
+}
+
+                                        __kernel void
+lattice_action_diff_y(__global hgpu_float4  * lattice_table,
+                    __global hgpu_double2 * lattice_measurement,
+                    __global hgpu_float   * lattice_parameters,
+                    __local hgpu_double2  * lattice_lds)
+{
+#if SUN == 2
+    hgpu_double2 out  = (hgpu_double2) 0.0;
+    hgpu_double2 out2 = (hgpu_double2) 0.0;
+    hgpu_double retrac_spat = 0.0;
+    hgpu_double retrac_temp = 0.0;
+    
+    uint gindex;// -- index on the ordinar lattice
+    uint gdiK = GID;// -- index on the enlarged lattice
+    
+    hgpu_float bet = lattice_parameters[0];
+    su2_twist twist;
+    twist.phi   = lattice_parameters[1];
+    
+    lattice_gidK_y_to_gid(&gdiK,&gindex);
+    
+    if (gindex<SITES) {
+        coords_4 coord;
+        coords_4 coordX,coordY,coordZ,coordT;
+        uint gdiX,gdiY,gdiZ,gdiT;
+
+        gpu_su_2 m1,m2,m3,m4,m5,m6;
+
+        lattice_gid_to_coords(&gindex,&coord);
+
+        // prepare neighbours
+        lattice_neighbours_gid(&coord,&coordX,&gdiX,X);
+        lattice_neighbours_gid(&coord,&coordY,&gdiY,Y);
+        lattice_neighbours_gid(&coord,&coordZ,&gdiZ,Z);
+        lattice_neighbours_gid(&coord,&coordT,&gdiT,T);
+
+            m1 = lattice_table_2(lattice_table,&coord, gindex,X,&twist);    // [p,x]
+            m2 = lattice_table_2(lattice_table,&coordX,gdiX,Y,&twist);   // [p+X,Y]
+            m3 = lattice_table_2(lattice_table,&coordY,gdiY,X,&twist);   // [p+Y,X]
+            m4 = lattice_table_2(lattice_table,&coord, gindex,Y,&twist);    // [p,Y]
+        retrac_spat = lattice_retrace_plaquette2(&m1,&m2,&m3,&m4); // x-y: [p,X]-[p+X,Y]-[p+Y,X]*-[p,Y]
+
+            m2 = lattice_table_2(lattice_table,&coordX,gdiX,Z,&twist);   // [p+X,Z]
+            m3 = lattice_table_2(lattice_table,&coordZ,gdiZ,X,&twist);   // [p+Z,X]
+            m5 = lattice_table_2(lattice_table,&coord, gindex,Z,&twist);    // [p,Z]
+        retrac_spat += lattice_retrace_plaquette2(&m1,&m2,&m3,&m5); // x-z: [p,X]-[p+X,Z]-[p+Z,X]*-[p,Z]*
+
+            m2 = lattice_table_2(lattice_table,&coordX,gdiX,T,&twist);   // [p+X,T]
+            m3 = lattice_table_2(lattice_table,&coordT,gdiT,X,&twist);   // [p+T,X]
+            m6 = lattice_table_2(lattice_table,&coord, gindex,T,&twist);    // [p,T]
+        retrac_temp = lattice_retrace_plaquette2(&m1,&m2,&m3,&m6); // x-t: [p,X]-[p+X,T]-[p+T,X]*-[p,T]*
+
+            m2 = lattice_table_2(lattice_table,&coordY,gdiY,Z,&twist);   // [p+Y,Z]
+            m3 = lattice_table_2(lattice_table,&coordZ,gdiZ,Y,&twist);   // [p+Z,Y]
+        retrac_spat += lattice_retrace_plaquette2(&m4,&m2,&m3,&m5); // y-z: [p,Y]-[p+Y,Z]-[p+Z,Y]*-[p,Z]*
+
+            m2 = lattice_table_2(lattice_table,&coordY,gdiY,T,&twist);   // [p+Y,T]
+            m3 = lattice_table_2(lattice_table,&coordT,gdiT,Y,&twist);   // [p+T,Y]
+        retrac_temp += lattice_retrace_plaquette2(&m4,&m2,&m3,&m6); // y-t: [p,Y]-[p+Y,T]-[p+T,Y]*-[p,T]*
+
+            m2 = lattice_table_2(lattice_table,&coordZ,gdiZ,T,&twist);   // [p+Z,T]
+            m3 = lattice_table_2(lattice_table,&coordT,gdiT,Z,&twist);   // [p+T,Z]
+        retrac_temp += lattice_retrace_plaquette2(&m5,&m2,&m3,&m6); // z-t: [p,Z]-[p+Z,T]-[p+T,Z]*-[p,T]*
+
+        out.x = bet * (6.0 - retrac_spat);
+        out.y = bet * (6.0 - retrac_temp);
+    }
+    
+    // first reduction
+    reduce_first_step_val_double2(lattice_lds,&out, &out2);
+    if(TID == 0) lattice_measurement[BID] = out2;
+#elif SUN == 3
+    hgpu_double2 out  = (hgpu_double2) 0.0;
+    hgpu_double2 out2 = (hgpu_double2) 0.0;
+    hgpu_double retrac_spat = 0.0;
+    hgpu_double retrac_temp = 0.0;
+    
+    uint gindex;// -- index on the ordinar lattice
+    uint gdiK = GID;// -- index on the enlarged lattice
+    
+    hgpu_float bet = lattice_parameters[0];
+    su3_twist twist;
+    twist.phi   = lattice_parameters[1];
+    twist.omega   = lattice_parameters[2];
+    
+    lattice_gidK_y_to_gid(&gdiK,&gindex);
+    
+    if (gindex<SITES) {
+        coords_4 coord;
+        coords_4 coordX,coordY,coordZ,coordT;
+        uint gdiX,gdiY,gdiZ,gdiT;
+
+        gpu_su_3 m1,m2,m3,m4,m5,m6;
+
+        lattice_gid_to_coords(&gindex,&coord);
+
+        // prepare neighbours
+        lattice_neighbours_gid(&coord,&coordX,&gdiX,X);
+        lattice_neighbours_gid(&coord,&coordY,&gdiY,Y);
+        lattice_neighbours_gid(&coord,&coordZ,&gdiZ,Z);
+        lattice_neighbours_gid(&coord,&coordT,&gdiT,T);
+
+            m1 = lattice_table_3(lattice_table,&coord, gindex,X,&twist);    // [p,x]
+            m2 = lattice_table_3(lattice_table,&coordX,gdiX,Y,&twist);   // [p+X,Y]
+            m3 = lattice_table_3(lattice_table,&coordY,gdiY,X,&twist);   // [p+Y,X]
+            m4 = lattice_table_3(lattice_table,&coord, gindex,Y,&twist);    // [p,Y]
+        retrac_spat = lattice_retrace_plaquette3(&m1,&m2,&m3,&m4); // x-y: [p,X]-[p+X,Y]-[p+Y,X]*-[p,Y]
+
+            m2 = lattice_table_3(lattice_table,&coordX,gdiX,Z,&twist);   // [p+X,Z]
+            m3 = lattice_table_3(lattice_table,&coordZ,gdiZ,X,&twist);   // [p+Z,X]
+            m5 = lattice_table_3(lattice_table,&coord, gindex,Z,&twist);    // [p,Z]
+        retrac_spat += lattice_retrace_plaquette3(&m1,&m2,&m3,&m5); // x-z: [p,X]-[p+X,Z]-[p+Z,X]*-[p,Z]*
+
+            m2 = lattice_table_3(lattice_table,&coordX,gdiX,T,&twist);   // [p+X,T]
+            m3 = lattice_table_3(lattice_table,&coordT,gdiT,X,&twist);   // [p+T,X]
+            m6 = lattice_table_3(lattice_table,&coord, gindex,T,&twist);    // [p,T]
+        retrac_temp = lattice_retrace_plaquette3(&m1,&m2,&m3,&m6); // x-t: [p,X]-[p+X,T]-[p+T,X]*-[p,T]*
+
+            m2 = lattice_table_3(lattice_table,&coordY,gdiY,Z,&twist);   // [p+Y,Z]
+            m3 = lattice_table_3(lattice_table,&coordZ,gdiZ,Y,&twist);   // [p+Z,Y]
+        retrac_spat += lattice_retrace_plaquette3(&m4,&m2,&m3,&m5); // y-z: [p,Y]-[p+Y,Z]-[p+Z,Y]*-[p,Z]*
+
+            m2 = lattice_table_3(lattice_table,&coordY,gdiY,T,&twist);   // [p+Y,T]
+            m3 = lattice_table_3(lattice_table,&coordT,gdiT,Y,&twist);   // [p+T,Y]
+        retrac_temp += lattice_retrace_plaquette3(&m4,&m2,&m3,&m6); // y-t: [p,Y]-[p+Y,T]-[p+T,Y]*-[p,T]*
+
+            m2 = lattice_table_3(lattice_table,&coordZ,gdiZ,T,&twist);   // [p+Z,T]
+            m3 = lattice_table_3(lattice_table,&coordT,gdiT,Z,&twist);   // [p+T,Z]
+        retrac_temp += lattice_retrace_plaquette3(&m5,&m2,&m3,&m6); // z-t: [p,Z]-[p+Z,T]-[p+T,Z]*-[p,T]*
+
+        out.x = bet * (9.0 - retrac_spat);
+        out.y = bet * (9.0 - retrac_temp);
+    }
+    
+    // first reduction
+    reduce_first_step_val_double2(lattice_lds,&out, &out2);
+    if(TID == 0) lattice_measurement[BID] = out2;
+#endif
+}
+
+                                        __kernel void
+lattice_action_diff_z(__global hgpu_float4  * lattice_table,
+                    __global hgpu_double2 * lattice_measurement,
+                    __global hgpu_float   * lattice_parameters,
+                    __local hgpu_double2  * lattice_lds)
+{
+#if SUN == 2
+    hgpu_double2 out  = (hgpu_double2) 0.0;
+    hgpu_double2 out2 = (hgpu_double2) 0.0;
+    hgpu_double retrac_spat = 0.0;
+    hgpu_double retrac_temp = 0.0;
+    
+    uint gindex;// -- index on the ordinar lattice
+    uint gdiK = GID;// -- index on the enlarged lattice
+    
+    hgpu_float bet = lattice_parameters[0];
+    su2_twist twist;
+    twist.phi   = lattice_parameters[1];
+    
+    lattice_gidK_z_to_gid(&gdiK,&gindex);
+    
+    if (gindex<SITES) {
+        coords_4 coord;
+        coords_4 coordX,coordY,coordZ,coordT;
+        uint gdiX,gdiY,gdiZ,gdiT;
+
+        gpu_su_2 m1,m2,m3,m4,m5,m6;
+
+        lattice_gid_to_coords(&gindex,&coord);
+
+        // prepare neighbours
+        lattice_neighbours_gid(&coord,&coordX,&gdiX,X);
+        lattice_neighbours_gid(&coord,&coordY,&gdiY,Y);
+        lattice_neighbours_gid(&coord,&coordZ,&gdiZ,Z);
+        lattice_neighbours_gid(&coord,&coordT,&gdiT,T);
+
+            m1 = lattice_table_2(lattice_table,&coord, gindex,X,&twist);    // [p,x]
+            m2 = lattice_table_2(lattice_table,&coordX,gdiX,Y,&twist);   // [p+X,Y]
+            m3 = lattice_table_2(lattice_table,&coordY,gdiY,X,&twist);   // [p+Y,X]
+            m4 = lattice_table_2(lattice_table,&coord, gindex,Y,&twist);    // [p,Y]
+        retrac_spat = lattice_retrace_plaquette2(&m1,&m2,&m3,&m4); // x-y: [p,X]-[p+X,Y]-[p+Y,X]*-[p,Y]
+
+            m2 = lattice_table_2(lattice_table,&coordX,gdiX,Z,&twist);   // [p+X,Z]
+            m3 = lattice_table_2(lattice_table,&coordZ,gdiZ,X,&twist);   // [p+Z,X]
+            m5 = lattice_table_2(lattice_table,&coord, gindex,Z,&twist);    // [p,Z]
+        retrac_spat += lattice_retrace_plaquette2(&m1,&m2,&m3,&m5); // x-z: [p,X]-[p+X,Z]-[p+Z,X]*-[p,Z]*
+
+            m2 = lattice_table_2(lattice_table,&coordX,gdiX,T,&twist);   // [p+X,T]
+            m3 = lattice_table_2(lattice_table,&coordT,gdiT,X,&twist);   // [p+T,X]
+            m6 = lattice_table_2(lattice_table,&coord, gindex,T,&twist);    // [p,T]
+        retrac_temp = lattice_retrace_plaquette2(&m1,&m2,&m3,&m6); // x-t: [p,X]-[p+X,T]-[p+T,X]*-[p,T]*
+
+            m2 = lattice_table_2(lattice_table,&coordY,gdiY,Z,&twist);   // [p+Y,Z]
+            m3 = lattice_table_2(lattice_table,&coordZ,gdiZ,Y,&twist);   // [p+Z,Y]
+        retrac_spat += lattice_retrace_plaquette2(&m4,&m2,&m3,&m5); // y-z: [p,Y]-[p+Y,Z]-[p+Z,Y]*-[p,Z]*
+
+            m2 = lattice_table_2(lattice_table,&coordY,gdiY,T,&twist);   // [p+Y,T]
+            m3 = lattice_table_2(lattice_table,&coordT,gdiT,Y,&twist);   // [p+T,Y]
+        retrac_temp += lattice_retrace_plaquette2(&m4,&m2,&m3,&m6); // y-t: [p,Y]-[p+Y,T]-[p+T,Y]*-[p,T]*
+
+            m2 = lattice_table_2(lattice_table,&coordZ,gdiZ,T,&twist);   // [p+Z,T]
+            m3 = lattice_table_2(lattice_table,&coordT,gdiT,Z,&twist);   // [p+T,Z]
+        retrac_temp += lattice_retrace_plaquette2(&m5,&m2,&m3,&m6); // z-t: [p,Z]-[p+Z,T]-[p+T,Z]*-[p,T]*
+
+        out.x = bet * (6.0 - retrac_spat);
+        out.y = bet * (6.0 - retrac_temp);
+    }
+    
+    // first reduction
+    reduce_first_step_val_double2(lattice_lds,&out, &out2);
+    if(TID == 0) lattice_measurement[BID] = out2;
+#elif SUN == 3
+    hgpu_double2 out  = (hgpu_double2) 0.0;
+    hgpu_double2 out2 = (hgpu_double2) 0.0;
+    hgpu_double retrac_spat = 0.0;
+    hgpu_double retrac_temp = 0.0;
+    
+    uint gindex;// -- index on the ordinar lattice
+    uint gdiK = GID;// -- index on the enlarged lattice
+    
+    hgpu_float bet = lattice_parameters[0];
+    su3_twist twist;
+    twist.phi   = lattice_parameters[1];
+    twist.omega   = lattice_parameters[2];
+    
+    lattice_gidK_z_to_gid(&gdiK,&gindex);
+    
+    if (gindex<SITES) {
+        coords_4 coord;
+        coords_4 coordX,coordY,coordZ,coordT;
+        uint gdiX,gdiY,gdiZ,gdiT;
+
+        gpu_su_3 m1,m2,m3,m4,m5,m6;
+
+        lattice_gid_to_coords(&gindex,&coord);
+
+        // prepare neighbours
+        lattice_neighbours_gid(&coord,&coordX,&gdiX,X);
+        lattice_neighbours_gid(&coord,&coordY,&gdiY,Y);
+        lattice_neighbours_gid(&coord,&coordZ,&gdiZ,Z);
+        lattice_neighbours_gid(&coord,&coordT,&gdiT,T);
+
+            m1 = lattice_table_3(lattice_table,&coord, gindex,X,&twist);    // [p,x]
+            m2 = lattice_table_3(lattice_table,&coordX,gdiX,Y,&twist);   // [p+X,Y]
+            m3 = lattice_table_3(lattice_table,&coordY,gdiY,X,&twist);   // [p+Y,X]
+            m4 = lattice_table_3(lattice_table,&coord, gindex,Y,&twist);    // [p,Y]
+        retrac_spat = lattice_retrace_plaquette3(&m1,&m2,&m3,&m4); // x-y: [p,X]-[p+X,Y]-[p+Y,X]*-[p,Y]
+
+            m2 = lattice_table_3(lattice_table,&coordX,gdiX,Z,&twist);   // [p+X,Z]
+            m3 = lattice_table_3(lattice_table,&coordZ,gdiZ,X,&twist);   // [p+Z,X]
+            m5 = lattice_table_3(lattice_table,&coord, gindex,Z,&twist);    // [p,Z]
+        retrac_spat += lattice_retrace_plaquette3(&m1,&m2,&m3,&m5); // x-z: [p,X]-[p+X,Z]-[p+Z,X]*-[p,Z]*
+
+            m2 = lattice_table_3(lattice_table,&coordX,gdiX,T,&twist);   // [p+X,T]
+            m3 = lattice_table_3(lattice_table,&coordT,gdiT,X,&twist);   // [p+T,X]
+            m6 = lattice_table_3(lattice_table,&coord, gindex,T,&twist);    // [p,T]
+        retrac_temp = lattice_retrace_plaquette3(&m1,&m2,&m3,&m6); // x-t: [p,X]-[p+X,T]-[p+T,X]*-[p,T]*
+
+            m2 = lattice_table_3(lattice_table,&coordY,gdiY,Z,&twist);   // [p+Y,Z]
+            m3 = lattice_table_3(lattice_table,&coordZ,gdiZ,Y,&twist);   // [p+Z,Y]
+        retrac_spat += lattice_retrace_plaquette3(&m4,&m2,&m3,&m5); // y-z: [p,Y]-[p+Y,Z]-[p+Z,Y]*-[p,Z]*
+
+            m2 = lattice_table_3(lattice_table,&coordY,gdiY,T,&twist);   // [p+Y,T]
+            m3 = lattice_table_3(lattice_table,&coordT,gdiT,Y,&twist);   // [p+T,Y]
+        retrac_temp += lattice_retrace_plaquette3(&m4,&m2,&m3,&m6); // y-t: [p,Y]-[p+Y,T]-[p+T,Y]*-[p,T]*
+
+            m2 = lattice_table_3(lattice_table,&coordZ,gdiZ,T,&twist);   // [p+Z,T]
+            m3 = lattice_table_3(lattice_table,&coordT,gdiT,Z,&twist);   // [p+T,Z]
+        retrac_temp += lattice_retrace_plaquette3(&m5,&m2,&m3,&m6); // z-t: [p,Z]-[p+Z,T]-[p+T,Z]*-[p,T]*
+
+        out.x = bet * (9.0 - retrac_spat);
+        out.y = bet * (9.0 - retrac_temp);
+    }
+    
+    // first reduction
+    reduce_first_step_val_double2(lattice_lds,&out, &out2);
+    if(TID == 0) lattice_measurement[BID] = out2;
+#endif
+}
+
+                                        __kernel void
 reduce_measurement_double2(__global hgpu_double2 * lattice_measurement,
                            __global hgpu_double2 * lattice_energies,
                            __local hgpu_double2  * lattice_lds,
@@ -191,6 +612,87 @@ reduce_measurement_double2(__global hgpu_double2 * lattice_measurement,
     reduce_final_step_double2(lattice_lds,lattice_measurement,size);
     hgpu_double2 out = lattice_lds[TID];
     if (GID==0) lattice_energies[index] = out;
+}
+
+                                        __kernel void
+reduce_action_diff_x_double2(__global hgpu_double2 * lattice_measurement,
+                           __global hgpu_double2 * lattice_energies,
+                           __local hgpu_double2  * lattice_lds,
+                           uint4 param,
+                           uint index)
+{
+    hgpu_double2 out[N1];
+    uint size1 = param.x / N1;
+    int i;
+    
+    reduce_final_step_double2(lattice_lds, lattice_measurement, size1);
+    out[0] = lattice_lds[TID];
+    
+    uint offset  = size1;
+    for(i = 1; i < N1; i++)
+    {
+       reduce_final_step_double2_offset(lattice_lds, lattice_measurement, size1, i * offset);
+       out[i] = lattice_lds[TID];
+    }
+    
+    uint offset2 = param.y;
+    if (GID==0)
+      for(i = 0; i < N1; i++)
+	lattice_energies[index + offset2 * i] = out[i];
+}
+
+                                        __kernel void
+reduce_action_diff_y_double2(__global hgpu_double2 * lattice_measurement,
+                           __global hgpu_double2 * lattice_energies,
+                           __local hgpu_double2  * lattice_lds,
+                           uint4 param,
+                           uint index)
+{
+    hgpu_double2 out[N2];
+    uint size1 = param.x / N2;
+    int i;
+    
+    reduce_final_step_double2(lattice_lds, lattice_measurement, size1);
+    out[0] = lattice_lds[TID];
+    
+    uint offset  = size1;
+    for(i = 1; i < N2; i++)
+    {
+       reduce_final_step_double2_offset(lattice_lds, lattice_measurement, size1, i * offset);
+       out[i] = lattice_lds[TID];
+    }
+    
+    uint offset2 = param.y;
+    if (GID==0)
+      for(i = 0; i < N2; i++)
+	lattice_energies[index + offset2 * i] = out[i];
+}
+
+                                        __kernel void
+reduce_action_diff_z_double2(__global hgpu_double2 * lattice_measurement,
+                           __global hgpu_double2 * lattice_energies,
+                           __local hgpu_double2  * lattice_lds,
+                           uint4 param,
+                           uint index)
+{
+    hgpu_double2 out[N3];
+    uint size1 = param.x / N3;
+    int i;
+    
+    reduce_final_step_double2(lattice_lds, lattice_measurement, size1);
+    out[0] = lattice_lds[TID];
+    
+    uint offset  = size1;
+    for(i = 1; i < N3; i++)
+    {
+       reduce_final_step_double2_offset(lattice_lds, lattice_measurement, size1, i * offset);
+       out[i] = lattice_lds[TID];
+    }
+    
+    uint offset2 = param.y;
+    if (GID==0)
+      for(i = 0; i < N3; i++)
+	lattice_energies[index + offset2 * i] = out[i];
 }
 
 #ifdef FMUNU
@@ -870,4 +1372,5 @@ clear_measurement(__global hgpu_double2 * lattice_measurement)
                                                                                                                                                                  
                                                                                                                                                                  
                                                                                                                                                                  
-                                                                                                                                                                 
+                                                                                                                                                                  
+                                                                                                                                                                  
