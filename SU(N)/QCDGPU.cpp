@@ -1,10 +1,8 @@
-// QCDGPU.cpp : Defines the entry point for the console application.
-//
 /******************************************************************************
  * @file     QCDGPU.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           The main program file
@@ -41,11 +39,11 @@
  
 #include "QCDGPU.h"
 
-char version[] = "1.4";     /**< version of programm */
+char version[] = "1.5";     /**< version of programm */
 char fil[]     = "c:\\init.dat"; /**< init.dat file loading by default */
 char fprefix[] = "su3-";     /**< prefix for data-files */
 
-char fload[] = "su3-14-Apr-16-00-00-00.qcg"; /**< file with configuration to be load by default*/
+char fload[] = "su3-14-Aug-20-00-00-00.qcg"; /**< file with configuration to be load by default*/
 
 #ifdef _WIN32
             char path[]   = "c:/"; /**< path for output file *//*< path for output file (corresponding to Windows/Linux OS) **/
@@ -66,10 +64,10 @@ int main(int argc, char ** argv)
     using  model_CL::model;
 
     model* model0 = new(model);
-model0->GPU0->GPU_limit_max_workgroup_size = 256; // please, remark it for Intel platform
-#ifndef WIN32
-setenv("CUDA_CACHE_DISABLE", "1", 1);
-#endif
+model0->GPU0->GPU_limit_max_workgroup_size = 64; // please, remark it for Intel platform
+//#ifndef WIN32
+//setenv("CUDA_CACHE_DISABLE", "1", 1); // disable nVidia cach, if needed
+//#endif
 
     int result = 0;
     // setup debug_level
@@ -90,13 +88,13 @@ setenv("CUDA_CACHE_DISABLE", "1", 1);
         model0->GPU0->GPU_debug.rebuild_binary = false;
         
         model0->PRNG0->PRNG_generator   = PRNG_CL::PRNG::PRNG_generator_RANLUX3;
-        model0->PRNG0->PRNG_randseries  = 0; // constant random series; 0 <--> system time
+        model0->PRNG0->PRNG_randseries  = 14; // constant random series; 0 <--> system time
         model0->lattice_nd      = 4;
-        model0->lattice_group   = 2;       // SU(N) group
-            model0->lattice_full_size[0] = 12;  // Nt
-            model0->lattice_full_size[1] = 12;  // Nx
-            model0->lattice_full_size[2] = 12;  // Ny
-            model0->lattice_full_size[3] = 6;  // Nz
+        model0->lattice_group   = 3;       // SU(N) group
+            model0->lattice_full_size[0] = 6;  // Nt
+            model0->lattice_full_size[1] = 6;  // Nx
+            model0->lattice_full_size[2] = 6;  // Ny
+            model0->lattice_full_size[3] = 2;  // Nz
 
         model0->big_lattice         = false;
                     model0->lattice_domain_size[0] = model0->lattice_full_size[0];
@@ -104,16 +102,20 @@ setenv("CUDA_CACHE_DISABLE", "1", 1);
                     model0->lattice_domain_size[2] = model0->lattice_full_size[2];
                     model0->lattice_domain_size[3] = model0->lattice_full_size[3];
         model0->precision     = model::model_precision_double;
-        model0->INIT          = 1;                      // start simulations (0 - continue, 1 - start)
-        model0->NAV           = 5;                     // number of thermalization cycles
-        model0->ITER          = 5;                    // number of working iterations (note: first measurement is performing on the initial configuration!!!)
-        model0->NITER         = 10;                     // Number of bulk iterations between measurements
+        model0->INIT          = 1;                  // start simulations (0 - continue, 1 - start)
+        model0->NAV           = 0;                  // number of thermalization cycles
+        model0->ITER          = 200;                // number of working iterations (note: first measurement is performing on the initial configuration!!!)
+        model0->NITER         = 2;                  // Number of bulk iterations between measurements
         model0->NHIT          = 10;
-        model0->BETA          = 2.8;
-        model0->PHI           = PI/10;   // lambda_3 (for SU(2) and SU(3) groups)
-        model0->OMEGA         = 0.0;     // lambda_8 (for SU(3) group)
+        model0->BETA          = 0.5;
+        model0->PHI           = 2.0;    // lambda_3 (for SU(2) and SU(3) groups)
+        model0->OMEGA         = 3.0;    // lambda_8 (for SU(3) group)
         model0->ints          = model::model_start_cold;  // setup start type (model_start_cold or model_start_hot)
-        model0->PL_level      = 2;                        // level of Polyakov loop calculation (0 = do not calculate PL, 1 = calculate PL only, 2 = calculate PL, PL^2, PL^4)
+        model0->PL_level      = 0;                  // level of Polyakov loop calculation
+                                                    // PL_level = 0 - do not calculate PL
+                                                    // PL_level = 1 - calculate PL only
+                                                    // PL_level = 2 - calculate PL, PL^2, PL^4
+                                                    // PL_level = 3 - calculate PL_diff
         model0->wilson_R      = 1;
         model0->wilson_T      = 2;
         model0->version       = (char*) calloc((strlen(version) + 1),sizeof(char));
@@ -122,15 +124,17 @@ setenv("CUDA_CACHE_DISABLE", "1", 1);
 model0->turnoff_updates     = false;                // turn off lattice updates
 model0->turnoff_config_save = true;                 // do not write configurations
 model0->turnoff_prns        = false;                // turn off prn production
-model0->turnoff_gramschmidt = true;                // turn off orthogonalization
+model0->turnoff_gramschmidt = false;                // turn off orthogonalization
 model0->get_actions_avr     = true;                 // calculate mean action values
 model0->get_plaquettes_avr  = true;                 // calculate mean plaquette values
-model0->get_wilson_loop     = true;                 // calculate Wilson loop values
-model0->get_Fmunu           = false;                 // calculate Fmunu tensor for H field (3-rd and 8-ht by default)
+model0->get_wilson_loop     = false;                // calculate Wilson loop values
+model0->get_Fmunu           = true;                 // calculate Fmunu tensor for H field (3-rd and 8-ht by default)
 model0->get_F0mu            = false;                // calculate Fmunu tensor for E field (3-rd and 8-ht by default)
 model0->get_Fmunu1          = false;                // flag to measure chomomagnetic field strength corresponding to the 1-st SU(3) generator
 model0->get_Fmunu5          = false;                // --"-- for 5-th group generator
 model0->write_lattice_state_every_secs = 2.0;       // write lattice configuration every ... seconds (default: 15 minutes)
+
+model0->get_actions_diff    = false;
 
 model0->check_prngs         = true;   // check PRNG production
 
