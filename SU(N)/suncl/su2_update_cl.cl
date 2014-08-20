@@ -2,7 +2,7 @@
  * @file     su2_update_cl.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Contains functions for lattice update (SU(2) gauge theory)
@@ -41,8 +41,6 @@
                      __attribute__((always_inline)) void
 lattice_unity_2(su_2* matrix)
 {
-    //su_2   matrix;
-
     (*matrix).u1.re = 1.0;
     (*matrix).u1.im = 0.0;
 
@@ -59,8 +57,6 @@ lattice_unity_2(su_2* matrix)
                      __attribute__((always_inline)) void
 lattice_zero_2(su_2* matrix)
 {
-    //su_2   matrix;
-
     (*matrix).u1.re = 0.0;
     (*matrix).u1.im = 0.0;
 
@@ -465,12 +461,12 @@ hgpu_float gid; //DELETE!!!
 
     while ((i < NHIT) && (flag == false)){
 #ifdef GID_UPD
-        gid = prns[(*indprng)].x; //DELETE!!!
+        gid = prns[(*indprng)].x;
 
-rnd.x = (hgpu_float) fabs(sin((0.005*(1 + NHIT)+270.0/SITES)*gid)); //DELETE!!!
-rnd.y = (hgpu_float) fabs(cos((0.005*(1 + NHIT)+ 60.0/SITES)*gid)); //DELETE!!!
-rnd.z = (hgpu_float) fabs(sin((0.005*(1 + NHIT)-150.0/SITES)*gid)); //DELETE!!!
-rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/SITES)*gid)); //DELETE!!!
+rnd.x = (hgpu_float) fabs(sin((0.005*(1 + NHIT)+270.0/SITES)*gid));
+rnd.y = (hgpu_float) fabs(cos((0.005*(1 + NHIT)+ 60.0/SITES)*gid));
+rnd.z = (hgpu_float) fabs(sin((0.005*(1 + NHIT)-150.0/SITES)*gid));
+rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/SITES)*gid));
 #else
         rnd.x = (hgpu_float) prns[(*indprng)].x;
         rnd.y = (hgpu_float) prns[(*indprng)].y;
@@ -479,17 +475,21 @@ rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/SITES)*gid)); //DELETE!!!
         (*indprng) += PRNGSTEP;
 #endif
         cosrnd = cos(PI2 * rnd.y);
-        delta = -(log(1.0 - rnd.x) + cosrnd * cosrnd * log(1.0 - rnd.z)) / bdet;   //delta = -(...)/[beta sqrt(det(a))] = 2 lambda^2 (Gattr)
+	delta = -(log(1.0 - rnd.x) + cosrnd * cosrnd * log(1.0 - rnd.z)) / bdet;  //delta = -(...)/[beta sqrt(det(a))] = 2 lambda^2 (Gattr)
         if ((rnd.w * rnd.w)<=(1.0 - 0.5 * delta)) {flag=true;}
+#ifdef GID_UPD
+	delta = cosrnd * cosrnd / bdet;  
+	flag = true;
+#endif
         i++;
     }
 
         if (flag) {
 #ifdef GID_UPD
-rnd.x = (hgpu_float) fabs(cos((0.08-270.0/SITES)*gid)); //DELETE!!!
-rnd.y = (hgpu_float) fabs(sin((0.08-60.0/SITES)*gid)); //DELETE!!!
-rnd.z = (hgpu_float) fabs(cos((0.08+150.0/SITES)*gid)); //DELETE!!!
-rnd.w = (hgpu_float) fabs(sin((0.08+380.0/SITES)*gid)); //DELETE!!!
+rnd.x = (hgpu_float) fabs(cos((0.08-270.0/SITES)*gid));
+rnd.y = (hgpu_float) fabs(sin((0.08-60.0/SITES)*gid));
+rnd.z = (hgpu_float) fabs(cos((0.08+150.0/SITES)*gid));
+rnd.w = (hgpu_float) fabs(sin((0.08+380.0/SITES)*gid));
 #else
             rnd.x = (hgpu_float) prns[(*indprng)].x;
             rnd.y = (hgpu_float) prns[(*indprng)].y;
@@ -558,4 +558,5 @@ lattice_heatbath_2(su_2* staple,gpu_su_2* m0,hgpu_float* beta,__global const hgp
                                                                                                                                                                   
                                                                                                                                                                   
                                                                                                                                                                   
-                                                                                                                                                                  
+                                                                                                                                                                   
+                                                                                                                                                                   
