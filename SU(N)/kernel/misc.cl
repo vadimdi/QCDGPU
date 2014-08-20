@@ -2,7 +2,7 @@
  * @file     misc.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Reduction procedures
@@ -127,6 +127,17 @@ reduce_final_step_double2_offset(__local hgpu_double2 * lds,
 
                               __attribute__((always_inline)) void
 reduce_first_step_val_double2(__local hgpu_double2 * lds,hgpu_double2 * val,hgpu_double2 * out){
+        lds[TID] = (*val);
+        for(uint i = GROUP_SIZE >> 1; i > 0; i >>= 1){
+            barrier(CLK_LOCAL_MEM_FENCE);
+            if(TID < i) lds[TID] += lds[TID + i];
+        }
+        barrier(CLK_LOCAL_MEM_FENCE);
+        if(TID == 0) (*out) = lds[TID];
+}
+
+                              __attribute__((always_inline)) void
+reduce_second_step_val_double2(__local hgpu_double2 * lds,hgpu_double2 * val,hgpu_double2 * out){
         lds[TID] = (*val);
         for(uint i = GROUP_SIZE >> 1; i > 0; i >>= 1){
             barrier(CLK_LOCAL_MEM_FENCE);
