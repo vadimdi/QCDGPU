@@ -2,7 +2,7 @@
  * @file     su3_measurements.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Definition of general functions used in measurements, corresponding to the SU(3) gauge group
@@ -523,4 +523,5 @@ lattice_retrace_plaquette3_double(double_su_3* m1, double_su_3* m2, double_su_3*
                                                                                                                                                                   
                                                                                                                                                                   
                                                                                                                                                                   
-                                                                                                                                                                  
+                                                                                                                                                                   
+                                                                                                                                                                   
