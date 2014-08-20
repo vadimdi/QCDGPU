@@ -2,7 +2,7 @@
  * @file     clinterface.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Interface for OpenCL AMD APP & nVidia SDK environment
@@ -51,7 +51,7 @@
 
 #define FNAME_MAX_LENGTH    128
 
-#define HASHES_SIZE         30
+#define HASHES_SIZE         60
 
 namespace GPU_CL{
 using GPU_CL::GPU;
@@ -1108,7 +1108,7 @@ cl_float4*      GPU::buffer_map_float4(int buffer_id)
     cl_float4* ptr;
     cl_event buffer_event;
     cl_ulong buffer_read_start, buffer_read_finish;
-    ptr = (cl_float4*) clEnqueueMapBuffer( GPU_queue,GPU_buffers[buffer_id].buffer,CL_TRUE,CL_MAP_READ,0,GPU_buffers[buffer_id].size_in_bytes,0, NULL, &buffer_event, &GPU_error );
+    ptr = (cl_float4*)clEnqueueMapBuffer( GPU_queue,GPU_buffers[buffer_id].buffer,CL_TRUE,CL_MAP_READ,0,GPU_buffers[buffer_id].size_in_bytes,0, NULL, &buffer_event, &GPU_error );
     OpenCL_Check_Error(GPU_error,"clEnqueueMapBuffer failed");
     if (GPU_debug.profiling){
         OpenCL_Check_Error(clWaitForEvents(1, &buffer_event),"clWaitForEvents failed");
