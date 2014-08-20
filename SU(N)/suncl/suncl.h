@@ -2,7 +2,7 @@
  * @file     suncl.h
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Lattice simulation procedures (header)
@@ -110,8 +110,10 @@ class model {
                        int     Fmunu_index1;        // index for first  Fmunu
                        int     Fmunu_index2;        // index for second Fmunu
 
+                      bool     get_actions_diff;    // calculate S(x), S(y), S(z)
+                       
                       bool     check_prngs;         // check PRNG production
-
+                      
                       bool     turnoff_config_save;// do not write configurations
                       bool     turnoff_updates;    // do not update links
                       bool     turnoff_prns;       // do not produce prns
@@ -216,10 +218,29 @@ class model {
 #define DM_Fmunu_abs_3_im   24 // index for data measurement for Fmunu_abs_3_im
 #define DM_Fmunu_abs_8_re   25 // index for data measurement for Fmunu_abs_8_re
 #define DM_Fmunu_abs_8_im   26 // index for data measurement for Fmunu_abs_8_im
-#define DM_max              26 // max index for data measurements
+#define DM_Polyakov_loop_diff    27 // index for data measurement for Polyakov_loop
+#define DM_Polyakov_loop_diff_im 28 // index for data measurement for Polyakov_loop_im
+#define DM_max              28 // max index for data measurements
 
              // measurements
 analysis_CL::analysis::data_analysis*   Analysis;            // array for all measurements
+analysis_CL::analysis::data_analysis*   Analysis_PL_X;         // array for differentiated Polyakov loop measurements (Re)
+analysis_CL::analysis::data_analysis*   Analysis_PL_X_im;      // array for differentiated Polyakov loop measurements (Im)
+analysis_CL::analysis::data_analysis*   Analysis_PL_Y;         // array for differentiated Polyakov loop measurements (Re)
+analysis_CL::analysis::data_analysis*   Analysis_PL_Y_im;      // array for differentiated Polyakov loop measurements (Im)
+analysis_CL::analysis::data_analysis*   Analysis_PL_Z;         // array for differentiated Polyakov loop measurements (Re)
+analysis_CL::analysis::data_analysis*   Analysis_PL_Z_im;      // array for differentiated Polyakov loop measurements (Im)
+
+analysis_CL::analysis::data_analysis*   Analysis_S_X_s;         // array for differentiated S measurements (spat)
+analysis_CL::analysis::data_analysis*   Analysis_S_X_t;      // array for differentiated S measurements (temp)
+analysis_CL::analysis::data_analysis*   Analysis_S_Y_s;         // array for differentiated S measurements (spat)
+analysis_CL::analysis::data_analysis*   Analysis_S_Y_t;      // array for differentiated S measurements (temp)
+analysis_CL::analysis::data_analysis*   Analysis_S_Z_s;         // array for differentiated S measurements (spat)
+analysis_CL::analysis::data_analysis*   Analysis_S_Z_t;      // array for differentiated S measurements (temp)
+
+analysis_CL::analysis::data_analysis*   Analysis_S_X;
+analysis_CL::analysis::data_analysis*   Analysis_S_Y;
+analysis_CL::analysis::data_analysis*   Analysis_S_Z;
 
                       char*    header;
                        int     header_index;
@@ -255,23 +276,43 @@ analysis_CL::analysis::data_analysis*   Analysis;            // array for all me
              int    sun_get_boundary_low_id;
              int    sun_put_boundary_low_id;
              int    sun_measurement_id;
+	     int    sun_action_diff_x_id;
+	     int    sun_action_diff_y_id;
+	     int    sun_action_diff_z_id;
              int    sun_measurement_reduce_id;
+	     int    sun_action_diff_x_reduce_id;
+	     int    sun_action_diff_y_reduce_id;
+	     int    sun_action_diff_z_reduce_id;
              int    sun_measurement_plq_id;
              int    sun_measurement_plq_reduce_id;
              int    sun_measurement_wilson_id;
              int    sun_wilson_loop_reduce_id;
              int    sun_polyakov_id;
+	     int    sun_polyakov_diff_x_id;
+	     int    sun_polyakov_diff_y_id;
+	     int    sun_polyakov_diff_z_id;
              int    sun_polyakov_reduce_id;
+	     int    sun_polyakov_diff_x_reduce_id;
+	     int    sun_polyakov_diff_y_reduce_id;
+	     int    sun_polyakov_diff_z_reduce_id;
              int    sun_update_indices_id;
 
              int    argument_wilson_index;
              int    argument_plq_index;
              int    argument_polyakov_index;
+	     int    argument_polyakov_diff_x_index;
+	     int    argument_polyakov_diff_y_index;
+	     int    argument_polyakov_diff_z_index;
              int    argument_measurement_index;
+	     int    argument_action_diff_x_index;
+	     int    argument_action_diff_y_index;
+	     int    argument_action_diff_z_index;
              int    wilson_index;
              int    plq_index;
              int    polyakov_index;
+	     int    polyakov_diff_index;
              int    measurement_index;
+	     int    action_diff_index;
 
             // identificators for buffers
     unsigned int    lattice_table;
@@ -283,6 +324,12 @@ analysis_CL::analysis::data_analysis*   Analysis;            // array for all me
     unsigned int    lattice_energies_plq;
     unsigned int    lattice_wilson_loop;
     unsigned int    lattice_polyakov_loop;
+    unsigned int    lattice_polyakov_loop_diff_x;
+    unsigned int    lattice_polyakov_loop_diff_y;
+    unsigned int    lattice_polyakov_loop_diff_z;
+    unsigned int    lattice_action_diff_x;
+    unsigned int    lattice_action_diff_y;
+    unsigned int    lattice_action_diff_z;
 
             // pointers for buffers
     cl_float4*      plattice_table_float;
@@ -294,6 +341,12 @@ analysis_CL::analysis::data_analysis*   Analysis;            // array for all me
     cl_double2*     plattice_energies_plq;
     cl_double*      plattice_wilson_loop;
     cl_double2*     plattice_polyakov_loop;
+    cl_double2*     plattice_polyakov_loop_diff_x;
+    cl_double2*     plattice_polyakov_loop_diff_y;
+    cl_double2*     plattice_polyakov_loop_diff_z;
+    cl_double2*     plattice_action_diff_x;
+    cl_double2*     plattice_action_diff_y;
+    cl_double2*     plattice_action_diff_z;
 
 
             // functions
@@ -343,6 +396,8 @@ analysis_CL::analysis::data_analysis*   Analysis;            // array for all me
            unsigned int lattice_table_exact_group;
            unsigned int lattice_polyakov_size;
            unsigned int lattice_parameters_size;
+	   
+	   unsigned int lattice_action_size;
 
            void    model_create(void);          // subroutine for tunning particular SU(N) model
            void    model_lattice_init(void);    // subroutine for tunning lattice initialization for SU(N) model
