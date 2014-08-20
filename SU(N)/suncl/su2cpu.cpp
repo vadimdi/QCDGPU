@@ -1,5 +1,5 @@
 /******************************************************************************
- * @file     suncpu.cpp
+ * @file     su2cpu.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
  * @version  1.5
