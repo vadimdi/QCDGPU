@@ -2,7 +2,7 @@
  * @file     suncpu.h
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Run of CPU check procedures (header)
@@ -40,7 +40,14 @@
 #include "su2cpu.h"
 #include "su3cpu.h"
 
- namespace SUN_CPU{class SU{public: void lattice_check_cpu(model_CL::model* lat);};};
+ namespace SUN_CPU
+ {
+ class SU
+ {
+    public:
+        void lattice_check_cpu(model_CL::model* lat);
+ };
+ };
  
  void LatticeCheckCPU(model_CL::model* lat);
  
