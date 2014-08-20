@@ -1,8 +1,8 @@
 /******************************************************************************
- * @file     suncpu.cpp
+ * @file     su3cpu.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Procedures for host simulations (SU(3) gauge group)
@@ -167,7 +167,8 @@ SU::su_3        SU::lattice_table_3(model* lat,coords_4 coords,unsigned int gind
     SU::su_3 result;
     SU::su_3 m_omega;
     result = lattice_data[gindex + lat->lattice_table_row_size * dir];
-    if ((dir==1) && (coords.z == (lat->lattice_domain_size[2]-1))) {
+
+    if ((dir==1) && (coords.x == (lat->lattice_full_size[0]-1))) {
         double phi_p_omega_2   = 0.5 * (lat->PHI   + lat->OMEGA);
         double omega_m_phi_2   = 0.5 * (lat->OMEGA - lat->PHI);
 
