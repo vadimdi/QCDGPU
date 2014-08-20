@@ -2,7 +2,7 @@
  * @file     suncpu.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Run of CPU check procedures
@@ -41,17 +41,15 @@
 void LatticeCheckCPU(model_CL::model* lat)
 {
   if(lat->lattice_group == 2) {
-    namespace SUN_CPU = SU2_CPU;
     using SU2_CPU::SU;
-    SU*  SU0  = new(SU);
+    SU*  SU0  = new(SU2_CPU::SU);
     SU0 ->lattice_check_cpu(lat);
     delete SU0;
   }
   
   if(lat->lattice_group == 3) {
-    namespace SUN_CPU = SU3_CPU;
     using SU3_CPU::SU;
-    SU*  SU0  = new(SU);
+    SU*  SU0  = new(SU3_CPU::SU);
     SU0 ->lattice_check_cpu(lat);
     delete SU0;
   }
