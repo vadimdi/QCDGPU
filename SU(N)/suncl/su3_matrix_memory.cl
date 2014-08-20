@@ -2,7 +2,7 @@
  * @file     su3_matrix_memory.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Matrix memory organization for the SU(3) gauge group
@@ -37,6 +37,8 @@
 #ifndef SU3_MATRIX_MEMORY_CL
 #define SU3_MATRIX_MEMORY_CL
 
+#include "su3cl.cl"
+
                     __attribute__((always_inline)) __private gpu_su_3
 lattice_table_3(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint gindex,const uint dir,const su3_twist * twist)
 {
@@ -53,42 +55,42 @@ lattice_table_3(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint
             m.uv3 = lattice_table[gindex +  9 * ROWSIZE];
 
 #ifdef  TBC
-//twist here if coord.z=N3
-    if ((*coord).z == (N3-1)){
-    hgpu_float4 m1,m2,m3,m4,m5,m6;
-    hgpu_float phi_p_omega_2 = ((*twist).phi + (*twist).omega)/2;
-    hgpu_float omega_m_phi_2 = ((*twist).omega - (*twist).phi)/2;
+//twist here if coord.x = N1 - 1; H = (0, 0, Hz)
+    if ((*coord).x == (N1-1)){
+       hgpu_float4 m1,m2,m3,m4,m5,m6;
+       hgpu_float phi_p_omega_2 = ((*twist).phi + (*twist).omega)/2;
+       hgpu_float omega_m_phi_2 = ((*twist).omega - (*twist).phi)/2;
 
-    hgpu_float4 a1,a2,a3,a4;
+       hgpu_float4 a1,a2,a3,a4;
 
-    a1.x = (hgpu_float) cos(phi_p_omega_2);
-    a1.y = a1.x;
-    a1.z = a1.x;
-    a1.w = (hgpu_float) cos(omega_m_phi_2);
+       a1.x = (hgpu_float) cos(phi_p_omega_2);
+       a1.y = a1.x;
+       a1.z = a1.x;
+       a1.w = (hgpu_float) cos(omega_m_phi_2);
 
-        a2.x = (hgpu_float) sin(phi_p_omega_2);
-        a2.y = a2.x;
-        a2.z = a2.x;
-        a2.w = (hgpu_float) sin(omega_m_phi_2);
+       a2.x = (hgpu_float) sin(phi_p_omega_2);
+       a2.y = a2.x;
+       a2.z = a2.x;
+       a2.w = (hgpu_float) sin(omega_m_phi_2);
 
-    a3 = (hgpu_float4) cos(omega_m_phi_2);
+       a3 = (hgpu_float4) cos(omega_m_phi_2);
 
-    a4.x = (hgpu_float) -sin(omega_m_phi_2);
-    a4.y =  a4.x;
-    a4.z = -a4.x;
-    a4.w = -a4.x;
+       a4.x = (hgpu_float) -sin(omega_m_phi_2);
+       a4.y =  a4.x;
+       a4.z = -a4.x;
+       a4.w = -a4.x;
 
-    m1 = m.uv1 * a1;
-    m2 = m.uv2 * a2;
-    m3 = m.uv2 * a1;
-    m4 = m.uv1 * a2;
-    m5 = m.uv3 * a3;
-    m6 = m.uv3.zwxy * a4;
+       m1 = m.uv1 * a1;
+       m2 = m.uv2 * a2;
+       m3 = m.uv2 * a1;
+       m4 = m.uv1 * a2;
+       m5 = m.uv3 * a3;
+       m6 = m.uv3.zwxy * a4;
 
-    m.uv1 = m1 - m2;
-    m.uv2 = m3 + m4;
-    m.uv3 = m5 + m6;
-            }
+       m.uv1 = m1 - m2;
+       m.uv2 = m3 + m4;
+       m.uv3 = m5 + m6;
+    }
 #endif
             break;
         case Z:
