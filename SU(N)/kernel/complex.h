@@ -2,7 +2,7 @@
  * @file     complex.h
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Defines basic constants, types and algebra used in program
@@ -327,8 +327,8 @@ hgpu_complex hgpu_add(hgpu_complex a,hgpu_complex b) {
 
 /**
 * Get a difference of two complex numbers with optional single/double precision
-* @param a -- уменьшаемое
-* @param b -- вычитаемое
+* @param a -- minuend
+* @param b -- subtrahend
 */
 
 hgpu_complex hgpu_sub(hgpu_complex a,hgpu_complex b) {
@@ -422,4 +422,5 @@ hgpu_complex_double hgpu_sub_double(hgpu_complex_double a,hgpu_complex_double b)
                                                                                                                                           
                                                                                                                                           
                                                                                                                                           
-                                                                                                                                          
+                                                                                                                                           
+                                                                                                                                           
