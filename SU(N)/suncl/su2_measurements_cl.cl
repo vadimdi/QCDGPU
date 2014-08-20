@@ -2,7 +2,7 @@
  * @file     su2_measurements.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Definition of general functions used in measurements, corresponding to the SU(2) gauge group
@@ -274,4 +274,6 @@ lattice_retrace_plaquette2_double(double_su_2* m1, double_su_2* m2, double_su_2*
                                                                                                                                                                   
                                                                                                                                                                   
                                                                                                                                                                   
-                                                                                                                                                                  
+                                                                                                                                                                   
+                                                                                                                                                                   
+                                                                                                                                                                   
