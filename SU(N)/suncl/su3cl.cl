@@ -2,7 +2,7 @@
  * @file     su3cl.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Defines general procedures for lattice update (SU(3) gauge theory)
@@ -87,6 +87,194 @@ lattice_gid_to_gid_xyz(const uint * gindex,uint * gnew)
 
     lattice_coords_to_gid(&gtmp,&tmp);
     (*gnew) = gtmp;
+}
+
+__attribute__((always_inline)) void
+lattice_gidK_x_to_gid_xyz(const uint * gindex,uint * gnew)
+{
+// convert gindex[y, z, x, t] -> gnew[y, z, t, x]
+// gindex = y + z*N2 + x*N2N3 + t*N1N2N3
+//   gnew = y + z*N2 + t*N2N3 + x*N2N3N4
+// N3 -> PLK
+    coords_4 tmp;
+    uint gtmp;
+    uint z1,z2,z3,z4;
+    uint gdi = (*gindex);
+
+    z4 = gdi / (N1N2 * PLK);
+    z1 = gdi - z4 * N1N2 * PLK;
+    z3 = z1 / (N2 * PLK);
+    z1 = z1 - z3 * N2 * PLK;
+    z2 = z1 / N2;
+    z1 = z1 - z2*N2;
+
+    if((z1 < N2) && (z2 < N3) && (z3 < N1) && (z4 == 0))
+    {
+     tmp.x = z3;
+     tmp.y = z1;
+     tmp.z = z2;
+     tmp.t = z4;
+    
+     lattice_coords_to_gid(&gtmp,&tmp);
+     (*gnew) = gtmp;
+    }
+    else (*gnew) = N1N2N3N4;
+}
+
+__attribute__((always_inline)) void
+lattice_gidK_y_to_gid_xyz(const uint * gindex,uint * gnew)
+{
+// gindex = x + z*N1 + y*N1N3 + t*N1N2N3
+//   gnew = y + z*N2 + t*N2N3 + x*N2N3N4
+// N3 -> PLK
+    coords_4 tmp;
+    uint gtmp;
+    uint z1,z2,z3,z4;
+    uint gdi = (*gindex);
+
+    z4 = gdi / (N1N2 * PLK);
+    z1 = gdi - z4 * N1N2 * PLK;
+    z3 = z1 / (N1 * PLK);
+    z1 = z1 - z3 * N1 * PLK;
+    z2 = z1 / N1;
+    z1 = z1 - z2*N1;
+
+    if((z1 < N2) && (z2 < N3) && (z3 < N1) && (z4 == 0))
+    {
+     tmp.x = z1;
+     tmp.y = z3;
+     tmp.z = z2;
+     tmp.t = z4;
+    
+     lattice_coords_to_gid(&gtmp,&tmp);
+     (*gnew) = gtmp;
+    }
+    else (*gnew) = N1N2N3N4;
+}
+
+__attribute__((always_inline)) void
+lattice_gidK_z_to_gid_xyz(const uint * gindex,uint * gnew)
+{
+// gindex = x + y*N1 + z*N1N2 + t*N1N2N3
+//   gnew = y + z*N2 + t*N2N3 + x*N2N3N4
+// N2 -> PLK
+    coords_4 tmp;
+    uint gtmp;
+    uint z1,z2,z3,z4;
+    uint gdi = (*gindex);
+
+    z4 = gdi / (N1 * N3 * PLK);
+    z1 = gdi - z4 * N1 * N3 * PLK;
+    z3 = z1 / (N1 * PLK);
+    z1 = z1 - z3 * N1 * PLK;
+    z2 = z1 / N1;
+    z1 = z1 - z2*N1;
+
+    if((z1 < N2) && (z2 < N3) && (z3 < N1) && (z4 == 0))
+    {
+     tmp.x = z1;
+     tmp.y = z2;
+     tmp.z = z3;
+     tmp.t = z4;
+    
+     lattice_coords_to_gid(&gtmp,&tmp);
+     (*gnew) = gtmp;
+    }
+    else (*gnew) = N1N2N3N4;
+}
+
+__attribute__((always_inline)) void
+lattice_gidK_x_to_gid(const uint * gindex,uint * gnew)
+{
+// convert gindex[y, z, x, t] -> gnew[y, z, t, x]
+// gindex = t + y*N4 + z*N2N4 + x*N2N3N4
+//   gnew = y + z*N2 + t*N2N3 + x*N2N3N4
+// N3 -> PLK
+    coords_4 tmp;
+    uint gtmp;
+    uint z1,z2,z3,z4;
+    uint gdi = (*gindex);
+
+    z4 = gdi / (N2 * PLK * N4);
+    z1 = gdi - z4 * N2 * PLK * N4;
+    z3 = z1 / (N2 * N4);
+    z1 = z1 - z3 * N2 * N4;
+    z2 = z1 / N4;
+    z1 = z1 - z2*N4;
+
+    if((z1 < N4) && (z2 < N2) && (z3 < N3) && (z4 < N1))
+    {
+     tmp.x = z4;
+     tmp.y = z2;
+     tmp.z = z3;
+     tmp.t = z1;
+    
+     lattice_coords_to_gid(&gtmp,&tmp);
+     (*gnew) = gtmp;
+    }
+    else (*gnew) = N1N2N3N4;
+}
+
+__attribute__((always_inline)) void
+lattice_gidK_y_to_gid(const uint * gindex,uint * gnew)
+{
+// gindex = t + x*N4 + z*N1N4 + y*N1N3N4
+//   gnew = y + z*N2 + t*N2N3 + x*N2N3N4
+// N3 -> PLK
+    coords_4 tmp;
+    uint gtmp;
+    uint z1,z2,z3,z4;
+    uint gdi = (*gindex);
+
+    z4 = gdi / (N1 * PLK * N4);
+    z1 = gdi - z4 * N1 * PLK * N4;
+    z3 = z1 / (N1 * N4);
+    z1 = z1 - z3 * N1 * N4;
+    z2 = z1 / N4;
+    z1 = z1 - z2*N4;
+
+    if((z1 < N4) && (z2 < N1) && (z3 < N3) && (z4 < N2))
+    {
+     tmp.x = z2;
+     tmp.y = z4;
+     tmp.z = z3;
+     tmp.t = z1;
+    
+     lattice_coords_to_gid(&gtmp,&tmp);
+     (*gnew) = gtmp;
+    }
+    else (*gnew) = N1N2N3N4;
+}
+
+__attribute__((always_inline)) void
+lattice_gidK_z_to_gid(const uint * gindex,uint * gnew)
+{
+// gindex = t + y*N4 + x*N2N4 + z*N1N2N4
+//   gnew = y + z*N2 + t*N2N3 + x*N2N3N4
+// N2 -> PLK
+    coords_4 tmp;
+    uint gtmp;
+    uint z1,z2,z3,z4;
+    uint gdi = (*gindex);
+
+    z4 = gdi / (N1 * PLK * N4);
+    z1 = gdi - z4 * N1 * PLK * N4;
+    z3 = z1 / (PLK * N4);
+    z1 = z1 - z3 * PLK * N4;
+    z2 = z1 / N4;
+    z1 = z1 - z2*N4;
+
+    if((z1 < N4) && (z2 < N2) && (z3 < N1) && (z4 < N3))
+    {
+     tmp.x = z3;
+     tmp.y = z2;
+     tmp.z = z4;
+     tmp.t = z1;
+    
+     lattice_coords_to_gid(&gtmp,&tmp);
+     (*gnew) = gtmp;
+    }
+    else (*gnew) = N1N2N3N4;
 }
 
                     __attribute__((always_inline)) __private uint
@@ -311,4 +499,5 @@ lattice_reconstruct3(gpu_su_3* a)
                                                                                                                                                                   
                                                                                                                                                                   
                                                                                                                                                                   
-                                                                                                                                                                  
+                                                                                                                                                                   
+                                                                                                                                                                   
