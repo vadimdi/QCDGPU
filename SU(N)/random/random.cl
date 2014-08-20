@@ -2,7 +2,7 @@
  * @file     random.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Pseudo-random numbers generators library (GPU part)
@@ -895,4 +895,5 @@ ranecu(__global uint4* seed_table,
                                                                                                                                                      
                                                                                                                                                      
                                                                                                                                                      
-                                                                                                                                                     
+                                                                                                                                                      
+                                                                                                                                                      
