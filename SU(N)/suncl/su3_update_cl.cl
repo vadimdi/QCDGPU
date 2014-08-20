@@ -2,7 +2,7 @@
  * @file     su3_update_cl.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Contains functions for lattice update (SU(3) gauge theory)
@@ -452,7 +452,7 @@ lattice_staple_3(__global hgpu_float4 * lattice_table, uint gindex,const uint di
                  m3 = lattice_table_3(lattice_table,&coord, gindex,Y,twist);  // [p,Y]
             staple1 = lattice_staple_hermitian3(&m1,&m2,&m3);           //  z-y: [p+Z,Y] -[p+Y,Z]*-[p,Y]*
 
-                 m1 = lattice_table_3(lattice_table,&coord13,gdiYmZ,Y,twist); // [p-Y+Z,Y]
+                 m1 = lattice_table_3(lattice_table,&coord14,gdiYmZ,Y,twist); // [p-Y+Z,Y]
                  m2 = lattice_table_3(lattice_table,&coord11,gdiYm,Z,twist);  // [p+Y,Z]
                  m3 = lattice_table_3(lattice_table,&coord11,gdiYm,Y,twist);  // [p-Y,Y]
             staple2 = lattice_staple_hermitian_backward3(&m1,&m2,&m3);  // -z-y: [p-Y+Z,Y]*-[p-Y,Z]*-[p-Y,Y]
@@ -466,7 +466,7 @@ lattice_staple_3(__global hgpu_float4 * lattice_table, uint gindex,const uint di
 
             staple2 = matrix_add3(&staple,&staple1); // [z+y]+[z-y]+[z+x]
 
-                 m1 = lattice_table_3(lattice_table,&coord14,gdiXmZ,X,twist); // [p-X+Z,X]
+                 m1 = lattice_table_3(lattice_table,&coord13,gdiXmZ,X,twist); // [p-X+Z,X]
                  m2 = lattice_table_3(lattice_table,&coord10,gdiXm,Z,twist);  // [p-X,Z]
                  m3 = lattice_table_3(lattice_table,&coord10,gdiXm,X,twist);  // [p-X,X]
             staple1 = lattice_staple_hermitian_backward3(&m1,&m2,&m3);  // -z-x: [p-X+Z,X]*-[p-X,Z]*-[p-X,X]
@@ -552,6 +552,9 @@ lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_single4 * prns,ui
     hgpu_float4 rnd,M;
     hgpu_float det,bdet,cosrnd,delta;
     hgpu_float costh,sinth,cosal,sinal,phi,sinphi,cosphi;
+#ifdef GID_UPD
+    hgpu_float gid;
+#endif
 
     uint i = 0;
 
@@ -570,23 +573,45 @@ lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_single4 * prns,ui
     bdet = (*beta) * det;
 
     while ((i < NHIT) && (flag == false)){
+#ifdef GID_UPD
+        gid = prns[(*indprng)].x;
+
+rnd.x = (hgpu_float) fabs(sin((0.005*(1 + NHIT)+270.0/SITES)*gid));
+rnd.y = (hgpu_float) fabs(cos((0.005*(1 + NHIT)+ 60.0/SITES)*gid));
+rnd.z = (hgpu_float) fabs(sin((0.005*(1 + NHIT)-150.0/SITES)*gid));
+rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/SITES)*gid));
+#else
         rnd.x = (hgpu_float) prns[(*indprng)].x;
         rnd.y = (hgpu_float) prns[(*indprng)].y;
         rnd.z = (hgpu_float) prns[(*indprng)].z;
         rnd.w = (hgpu_float) prns[(*indprng)].w;
         (*indprng) += PRNGSTEP;
+#endif
         cosrnd = cos(PI2 * rnd.y);
         delta = -(log(1.0 - rnd.x) + cosrnd * cosrnd * log(1.0 - rnd.z)) / bdet;
+#ifdef GID_UPD
+        delta = cosrnd * cosrnd / bdet;
+        flag = true;
+#else
         if ((rnd.w * rnd.w)<=(1.0 - 0.5 * delta)) {flag=true;}
+#endif
+
         i++;
     }
 
         if (flag) {
+#ifdef GID_UPD
+rnd.x = (hgpu_float) fabs(cos((0.08-270.0/SITES)*gid));
+rnd.y = (hgpu_float) fabs(sin((0.08-60.0/SITES)*gid));
+rnd.z = (hgpu_float) fabs(cos((0.08+150.0/SITES)*gid));
+rnd.w = (hgpu_float) fabs(sin((0.08+380.0/SITES)*gid));
+#else
             rnd.x = (hgpu_float) prns[(*indprng)].x;
             rnd.y = (hgpu_float) prns[(*indprng)].y;
             rnd.z = (hgpu_float) prns[(*indprng)].z;
             rnd.w = (hgpu_float) prns[(*indprng)].w;
             (*indprng) += PRNGSTEP;
+#endif
             cosal = 1.0 - delta;
             costh = 2.0 * rnd.x - 1.0;
             sinth = sqrt(1.0 - costh * costh);
@@ -607,7 +632,7 @@ lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_single4 * prns,ui
         }
 }
 
-                    __attribute__((always_inline)) __private gpu_su_3
+__attribute__((always_inline)) __private gpu_su_3
 lattice_heatbath3(su_3* staple,gpu_su_3* m0,hgpu_float* beta,__global const hgpu_single4 * prns)
 {
     gpu_su_3 reslt;
@@ -777,4 +802,5 @@ hgpu_float4 uv1,uv2,uv3;
                                                                                                                                                                   
                                                                                                                                                                   
                                                                                                                                                                   
-                                                                                                                                                                  
+                                                                                                                                                                   
+                                                                                                                                                                   
