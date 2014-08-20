@@ -43,6 +43,7 @@ ifeq ($(is_64), 1)
 SDK_LIB_INTEL=/usr/lib64/
 endif
 
+
 # nvidia
 SDK_INC_NVIDIA=/usr/local/cuda/include/
 SDK_LIB_NVIDIA=/usr/lib/
