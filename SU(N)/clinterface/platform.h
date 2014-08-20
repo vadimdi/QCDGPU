@@ -2,7 +2,7 @@
  * @file     platform.h
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]  
  *           External dependecies corresponding to user's operating system
@@ -74,5 +74,6 @@
 #include <string>
 #include <time.h>
 #include <malloc.h>
+
 
 #endif
