@@ -2,7 +2,7 @@
  * @file     clinterface.h
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU] 
  *           Interface for OpenCL AMD APP & nVidia SDK environment
