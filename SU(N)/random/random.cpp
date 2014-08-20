@@ -2,7 +2,7 @@
  * @file     random.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Pseudo-random numbers generators library
@@ -229,7 +229,7 @@ void                PRNG::initialize(void)
             if (PRNG_generator==PRNG_generator_RANLUX0) RL_nskip = 24;
             if (PRNG_generator==PRNG_generator_RANLUX1) RL_nskip = 48;
             if (PRNG_generator==PRNG_generator_RANLUX2) RL_nskip = 97;
-            if (PRNG_generator==PRNG_generator_RANLUX3) RL_nskip = 223;//223;
+            if (PRNG_generator==PRNG_generator_RANLUX3) RL_nskip = 223;
             if (PRNG_generator==PRNG_generator_RANLUX4) RL_nskip = 389;
             RL_initialize_CPU();
             RL_initialize();
