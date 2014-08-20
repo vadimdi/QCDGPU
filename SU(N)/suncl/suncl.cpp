@@ -2,7 +2,7 @@
  * @file     suncl.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Lattice simulation procedures
@@ -117,6 +117,23 @@ const char* REIM[] = {"re","im"};         // markers for re / im
         model_create(); // tune particular model
 
         Analysis = (analysis_CL::analysis::data_analysis*) calloc(DATA_MEASUREMENTS,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_PL_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_PL_X_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_PL_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_PL_Y_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_PL_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_PL_Z_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+	
+	Analysis_S_X_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_S_X_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_S_Y_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_S_Y_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_S_Z_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_S_Z_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+
+	Analysis_S_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_S_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+	Analysis_S_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
 }
             model::~model(void) {
         delete[] lattice_domain_size;
@@ -126,6 +143,23 @@ const char* REIM[] = {"re","im"};         // markers for re / im
         delete D_A;
            D_A = 0;
         free(Analysis);
+	
+	free(Analysis_PL_X);
+        free(Analysis_PL_X_im);
+	free(Analysis_PL_Y);
+        free(Analysis_PL_Y_im);
+	free(Analysis_PL_Z);
+        free(Analysis_PL_Z_im);
+	free(Analysis_S_X_s);
+        free(Analysis_S_X_t);
+	free(Analysis_S_Y_s);
+        free(Analysis_S_Y_t);
+	free(Analysis_S_Z_s);
+        free(Analysis_S_Z_t);
+	free(Analysis_S_X);
+	free(Analysis_S_Y);
+	free(Analysis_S_Z);
+	
         free(lattice_group_elements);
 
         if (GPU0->GPU_debug.profiling) GPU0->print_time_detailed();
@@ -200,6 +234,10 @@ void        model::lattice_get_init_file(char* file){
                 get_Fmunu = false;
                 get_F0mu  = false;
             }
+            if (!strcmp(parameters[parameters_items].Variable,"FMUNU"))  {
+                get_F0mu  = false;
+                get_Fmunu = true;
+            }
             if (!strcmp(parameters[parameters_items].Variable,"F0MU"))  {
                 get_F0mu  = true;
                 get_Fmunu = false;
@@ -234,6 +272,7 @@ void        model::lattice_get_init_file(char* file){
                 get_Fmunu5 = false;
                 get_Fmunu6 = false;
             }
+            if (!strcmp(parameters[parameters_items].Variable,"PL_LEVEL"))  {PL_level = parameters[parameters_items].iVarVal;}
             if (!strcmp(parameters[parameters_items].Variable,"WILSONR"))   {wilson_R = parameters[parameters_items].iVarVal;}
             if (!strcmp(parameters[parameters_items].Variable,"WILSONT"))   {wilson_T = parameters[parameters_items].iVarVal;}
             parameters_flag = parameters[parameters_items].final;
@@ -246,7 +285,7 @@ char*       model::lattice_make_header(void){
     header = (char*) calloc(header_size, sizeof(char));
     int j = 0;
 
-    j  += sprintf_s(header+j,header_size-j, " GPU SU(%u) simulator %s (su23-10_win)\n\n",lattice_group,version);
+    j  += sprintf_s(header+j,header_size-j, " GPU SU(%u) simulator %s (QCDGPU-m-1-1)\n\n",lattice_group,version);
     j  += sprintf_s(header+j,header_size-j, " Monte Carlo simulation of %uD SU(%u) LGT\n\n",lattice_nd,lattice_group);
     j  += sprintf_s(header+j,header_size-j, " ***************************************************\n");
     j  += sprintf_s(header+j,header_size-j, " Active OpenCL platform   : %s\n",GPU0->platform_get_name(GPU0->GPU_platform));
@@ -268,9 +307,12 @@ char*       model::lattice_make_header(void){
     j  += sprintf_s(header+j,header_size-j, " niter                       : %i\n",NITER);
     j  += sprintf_s(header+j,header_size-j, " iter (# of samples)         : %i\n",ITER);
     j  += sprintf_s(header+j,header_size-j, " nhit                        : %i\n",NHIT);
-    if (precision == model::model_precision_double) j  += sprintf_s(header+j,header_size-j, " precision                   : double\n");
     if (precision == model::model_precision_single) j  += sprintf_s(header+j,header_size-j, " precision                   : single\n");
     if (precision == model::model_precision_mixed)  j  += sprintf_s(header+j,header_size-j, " precision                   : mixed\n");
+    if (precision == model::model_precision_double)
+    {
+            j  += sprintf_s(header+j,header_size-j, " precision                   : double\n");
+    }
     j  += sprintf_s(header+j,header_size-j, " ***************************************************\n");
     j  += model_make_header((header+j),(header_size-j));
 
@@ -456,34 +498,6 @@ char*       model::lattice_make_header2(void){
         j  += sprintf_s(header+j,header_size-j, " *** Verification successfully passed! *************\n");
     else
         j  += sprintf_s(header+j,header_size-j, " --- Verification failed! --------------------------\n");
-    j  += sprintf_s(header+j,header_size-j, " Data fields:\n");
-    j  += sprintf_s(header+j,header_size-j, "    #, ");
-    if (get_plaquettes_avr){
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_Plq_spat].data_name);
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_Plq_temp].data_name);
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_Plq_total].data_name);
-    }
-    if (get_wilson_loop)
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_Wilson_loop].data_name);
-    if (get_actions_avr){
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_S_spat].data_name);
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_S_temp].data_name);
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_S_total].data_name);
-    }
-    if (PL_level > 0){
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_Polyakov_loop].data_name);
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_Polyakov_loop_im].data_name);
-    }
-    if (PL_level > 1){
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_Polyakov_loop_P2].data_name);
-                           j += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_Polyakov_loop_P4].data_name);
-    }
-    if ((get_Fmunu)||(get_F0mu))
-        for (int i=0;i<((lattice_nd-1)*2+2)*2;i++)
-            j  += sprintf_s(header+j,header_size-j, "%-22s",Analysis[DM_Fmunu_3+i].data_name);
-    j  += sprintf_s(header+j,header_size-j, "\n");
-    j  += sprintf_s(header+j,header_size-j, " ***************************************************\n");
-
     header_index = j;
 
     return header;
@@ -575,6 +589,116 @@ void        model::lattice_analysis(void){
         Analysis[DM_Plq_total].data_name      = "Plq_total";
         D_A->lattice_data_analysis_joint(&Analysis[DM_Plq_total],&Analysis[DM_Plq_spat],&Analysis[DM_Plq_temp]);
     }    
+    
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    if(get_actions_diff)
+    {
+      
+          Analysis_S_X_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_S_X_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_S_Y_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_S_Y_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_S_Z_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_S_Z_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+	  
+	  Analysis_S_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_S_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_S_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+
+      for(int i = 0; i < lattice_domain_n1; i++)
+	  {
+	    Analysis_S_X_s[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_S_X_s[i].precision_single = false;
+            else                                   Analysis_S_X_s[i].precision_single = true;
+	    Analysis_S_X_s[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+	    
+	    Analysis_S_X_s[i].pointer         = GPU0->buffer_map(lattice_action_diff_x);
+            Analysis_S_X_s[i].pointer_offset  = lattice_energies_size * i;
+            Analysis_S_X_s[i].denominator     = ((double) (lattice_full_n2n3n4 * 3));
+            Analysis_S_X_s[i].data_name       = "S_diff_s";
+            D_A->lattice_data_analysis(&Analysis_S_X_s[i]);
+
+	    Analysis_S_X_t[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_S_X_t[i].precision_single = false;
+            else                                   Analysis_S_X_t[i].precision_single = true;
+	    Analysis_S_X_t[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+	    
+	    Analysis_S_X_t[i].pointer         = Analysis_S_X_s[i].pointer;
+            Analysis_S_X_t[i].pointer_offset  = lattice_energies_size * i;
+            Analysis_S_X_t[i].denominator     = ((double) (lattice_full_n2n3n4 * 3));
+            Analysis_S_X_t[i].data_name       = "S_diff_t";
+            D_A->lattice_data_analysis(&Analysis_S_X_t[i]);
+	    
+	    Analysis_S_X[i].data_name      = "S_total_diff";
+	    D_A->lattice_data_analysis_joint(&Analysis_S_X[i],&Analysis_S_X_s[i],&Analysis_S_X_t[i]);
+	  }
+	  
+	  int lattice_full_n1n3n4 = lattice_full_size[0] * lattice_full_size[2] * lattice_full_size[3];
+	  for(int i = 0; i < lattice_domain_size[1]; i++)
+	  {
+	    Analysis_S_Y_s[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_S_Y_s[i].precision_single = false;
+            else                                   Analysis_S_Y_s[i].precision_single = true;
+	    Analysis_S_Y_s[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+	    
+	    Analysis_S_Y_s[i].pointer         = GPU0->buffer_map(lattice_action_diff_y);
+            Analysis_S_Y_s[i].pointer_offset  = lattice_energies_size * i;
+            Analysis_S_Y_s[i].denominator     = ((double) (lattice_full_n1n3n4 * 3));
+            Analysis_S_Y_s[i].data_name       = "S_diff_s";
+            D_A->lattice_data_analysis(&Analysis_S_Y_s[i]);
+
+	    Analysis_S_Y_t[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_S_Y_t[i].precision_single = false;
+            else                                   Analysis_S_Y_t[i].precision_single = true;
+	    Analysis_S_Y_t[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+	    
+	    Analysis_S_Y_t[i].pointer         = Analysis_S_Y_s[i].pointer;
+            Analysis_S_Y_t[i].pointer_offset  = lattice_energies_size * i;
+            Analysis_S_Y_t[i].denominator     = ((double) (lattice_full_n1n3n4 * 3));
+            Analysis_S_Y_t[i].data_name       = "S_diff_t";
+            D_A->lattice_data_analysis(&Analysis_S_Y_t[i]);
+	    
+	    Analysis_S_Y[i].data_name      = "S_total_diff";
+	    D_A->lattice_data_analysis_joint(&Analysis_S_Y[i],&Analysis_S_Y_s[i],&Analysis_S_Y_t[i]);
+	  }
+	  
+	  int lattice_full_n1n2n4 = lattice_full_size[0] * lattice_full_size[1] * lattice_full_size[3];
+	  for(int i = 0; i < lattice_domain_size[2]; i++)
+	  {
+	    Analysis_S_Z_s[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_S_Z_s[i].precision_single = false;
+            else                                   Analysis_S_Z_s[i].precision_single = true;
+	    Analysis_S_Z_s[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+	    
+	    Analysis_S_Z_s[i].pointer         = GPU0->buffer_map(lattice_action_diff_z);
+            Analysis_S_Z_s[i].pointer_offset  = lattice_energies_size * i;
+            Analysis_S_Z_s[i].denominator     = ((double) (lattice_full_n1n2n4 * 3));
+            Analysis_S_Z_s[i].data_name       = "S_diff_s";
+            D_A->lattice_data_analysis(&Analysis_S_Z_s[i]);
+
+	    Analysis_S_Z_t[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_S_Z_t[i].precision_single = false;
+            else                                   Analysis_S_Z_t[i].precision_single = true;
+	    Analysis_S_Z_t[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+	    
+	    Analysis_S_Z_t[i].pointer         = Analysis_S_Z_s[i].pointer;
+            Analysis_S_Z_t[i].pointer_offset  = lattice_energies_size * i;
+            Analysis_S_Z_t[i].denominator     = ((double) (lattice_full_n1n2n4 * 3));
+            Analysis_S_Z_t[i].data_name       = "S_diff_t";
+            D_A->lattice_data_analysis(&Analysis_S_Z_t[i]);
+	    
+	    Analysis_S_Z[i].data_name      = "S_total_diff";
+	    D_A->lattice_data_analysis_joint(&Analysis_S_Z[i],&Analysis_S_Z_s[i],&Analysis_S_Z_t[i]);
+	  }
+    }
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    
     if (PL_level > 0) {
         // Polyakov_loop
         Analysis[DM_Polyakov_loop].pointer            = GPU0->buffer_map(lattice_polyakov_loop);
@@ -587,6 +711,101 @@ void        model::lattice_analysis(void){
         Analysis[DM_Polyakov_loop_im].denominator     = ((double) (lattice_full_n1n2n3 * lattice_group));
         Analysis[DM_Polyakov_loop_im].data_name       = "Polyakov_loop_im";
         D_A->lattice_data_analysis(&Analysis[DM_Polyakov_loop_im]);
+	
+//*************************************************************************************
+	if(PL_level > 2)
+	{
+	  Analysis_PL_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_PL_X_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_PL_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_PL_Y_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_PL_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+	  Analysis_PL_Z_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+	  
+	  for(int i = 0; i < lattice_domain_n1; i++)
+	  {
+	    Analysis_PL_X[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_PL_X[i].precision_single = false;
+            else                                   Analysis_PL_X[i].precision_single = true;
+	    Analysis_PL_X[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+	    
+	    Analysis_PL_X[i].pointer         = GPU0->buffer_map(lattice_polyakov_loop_diff_x);
+            Analysis_PL_X[i].pointer_offset  = lattice_polyakov_loop_size * i;
+            Analysis_PL_X[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
+            Analysis_PL_X[i].data_name       = "Polyakov_loop_diff";
+            D_A->lattice_data_analysis(&Analysis_PL_X[i]);
+
+	    Analysis_PL_X_im[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_PL_X_im[i].precision_single = false;
+            else                                   Analysis_PL_X_im[i].precision_single = true;
+	    Analysis_PL_X_im[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+	    
+	    Analysis_PL_X_im[i].pointer         = Analysis_PL_X[i].pointer;
+            Analysis_PL_X_im[i].pointer_offset  = lattice_polyakov_loop_size * i;
+            Analysis_PL_X_im[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
+            Analysis_PL_X_im[i].data_name       = "Polyakov_loop_im_diff";
+            D_A->lattice_data_analysis(&Analysis_PL_X_im[i]);
+	  }
+	  
+	  for(int i = 0; i < lattice_domain_size[1]; i++)
+	  {
+	    Analysis_PL_Y[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_PL_Y[i].precision_single = false;
+            else                                   Analysis_PL_Y[i].precision_single = true;
+	    Analysis_PL_Y[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+	    
+	    Analysis_PL_Y[i].pointer         = GPU0->buffer_map(lattice_polyakov_loop_diff_y);
+            Analysis_PL_Y[i].pointer_offset  = lattice_polyakov_loop_size * i;
+            Analysis_PL_Y[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
+            Analysis_PL_Y[i].data_name       = "Polyakov_loop_diff";
+            D_A->lattice_data_analysis(&Analysis_PL_Y[i]);
+
+	    Analysis_PL_Y_im[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_PL_Y_im[i].precision_single = false;
+            else                                   Analysis_PL_Y_im[i].precision_single = true;
+	    Analysis_PL_Y_im[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+	    
+	    Analysis_PL_Y_im[i].pointer         = Analysis_PL_Y[i].pointer;
+            Analysis_PL_Y_im[i].pointer_offset  = lattice_polyakov_loop_size * i;
+            Analysis_PL_Y_im[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
+            Analysis_PL_Y_im[i].data_name       = "Polyakov_loop_im_diff";
+            D_A->lattice_data_analysis(&Analysis_PL_Y_im[i]);
+	  }
+	  
+	  for(int i = 0; i < lattice_domain_size[2]; i++)
+	  {
+	    Analysis_PL_Z[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_PL_Z[i].precision_single = false;
+            else                                   Analysis_PL_Z[i].precision_single = true;
+	    Analysis_PL_Z[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+	    
+	    Analysis_PL_Z[i].pointer         = GPU0->buffer_map(lattice_polyakov_loop_diff_z);
+            Analysis_PL_Z[i].pointer_offset  = lattice_polyakov_loop_size * i;
+            Analysis_PL_Z[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
+            Analysis_PL_Z[i].data_name       = "Polyakov_loop_diff";
+            D_A->lattice_data_analysis(&Analysis_PL_Z[i]);
+
+	    Analysis_PL_Z_im[i].data_size = ITER;
+	    
+	    if (precision==model_precision_double) Analysis_PL_Z_im[i].precision_single = false;
+            else                                   Analysis_PL_Z_im[i].precision_single = true;
+	    Analysis_PL_Z_im[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+	    
+	    Analysis_PL_Z_im[i].pointer         = Analysis_PL_Z[i].pointer;
+            Analysis_PL_Z_im[i].pointer_offset  = lattice_polyakov_loop_size * i;
+            Analysis_PL_Z_im[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
+            Analysis_PL_Z_im[i].data_name       = "Polyakov_loop_im_diff";
+            D_A->lattice_data_analysis(&Analysis_PL_Z_im[i]);
+	  }
+	  
+	}
+//*************************************************************************************
+
     }
     if (PL_level > 1){
         // Polyakov_loop_P2
@@ -689,8 +908,134 @@ void        model::lattice_write_results(void) {
 
     fopen_s(&stream,buffer,"w+");
     if(stream)
-    {
+	{
         fprintf(stream,header);
+	
+	if (PL_level>2) {
+	  fprintf(stream, " ***************************************************\n");
+	  fprintf(stream,"Differentiated Polyakov loop data (#, PL, PL_im, PL_variance, PL_im_variance):");
+
+	  fprintf(stream, "\n"); 
+	  fprintf(stream,"\nX              ");  
+	  for (int i=0; i<lattice_full_size[0];i++)
+            fprintf(stream, "%2u                   ",i);
+	  fprintf(stream,"\nPL             ");
+	  for (int i=0; i<lattice_full_size[0];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_X[i].mean_value);
+	  fprintf(stream,"\nPL_im          ");
+	  for (int i=0; i<lattice_full_size[0];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_X_im[i].mean_value);
+	  fprintf(stream,"\nPL_variance    ");
+	  for (int i=0; i<lattice_full_size[0];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_X[i].variance);
+	  fprintf(stream,"\nPL_im_variance ");
+	  for (int i=0; i<lattice_full_size[0];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_X_im[i].variance);
+	  fprintf(stream,"\n");
+	   
+	  fprintf(stream,"\nY              ");  
+	  for (int i=0; i<lattice_full_size[1];i++)
+            fprintf(stream, "%2u                   ",i);
+	  fprintf(stream,"\nPL             ");
+	  for (int i=0; i<lattice_full_size[1];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_Y[i].mean_value);
+	  fprintf(stream,"\nPL_im          ");
+	  for (int i=0; i<lattice_full_size[1];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_Y_im[i].mean_value);
+	  fprintf(stream,"\nPL_variance    ");
+	  for (int i=0; i<lattice_full_size[1];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_Y[i].variance);
+	  fprintf(stream,"\nPL_im_variance ");
+	  for (int i=0; i<lattice_full_size[1];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_Y_im[i].variance);
+	  fprintf(stream,"\n");
+	  
+	  fprintf(stream,"\nZ              ");  
+	  for (int i=0; i<lattice_full_size[2];i++)
+            fprintf(stream, "%2u                   ",i);
+	  fprintf(stream,"\nPL             ");
+	  for (int i=0; i<lattice_full_size[2];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_Z[i].mean_value);
+	  fprintf(stream,"\nPL_im          ");
+	  for (int i=0; i<lattice_full_size[2];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_Z_im[i].mean_value);
+	  fprintf(stream,"\nPL_variance    ");
+	  for (int i=0; i<lattice_full_size[2];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_Z[i].variance);
+	  fprintf(stream,"\nPL_im_variance ");
+	  for (int i=0; i<lattice_full_size[2];i++)
+            fprintf(stream, "% 16.13e ",Analysis_PL_Z_im[i].variance);
+	  fprintf(stream,"\n");
+	}
+	
+	if(get_actions_diff)
+	{
+	  fprintf(stream, " ***************************************************\n");
+	  fprintf(stream,"Differentiated S data (#, S_total, S_variance):");
+
+	  fprintf(stream, "\n"); 
+	  fprintf(stream,"\nX              ");  
+	  for (int i=0; i<lattice_full_size[0];i++)
+            fprintf(stream, "%2u                   ",i);
+	  fprintf(stream,"\nS             ");
+	  for (int i=0; i<lattice_full_size[0];i++)
+            fprintf(stream, "% 16.13e ",Analysis_S_X[i].mean_value);
+	  fprintf(stream,"\nS_variance    ");
+	  for (int i=0; i<lattice_full_size[0];i++)
+            fprintf(stream, "% 16.13e ",Analysis_S_X[i].variance);
+	  fprintf(stream,"\n");
+	   
+	  fprintf(stream,"\nY              ");  
+	  for (int i=0; i<lattice_full_size[1];i++)
+            fprintf(stream, "%2u                   ",i);
+	  fprintf(stream,"\nS             ");
+	  for (int i=0; i<lattice_full_size[1];i++)
+            fprintf(stream, "% 16.13e ",Analysis_S_Y[i].mean_value);
+	  fprintf(stream,"\nS_variance    ");
+	  for (int i=0; i<lattice_full_size[1];i++)
+            fprintf(stream, "% 16.13e ",Analysis_S_Y[i].variance);
+	  fprintf(stream,"\n");
+	  
+	  fprintf(stream,"\nZ              ");  
+	  for (int i=0; i<lattice_full_size[2];i++)
+            fprintf(stream, "%2u                   ",i);
+	  fprintf(stream,"\nS             ");
+	  for (int i=0; i<lattice_full_size[2];i++)
+            fprintf(stream, "% 16.13e ",Analysis_S_Z[i].mean_value);
+	  fprintf(stream,"\nS_variance    ");
+	  for (int i=0; i<lattice_full_size[2];i++)
+            fprintf(stream, "% 16.13e ",Analysis_S_Z[i].variance);
+	  fprintf(stream,"\n");
+	}
+
+        fprintf(stream, " ***************************************************\n");
+        fprintf(stream, " Data fields:\n");
+        fprintf(stream, "    #,  ");
+        if (get_plaquettes_avr){
+            fprintf(stream, "%-21s",Analysis[DM_Plq_spat].data_name);
+            fprintf(stream, "%-21s",Analysis[DM_Plq_temp].data_name);
+            fprintf(stream, "%-21s",Analysis[DM_Plq_total].data_name);
+        }
+        if (get_wilson_loop)
+            fprintf(stream, "%-21s",Analysis[DM_Wilson_loop].data_name);
+        if (get_actions_avr){
+            fprintf(stream, "%-21s",Analysis[DM_S_spat].data_name);
+            fprintf(stream, "%-21s",Analysis[DM_S_temp].data_name);
+            fprintf(stream, "%-21s",Analysis[DM_S_total].data_name);
+        }
+        if (PL_level > 0){
+            fprintf(stream, "%-21s",Analysis[DM_Polyakov_loop].data_name);
+            fprintf(stream, "%-21s",Analysis[DM_Polyakov_loop_im].data_name);
+        }
+        if (PL_level > 1){
+            fprintf(stream, "%-21s",Analysis[DM_Polyakov_loop_P2].data_name);
+            fprintf(stream, "%-21s",Analysis[DM_Polyakov_loop_P4].data_name);
+        }
+        if ((get_Fmunu)||(get_F0mu))
+        for (int i=0;i<((lattice_nd-1)*2+2)*2;i++)
+            fprintf(stream, "%-21s",Analysis[DM_Fmunu_3+i].data_name);
+            fprintf(stream, "\n");
+            fprintf(stream, " ***************************************************\n");
 
         // write plaquette data
         for (int i=0; i<ITER; i++) {
@@ -722,8 +1067,8 @@ void        model::lattice_write_results(void) {
             fprintf(stream, "\n");
         }
 
-        if ( fclose(stream) ) {printf( "The file was not closed!\n" ); }
-    }
+		if ( fclose(stream) ) {printf( "The file was not closed!\n" ); }
+	}
 }
 
 void        model::lattice_save_state(void){
@@ -949,6 +1294,18 @@ void        model::lattice_load_state(void){
     }
     free(head);
 }
+
+int getK(int n1, int n2, int ws)
+{
+  int i;
+  
+   for(i = n2; i < n2 * ws; i++)
+    {
+      if(i == ceil((double) n1 * i / ws) * ws / n1) break;
+    }
+    
+  return i;
+}
  
 void        model::model_lattice_init(void){
     if(lattice_group == 2)
@@ -1027,10 +1384,18 @@ void        model::model_lattice_init(void){
     lattice_measurement_size_F      = lattice_measurement_size * MODEL_energies_size;
     lattice_measurement_offset      = lattice_measurement_size;
 
-    lattice_polyakov_size           = GPU0->buffer_size_align((unsigned int) lattice_domain_exact_n1n2n3);
+    if (PL_level>2)
+      lattice_polyakov_size         = GPU0->buffer_size_align((unsigned int) (lattice_domain_n2n3 * getK(lattice_domain_n1, lattice_domain_size[1], GPU0->GPU_limit_max_workgroup_size)));
+    else
+      lattice_polyakov_size           = GPU0->buffer_size_align((unsigned int) lattice_domain_exact_n1n2n3);
     lattice_polyakov_loop_size      = GPU0->buffer_size_align(ITER);      // number of working iterations
     lattice_polyakov_loop_offset    = GPU0->buffer_size_align((unsigned int) ceil((double) lattice_polyakov_size / workgroup_factor));
 
+    if(get_actions_diff)
+      lattice_action_size = GPU0->buffer_size_align((unsigned int) (lattice_domain_n2n3n4 * getK(lattice_domain_n1, lattice_domain_size[1], GPU0->GPU_limit_max_workgroup_size)));
+    else 
+      lattice_action_size = lattice_table_exact_row_size;
+    
     if ((!get_Fmunu)&&(!get_F0mu)){
         lattice_energies_size_F    = lattice_energies_size;
         lattice_measurement_size_F = lattice_measurement_size;
@@ -1147,6 +1512,8 @@ void        model::lattice_make_programs(void)
     options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -I %s%s",           GPU0->cl_root_path,path_kernel);
     options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D ROWSIZE=%u",     lattice_table_row_size);
     options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D PRECISION=%u",   precision);
+    
+    options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D PLK=%u",   getK(lattice_domain_n1, lattice_domain_size[1], GPU0->GPU_limit_max_workgroup_size));
 
     char options[1024];
     int options_length  = sprintf_s(options,sizeof(options),"%s",options_common);
@@ -1166,7 +1533,7 @@ void        model::lattice_make_programs(void)
     const size_t init_hot_global_size[]           = {lattice_group_elements[lattice_group-1]*lattice_table_row_size};
     const size_t monte_global_size[]              = {lattice_table_exact_row_size_half};
 
-    const size_t measurement3_global_size[]       = {lattice_table_exact_row_size};
+    const size_t measurement3_global_size[]       = {lattice_action_size};
     const size_t polyakov3_global_size[]          = {lattice_polyakov_size};
     const size_t clear_measurement_global_size[]  = {lattice_measurement_size_F};
 
@@ -1183,7 +1550,6 @@ void        model::lattice_make_programs(void)
                 sun_init_id = GPU0->kernel_init("lattice_init_gid",1,init_global_size,NULL);
                 argument_id = GPU0->kernel_init_buffer(sun_init_id,lattice_table);
     } else if (ints==model_start_cold) {    // cold init
-
                 sun_init_id = GPU0->kernel_init("lattice_init_cold",1,init_global_size,NULL);
                 argument_id = GPU0->kernel_init_buffer(sun_init_id,lattice_table);
     } else {                                // hot init
@@ -1282,6 +1648,60 @@ void        model::lattice_make_programs(void)
            argument_id = GPU0->kernel_init_buffer(sun_measurement_id,lattice_parameters);
            argument_id = GPU0->kernel_init_buffer(sun_measurement_id,lattice_lds);
     int size_reduce_measurement_double2 = (int) ceil((double) lattice_table_exact_row_size / GPU0->kernel_get_worksize(sun_measurement_id));
+    
+    sun_measurement_reduce_id = GPU0->kernel_init("reduce_measurement_double2",1,reduce_measurement_global_size,reduce_local_size);
+                  argument_id = GPU0->kernel_init_buffer(sun_measurement_reduce_id,lattice_measurement);
+                  argument_id = GPU0->kernel_init_buffer(sun_measurement_reduce_id,lattice_energies);
+                  argument_id = GPU0->kernel_init_buffer(sun_measurement_reduce_id,lattice_lds);
+                  argument_measurement_index = GPU0->kernel_init_constant(sun_measurement_reduce_id,&size_reduce_measurement_double2);
+		  
+    if(get_actions_diff)
+    {
+      cl_uint4 Sparam;
+	Sparam.s[0] = (int) ceil((double) lattice_action_size / GPU0->kernel_get_worksize(sun_measurement_id));
+	Sparam.s[1] = lattice_energies_size;
+	Sparam.s[2] = 0;
+	Sparam.s[3] = 0;
+      
+	sun_action_diff_x_id = GPU0->kernel_init("lattice_action_diff_x",1,measurement3_global_size,local_size_lattice_measurement);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_table);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_measurement);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_parameters);	
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_lds);
+        int size_reduce_action_diff_double2 = (int) ceil((double) lattice_action_size / GPU0->kernel_get_worksize(sun_action_diff_x_id));
+    
+        sun_action_diff_x_reduce_id = GPU0->kernel_init("reduce_action_diff_x_double2",1,reduce_measurement_global_size,reduce_local_size);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_reduce_id,lattice_measurement);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_reduce_id,lattice_action_diff_x);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_reduce_id,lattice_lds);
+           argument_action_diff_x_index = GPU0->kernel_init_constant(sun_action_diff_x_reduce_id,&Sparam);
+	   
+	sun_action_diff_y_id = GPU0->kernel_init("lattice_action_diff_y",1,measurement3_global_size,local_size_lattice_measurement);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_table);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_measurement);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_parameters);	
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_lds);
+        size_reduce_action_diff_double2 = (int) ceil((double) lattice_action_size / GPU0->kernel_get_worksize(sun_action_diff_y_id));
+    
+        sun_action_diff_y_reduce_id = GPU0->kernel_init("reduce_action_diff_y_double2",1,reduce_measurement_global_size,reduce_local_size);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_reduce_id,lattice_measurement);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_reduce_id,lattice_action_diff_y);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_reduce_id,lattice_lds);
+           argument_action_diff_y_index = GPU0->kernel_init_constant(sun_action_diff_y_reduce_id,&Sparam);
+	   
+	sun_action_diff_z_id = GPU0->kernel_init("lattice_action_diff_z",1,measurement3_global_size,local_size_lattice_measurement);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_table);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_measurement);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_parameters);	
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_lds);
+        size_reduce_action_diff_double2 = (int) ceil((double) lattice_action_size / GPU0->kernel_get_worksize(sun_action_diff_z_id));
+    
+        sun_action_diff_z_reduce_id = GPU0->kernel_init("reduce_action_diff_z_double2",1,reduce_measurement_global_size,reduce_local_size);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_reduce_id,lattice_measurement);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_reduce_id,lattice_action_diff_z);
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_reduce_id,lattice_lds);
+           argument_action_diff_z_index = GPU0->kernel_init_constant(sun_action_diff_z_reduce_id,&Sparam);
+    }
 
     // for mean averaged plaquettes measurements
     cl_uint4 mesurement_plq_param;
@@ -1305,14 +1725,12 @@ void        model::lattice_make_programs(void)
             mesurement_plq_param.s[3] = 0;
                           argument_plq_index = GPU0->kernel_init_constant(sun_measurement_plq_reduce_id,&mesurement_plq_param);
     }
-
-//    int lattice_measurement_size_correction = max(size_reduce_measurement_double2,size_reduce_measurement_plq_double2);
-
-    sun_measurement_reduce_id = GPU0->kernel_init("reduce_measurement_double2",1,reduce_measurement_global_size,reduce_local_size);
-                  argument_id = GPU0->kernel_init_buffer(sun_measurement_reduce_id,lattice_measurement);
-                  argument_id = GPU0->kernel_init_buffer(sun_measurement_reduce_id,lattice_energies);
-                  argument_id = GPU0->kernel_init_buffer(sun_measurement_reduce_id,lattice_lds);
-                  argument_measurement_index = GPU0->kernel_init_constant(sun_measurement_reduce_id,&size_reduce_measurement_double2);
+    
+    int lattice_measurement_size_correction = max(size_reduce_measurement_double2,size_reduce_measurement_plq_double2);
+    if (lattice_measurement_size_F<(unsigned int) lattice_measurement_size_correction){
+        printf ("buffer plattice_measurement should be resized!!!\n");
+        _getch();
+    }
 
     // for Wilson loop measurements _____________________________________________________________________________________________________________________________
     char options_wilson[1024];
@@ -1356,8 +1774,16 @@ void        model::lattice_make_programs(void)
                                   GPU0->program_create(polyakov_source,options_polyakov);
     int size_reduce_polyakov_double2   = 0;
     int offset_reduce_polyakov_double2 = 0;
+    int size_reduce_polyakov_diff_double2   = 0;
+    int offset_reduce_polyakov_diff_double2 = 0;
     sun_polyakov_id        = 0;
     sun_polyakov_reduce_id = 0;
+    sun_polyakov_diff_x_id        = 0;
+    sun_polyakov_diff_x_reduce_id = 0;
+    sun_polyakov_diff_y_id        = 0;
+    sun_polyakov_diff_y_reduce_id = 0;
+    sun_polyakov_diff_z_id        = 0;
+    sun_polyakov_diff_z_reduce_id = 0;
     cl_uint4 polyakov_param;
     if (PL_level > 0) {
         sun_polyakov_id = GPU0->kernel_init("lattice_polyakov",1,polyakov3_global_size,local_size_lattice_polyakov);
@@ -1379,6 +1805,66 @@ void        model::lattice_make_programs(void)
             polyakov_param.s[3] = 0;
             argument_polyakov_index = GPU0->kernel_init_constant(sun_polyakov_reduce_id,&polyakov_param);
     }
+	if (PL_level > 2) {
+        sun_polyakov_diff_x_id = GPU0->kernel_init("lattice_polyakov_diff_x",1,polyakov3_global_size,local_size_lattice_polyakov);
+        offset_reduce_polyakov_diff_double2 = GPU0->buffer_size_align((unsigned int) ceil((double) lattice_polyakov_size / GPU0->kernel_get_worksize(sun_polyakov_diff_x_id)),GPU0->kernel_get_worksize(sun_polyakov_diff_x_id));
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_id,lattice_table);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_id,lattice_measurement);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_id,lattice_parameters);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_id,lattice_lds);
+            argument_id = GPU0->kernel_init_constant(sun_polyakov_diff_x_id,&offset_reduce_polyakov_diff_double2);
+        size_reduce_polyakov_diff_double2 = (int) ceil((double) lattice_polyakov_size / GPU0->kernel_get_worksize(sun_polyakov_diff_x_id));
+
+        sun_polyakov_diff_x_reduce_id = GPU0->kernel_init("reduce_polyakov_diff_x_double2",1,reduce_polyakov_global_size,reduce_local_size); 
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_reduce_id,lattice_measurement);
+	    argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_reduce_id,lattice_polyakov_loop_diff_x);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_reduce_id,lattice_lds);
+            polyakov_param.s[0] = size_reduce_polyakov_diff_double2;
+            polyakov_param.s[1] = offset_reduce_polyakov_diff_double2;
+            polyakov_param.s[2] = lattice_polyakov_loop_size;
+            polyakov_param.s[3] = 0;
+            argument_polyakov_diff_x_index = GPU0->kernel_init_constant(sun_polyakov_diff_x_reduce_id,&polyakov_param);
+	    
+	
+	    sun_polyakov_diff_y_id = GPU0->kernel_init("lattice_polyakov_diff_y",1,polyakov3_global_size,local_size_lattice_polyakov);
+        offset_reduce_polyakov_diff_double2 = GPU0->buffer_size_align((unsigned int) ceil((double) lattice_polyakov_size / GPU0->kernel_get_worksize(sun_polyakov_diff_y_id)),GPU0->kernel_get_worksize(sun_polyakov_diff_y_id));
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_id,lattice_table);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_id,lattice_measurement);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_id,lattice_parameters);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_id,lattice_lds);
+            argument_id = GPU0->kernel_init_constant(sun_polyakov_diff_y_id,&offset_reduce_polyakov_diff_double2);
+        size_reduce_polyakov_diff_double2 = (int) ceil((double) lattice_polyakov_size / GPU0->kernel_get_worksize(sun_polyakov_diff_y_id));
+
+        sun_polyakov_diff_y_reduce_id = GPU0->kernel_init("reduce_polyakov_diff_y_double2",1,reduce_polyakov_global_size,reduce_local_size); 
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_reduce_id,lattice_measurement);
+	    argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_reduce_id,lattice_polyakov_loop_diff_y);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_reduce_id,lattice_lds);
+            polyakov_param.s[0] = size_reduce_polyakov_diff_double2;
+            polyakov_param.s[1] = offset_reduce_polyakov_diff_double2;
+            polyakov_param.s[2] = lattice_polyakov_loop_size;
+            polyakov_param.s[3] = 0;
+            argument_polyakov_diff_y_index = GPU0->kernel_init_constant(sun_polyakov_diff_y_reduce_id,&polyakov_param);
+	    
+	
+	sun_polyakov_diff_z_id = GPU0->kernel_init("lattice_polyakov_diff_z",1,polyakov3_global_size,local_size_lattice_polyakov);
+        offset_reduce_polyakov_diff_double2 = GPU0->buffer_size_align((unsigned int) ceil((double) lattice_polyakov_size / GPU0->kernel_get_worksize(sun_polyakov_diff_z_id)),GPU0->kernel_get_worksize(sun_polyakov_diff_z_id));
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_id,lattice_table);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_id,lattice_measurement);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_id,lattice_parameters);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_id,lattice_lds);
+            argument_id = GPU0->kernel_init_constant(sun_polyakov_diff_z_id,&offset_reduce_polyakov_diff_double2);
+        size_reduce_polyakov_diff_double2 = (int) ceil((double) lattice_polyakov_size / GPU0->kernel_get_worksize(sun_polyakov_diff_z_id));
+
+        sun_polyakov_diff_z_reduce_id = GPU0->kernel_init("reduce_polyakov_diff_z_double2",1,reduce_polyakov_global_size,reduce_local_size); 
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_reduce_id,lattice_measurement);
+	    argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_reduce_id,lattice_polyakov_loop_diff_z);
+            argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_reduce_id,lattice_lds);
+            polyakov_param.s[0] = size_reduce_polyakov_diff_double2;
+            polyakov_param.s[1] = offset_reduce_polyakov_diff_double2;
+            polyakov_param.s[2] = lattice_polyakov_loop_size;
+            polyakov_param.s[3] = 0;
+            argument_polyakov_diff_z_index = GPU0->kernel_init_constant(sun_polyakov_diff_z_reduce_id,&polyakov_param);
+    }
 }
 
 void        model::lattice_create_buffers(void)
@@ -1387,13 +1873,25 @@ void        model::lattice_create_buffers(void)
     cl_double*   plattice_parameters_double = NULL;
 
     int fc = 2;
-    int fc2 = ((PL_level>1)&&(lattice_measurement_size_F <= 2 * lattice_polyakov_loop_size)) ? 2 : 1;
+int fc2 = 1;
+    if ((PL_level>1)&&(lattice_measurement_size_F <= 2 * lattice_polyakov_loop_size)) fc2 = 2;
+    if ((PL_level>2)&&(lattice_measurement_size_F <= (lattice_polyakov_loop_size * (lattice_domain_n1 + 1)))) fc2 = lattice_domain_n1 + 1;
     size_lattice_table         = fc * lattice_table_size;
     size_lattice_measurement   = fc * lattice_measurement_size_F;
     size_lattice_energies      = fc * lattice_energies_size;
     size_lattice_wilson_loop   = fc * lattice_energies_size;
     size_lattice_energies_plq  = fc * lattice_energies_offset * MODEL_energies_size;
-    size_lattice_polyakov_loop = fc * fc2 * lattice_polyakov_loop_size * PL_level;
+    
+    if(get_actions_diff)
+    {
+       fc2 = 2; 
+       size_lattice_energies *= (fc2*getK(lattice_domain_n1, lattice_domain_size[1], GPU0->GPU_limit_max_workgroup_size));
+    }
+    
+    if (PL_level>2)
+      size_lattice_polyakov_loop = fc * fc2 * lattice_polyakov_loop_size * getK(lattice_domain_n1, lattice_domain_size[1], GPU0->GPU_limit_max_workgroup_size);
+    else
+      size_lattice_polyakov_loop = fc * fc2 * lattice_polyakov_loop_size * PL_level;
     size_lattice_boundary      = fc * lattice_boundary_size;
     size_lattice_parameters    = fc * lattice_parameters_size;
 
@@ -1407,7 +1905,26 @@ void        model::lattice_create_buffers(void)
     plattice_energies_plq   = (cl_double2*) calloc(size_lattice_energies_plq, sizeof(cl_double2));
     plattice_wilson_loop    = (cl_double*)  calloc(size_lattice_wilson_loop,  sizeof(cl_double));
     plattice_polyakov_loop  = NULL;
+    
+    plattice_action_diff_x      = NULL;
+    plattice_action_diff_y      = NULL;
+    plattice_action_diff_z      = NULL;
+    if(get_actions_diff)
+    {
+       plattice_action_diff_x      = (cl_double2*) calloc(size_lattice_energies,     sizeof(cl_double2)); 
+       plattice_action_diff_y      = (cl_double2*) calloc(size_lattice_energies,     sizeof(cl_double2)); 
+       plattice_action_diff_z      = (cl_double2*) calloc(size_lattice_energies,     sizeof(cl_double2)); 
+    }
         if (PL_level > 0) plattice_polyakov_loop = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
+    plattice_polyakov_loop_diff_x  = NULL;
+    plattice_polyakov_loop_diff_y  = NULL;
+    plattice_polyakov_loop_diff_z  = NULL;
+        if (PL_level > 2) 
+	{
+	  plattice_polyakov_loop_diff_x = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
+	  plattice_polyakov_loop_diff_y = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
+	  plattice_polyakov_loop_diff_z = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
+	}
 
     if (precision == model_precision_single) {
         plattice_table_float            = (cl_float4*)  calloc(size_lattice_table,     sizeof(cl_float4));
@@ -1444,15 +1961,26 @@ void        model::lattice_create_buffers(void)
         lattice_parameters      = GPU0->buffer_init(GPU0->buffer_type_Constant, size_lattice_parameters, plattice_parameters_double, sizeof(cl_double));  // Lattice counters and indices
     }
     lattice_measurement         = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_measurement,      plattice_measurement,       sizeof(cl_double2)); // Lattice measurement
-    lattice_lds                 = GPU0->buffer_init(GPU0->buffer_type_LDS,lds_size,                      NULL /* 0 // 26.03.14 */,                          sizeof(cl_double2)); // LDS for reduction
+    lattice_lds                 = GPU0->buffer_init(GPU0->buffer_type_LDS,lds_size,                      NULL ,                          sizeof(cl_double2)); // LDS for reduction
     lattice_energies            = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies,         plattice_energies,          sizeof(cl_double2)); // Lattice energies
+    if(get_actions_diff)
+    {
+         lattice_action_diff_x      = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies,         plattice_action_diff_x,          sizeof(cl_double2));
+	 lattice_action_diff_y      = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies,         plattice_action_diff_y,          sizeof(cl_double2));
+	 lattice_action_diff_z      = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies,         plattice_action_diff_z,          sizeof(cl_double2));
+    }
     if ((get_plaquettes_avr) || (get_Fmunu) || (get_F0mu))
         lattice_energies_plq    = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies_plq,     plattice_energies_plq,      sizeof(cl_double2)); // Lattice energies (plaquettes)
     if (get_wilson_loop)
         lattice_wilson_loop     = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_wilson_loop,      plattice_wilson_loop,       sizeof(cl_double));  // Wilson loop
     if (PL_level > 0)
         lattice_polyakov_loop   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop, sizeof(cl_double2)); // Polyakov loops
-
+    if (PL_level > 2)
+    {
+	    lattice_polyakov_loop_diff_x   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop_diff_x, sizeof(cl_double2));
+	    lattice_polyakov_loop_diff_y   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop_diff_y, sizeof(cl_double2));
+	    lattice_polyakov_loop_diff_z   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop_diff_z, sizeof(cl_double2));
+    }
 }
 
 void        model::lattice_simulate(void)
@@ -1528,6 +2056,36 @@ void        model::lattice_simulate(void)
             GPU0->print_stage("measurement reduce done");
         }
 
+        if(get_actions_diff)
+	{
+	    GPU0->kernel_run(sun_action_diff_x_id);
+	    GPU0->print_stage("measurement S diff done");
+                action_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_action_diff_x_reduce_id,&action_diff_index,argument_action_diff_x_index);
+            GPU0->kernel_run(sun_action_diff_x_reduce_id);
+            GPU0->print_stage("measurement action diff reduce done");
+            //lattice_pointer_measurements = GPU0->buffer_map(lattice_measurement);
+            //GPU0->print_mapped_buffer_double2(lattice_measurement,15);
+	    
+	    GPU0->kernel_run(sun_action_diff_y_id);
+	    GPU0->print_stage("measurement S diff done");
+                action_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_action_diff_y_reduce_id,&action_diff_index,argument_action_diff_y_index);
+            GPU0->kernel_run(sun_action_diff_y_reduce_id);
+            GPU0->print_stage("measurement action diff reduce done");
+            //lattice_pointer_measurements = GPU0->buffer_map(lattice_measurement);
+            //GPU0->print_mapped_buffer_double2(lattice_measurement,110);
+	    
+	    GPU0->kernel_run(sun_action_diff_z_id);
+	    GPU0->print_stage("measurement S diff done");
+                action_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_action_diff_z_reduce_id,&action_diff_index,argument_action_diff_z_index);
+            GPU0->kernel_run(sun_action_diff_z_reduce_id);
+            GPU0->print_stage("measurement action diff reduce done");
+            //lattice_pointer_measurements = GPU0->buffer_map(lattice_measurement);
+            //GPU0->print_mapped_buffer_double2(lattice_measurement,110);
+ 	}
+        
         if (PL_level > 0) {
             GPU0->kernel_run(sun_polyakov_id);                     // Lattice Polyakov loop measurement
             GPU0->print_stage("Polyakov loop measurement done");
@@ -1535,6 +2093,35 @@ void        model::lattice_simulate(void)
                 GPU0->kernel_init_constant_reset(sun_polyakov_reduce_id,&polyakov_index,argument_polyakov_index);
             GPU0->kernel_run(sun_polyakov_reduce_id);              // Lattice Polyakov loop measurement reduction
             GPU0->print_stage("Polyakov loop reduce done");
+        }
+        
+        if (PL_level > 2) {
+            GPU0->kernel_run(sun_polyakov_diff_x_id);                     // Lattice Polyakov loop measurement
+            GPU0->print_stage("Polyakov loop diff measurement done");
+                polyakov_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_polyakov_diff_x_reduce_id,&polyakov_diff_index,argument_polyakov_diff_x_index);
+            GPU0->kernel_run(sun_polyakov_diff_x_reduce_id);              // Lattice Polyakov loop measurement reduction
+            GPU0->print_stage("Polyakov loop diff reduce done");
+	    //lattice_pointer_measurements = GPU0->buffer_map(lattice_measurement);
+            //GPU0->print_mapped_buffer_double2(lattice_measurement,15);
+	    
+	    GPU0->kernel_run(sun_polyakov_diff_y_id);                     // Lattice Polyakov loop measurement
+            GPU0->print_stage("Polyakov loop diff measurement done");
+                polyakov_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_polyakov_diff_y_reduce_id,&polyakov_diff_index,argument_polyakov_diff_y_index);
+            GPU0->kernel_run(sun_polyakov_diff_y_reduce_id);              // Lattice Polyakov loop measurement reduction
+            GPU0->print_stage("Polyakov loop diff reduce done");
+            //lattice_pointer_measurements = GPU0->buffer_map(lattice_measurement);
+            //GPU0->print_mapped_buffer_double2(lattice_measurement,15);
+	    
+	    GPU0->kernel_run(sun_polyakov_diff_z_id);                     // Lattice Polyakov loop measurement
+            GPU0->print_stage("Polyakov loop diff measurement done");
+                polyakov_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_polyakov_diff_z_reduce_id,&polyakov_diff_index,argument_polyakov_diff_z_index);
+            GPU0->kernel_run(sun_polyakov_diff_z_reduce_id);              // Lattice Polyakov loop measurement reduction
+            GPU0->print_stage("Polyakov loop diff reduce done");
+            //lattice_pointer_measurements = GPU0->buffer_map(lattice_measurement);
+            //GPU0->print_mapped_buffer_double2(lattice_measurement,15);
         }
 
         ITER_counter++;
@@ -1628,6 +2215,24 @@ void        model::lattice_simulate(void)
                 GPU0->kernel_init_constant_reset(sun_measurement_reduce_id,&measurement_index,argument_measurement_index);
             GPU0->kernel_run(sun_measurement_reduce_id);          // Lattice measurement reduction
         }
+        
+        if(get_actions_diff)
+	{
+	    GPU0->kernel_run(sun_action_diff_x_id);
+		action_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_action_diff_x_reduce_id, &action_diff_index, argument_action_diff_x_index);
+            GPU0->kernel_run(sun_action_diff_x_reduce_id);
+	    
+	    GPU0->kernel_run(sun_action_diff_y_id);
+		action_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_action_diff_y_reduce_id, &action_diff_index, argument_action_diff_y_index);
+            GPU0->kernel_run(sun_action_diff_y_reduce_id);
+	    
+	    GPU0->kernel_run(sun_action_diff_z_id);
+		action_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_action_diff_z_reduce_id, &action_diff_index, argument_action_diff_z_index);
+            GPU0->kernel_run(sun_action_diff_z_reduce_id);
+	}
 
 GPU0->kernel_run(sun_clear_measurement_id);
         if (PL_level > 0) {
@@ -1635,6 +2240,24 @@ GPU0->kernel_run(sun_clear_measurement_id);
                 polyakov_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_polyakov_reduce_id,&polyakov_index,argument_polyakov_index);
             GPU0->kernel_run(sun_polyakov_reduce_id);             // Lattice Polyakov loop measurement reduction
+        }
+        
+GPU0->kernel_run(sun_clear_measurement_id);
+        if (PL_level > 2) {
+            GPU0->kernel_run(sun_polyakov_diff_x_id);
+                polyakov_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_polyakov_diff_x_reduce_id,&polyakov_diff_index,argument_polyakov_diff_x_index);
+            GPU0->kernel_run(sun_polyakov_diff_x_reduce_id);
+	    
+	    GPU0->kernel_run(sun_polyakov_diff_y_id);
+                polyakov_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_polyakov_diff_y_reduce_id,&polyakov_diff_index,argument_polyakov_diff_y_index);
+            GPU0->kernel_run(sun_polyakov_diff_y_reduce_id);
+	    
+	    GPU0->kernel_run(sun_polyakov_diff_z_id);
+                polyakov_diff_index = ITER_counter;
+                GPU0->kernel_init_constant_reset(sun_polyakov_diff_z_reduce_id,&polyakov_diff_index,argument_polyakov_diff_z_index);
+            GPU0->kernel_run(sun_polyakov_diff_z_reduce_id);
         }
 
 GPU0->kernel_run(sun_clear_measurement_id);
