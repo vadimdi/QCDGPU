@@ -2,7 +2,7 @@
  * @file     suncl.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Contains lattice initialization and update procedures, matrix reunitarization Gram-Schmidt procedure
@@ -50,7 +50,6 @@
 #include "su3_matrix_memory.cl"
 #include "su3_update_cl.cl"
 #endif
-
 
                                         __kernel void
 lattice_init_hot_X(__global hgpu_float4 * lattice_table,
@@ -232,14 +231,91 @@ lattice_init_gid(__global hgpu_float4 * lattice_table)
 #endif
 
 #if SUN == 3
-    gpu_su_3 matrix;
-    matrix.uv1 = (hgpu_float4) (GID, 0.0, 0.0, 0.0);
-    matrix.uv2 = (hgpu_float4) (0.0, 0.0, 0.0, 0.0);
-    matrix.uv3 = (hgpu_float4) (0.0, 1.0/GID, 0.0, 0.0);
+    gpu_su_3 matrix, matrix_y, matrix_z, matrix_t;
+
+  if(GID < SITES)
+  {
+    hgpu_double f1  = sin((0.001+10.0/SITES)*GID)/2.0;
+    hgpu_double f2  = cos((0.001-10.0/SITES)*GID)/3.0;
+    hgpu_double f3  = sin((0.001-18.0/SITES)*GID)/4.0;
+    hgpu_double f4  = cos((0.001+12.0/SITES)*GID)/4.0;
+    hgpu_double f5  = sin((0.001-12.0/SITES)*GID)/3.0;
+    hgpu_double f6  = cos((0.001-15.0/SITES)*GID)/2.0;
+    hgpu_double f7  = sin((0.001+15.0/SITES)*GID)/3.0;
+    hgpu_double f8  = cos((0.001-11.0/SITES)*GID)/4.0;
+    hgpu_double f9  = sin((0.001-11.0/SITES)*GID)/3.0;
+    hgpu_double f10 = cos((0.001+16.0/SITES)*GID)/2.0;
+    hgpu_double f11 = sin((0.001-16.0/SITES)*GID)/3.0;
+    hgpu_double f12 = cos((0.001-18.0/SITES)*GID)/2.0;
+    
+
+    matrix.uv1 = (hgpu_float4) (f1, f3, f5, f11);
+    matrix.uv2 = (hgpu_float4) (f2, f4, f6, f12);
+    matrix.uv3 = (hgpu_float4) (f7, f9, f8, f10);
+     lattice_GramSchmidt3(&matrix);
+
+    hgpu_double f1y  = sin((0.002+10.0/SITES)*GID)/2.0;
+    hgpu_double f2y  = cos((0.002-10.0/SITES)*GID)/3.0;
+    hgpu_double f3y  = sin((0.002-18.0/SITES)*GID)/4.0;
+    hgpu_double f4y  = cos((0.002+12.0/SITES)*GID)/4.0;
+    hgpu_double f5y  = sin((0.002-12.0/SITES)*GID)/3.0;
+    hgpu_double f6y  = cos((0.002-15.0/SITES)*GID)/2.0;
+    hgpu_double f7y  = sin((0.002+15.0/SITES)*GID)/3.0;
+    hgpu_double f8y  = cos((0.002-11.0/SITES)*GID)/4.0;
+    hgpu_double f9y  = sin((0.002-11.0/SITES)*GID)/3.0;
+    hgpu_double f10y = cos((0.002+16.0/SITES)*GID)/2.0;
+    hgpu_double f11y = sin((0.002-16.0/SITES)*GID)/3.0;
+    hgpu_double f12y = cos((0.002-18.0/SITES)*GID)/2.0;
+    
+
+    matrix_y.uv1 = (hgpu_float4) (f1y, f3y, f5y, f11y);
+    matrix_y.uv2 = (hgpu_float4) (f2y, f4y, f6y, f12y);
+    matrix_y.uv3 = (hgpu_float4) (f7y, f9y, f8y, f10y);
+     lattice_GramSchmidt3(&matrix_y);
+
+    hgpu_double f1z  = sin((0.003+10.0/SITES)*GID)/2.0;
+    hgpu_double f2z  = cos((0.003-10.0/SITES)*GID)/3.0;
+    hgpu_double f3z  = sin((0.003-18.0/SITES)*GID)/4.0;
+    hgpu_double f4z  = cos((0.003+12.0/SITES)*GID)/4.0;
+    hgpu_double f5z  = sin((0.003-12.0/SITES)*GID)/3.0;
+    hgpu_double f6z  = cos((0.003-15.0/SITES)*GID)/2.0;
+    hgpu_double f7z  = sin((0.003+15.0/SITES)*GID)/3.0;
+    hgpu_double f8z  = cos((0.003-11.0/SITES)*GID)/4.0;
+    hgpu_double f9z  = sin((0.003-11.0/SITES)*GID)/3.0;
+    hgpu_double f10z = cos((0.003+16.0/SITES)*GID)/2.0;
+    hgpu_double f11z = sin((0.003-16.0/SITES)*GID)/3.0;
+    hgpu_double f12z = cos((0.003-18.0/SITES)*GID)/2.0;
+    
+
+    matrix_z.uv1 = (hgpu_float4) (f1z, f3z, f5z, f11z);
+    matrix_z.uv2 = (hgpu_float4) (f2z, f4z, f6z, f12z);
+    matrix_z.uv3 = (hgpu_float4) (f7z, f9z, f8z, f10z);
+     lattice_GramSchmidt3(&matrix_z);
+
+    hgpu_double f1t  = sin((0.004+10.0/SITES)*GID)/2.0;
+    hgpu_double f2t  = cos((0.004-10.0/SITES)*GID)/3.0;
+    hgpu_double f3t  = sin((0.004-18.0/SITES)*GID)/4.0;
+    hgpu_double f4t  = cos((0.004+12.0/SITES)*GID)/4.0;
+    hgpu_double f5t  = sin((0.004-12.0/SITES)*GID)/3.0;
+    hgpu_double f6t  = cos((0.004-15.0/SITES)*GID)/2.0;
+    hgpu_double f7t  = sin((0.004+15.0/SITES)*GID)/3.0;
+    hgpu_double f8t  = cos((0.004-11.0/SITES)*GID)/4.0;
+    hgpu_double f9t  = sin((0.004-11.0/SITES)*GID)/3.0;
+    hgpu_double f10t = cos((0.004+16.0/SITES)*GID)/2.0;
+    hgpu_double f11t = sin((0.004-16.0/SITES)*GID)/3.0;
+    hgpu_double f12t = cos((0.004-18.0/SITES)*GID)/2.0;
+    
+
+    matrix_t.uv1 = (hgpu_float4) (f1t, f3t, f5t, f11t);
+    matrix_t.uv2 = (hgpu_float4) (f2t, f4t, f6t, f12t);
+    matrix_t.uv3 = (hgpu_float4) (f7t, f9t, f8t, f10t);
+     lattice_GramSchmidt3(&matrix_t);
+    
     lattice_store_3(lattice_table,&matrix,GID,X);
-    lattice_store_3(lattice_table,&matrix,GID,Y);
-    lattice_store_3(lattice_table,&matrix,GID,Z);
-    lattice_store_3(lattice_table,&matrix,GID,T);
+    lattice_store_3(lattice_table,&matrix_y,GID,Y);
+    lattice_store_3(lattice_table,&matrix_z,GID,Z);
+    lattice_store_3(lattice_table,&matrix_t,GID,T);
+  }
 #endif
 }
 
@@ -312,7 +388,7 @@ update_even_X(__global hgpu_float4 * lattice_table,
         m0     = lattice_table_2(lattice_table,&coord,gindex,X,&twist);    // [p,X]
         staple = lattice_staple_2(lattice_table,gindex,X,&twist);
 #ifdef GID_UPD
-prns[GID].x = (float) gindex; // DELETE!!!
+prns[GID].x = (float) gindex;
 #endif
         mU     = lattice_heatbath_2(&staple,&m0,&bet,prns);
 
@@ -333,6 +409,9 @@ prns[GID].x = (float) gindex; // DELETE!!!
 
         m0     = lattice_table_3(lattice_table,&coord,gindex,X,&twist);    // [p,X]
         staple = lattice_staple_3(lattice_table,gindex,X,&twist);
+#ifdef GID_UPD
+prns[GID].x = (float) gindex;
+#endif
         mU     = lattice_heatbath3(&staple,&m0,&bet,prns);
 
 #ifndef BULK_UPDATES
@@ -361,7 +440,7 @@ update_even_Y(__global hgpu_float4 * lattice_table,
         m0     = lattice_table_2(lattice_table,&coord,gindex,Y,&twist);    // [p,Y]
         staple = lattice_staple_2(lattice_table,gindex,Y,&twist);
 #ifdef GID_UPD
-prns[GID].x = (float) gindex; // DELETE!!!
+prns[GID].x = (float) gindex;
 #endif
         mU     = lattice_heatbath_2(&staple,&m0,&bet,prns);
 
@@ -382,6 +461,9 @@ prns[GID].x = (float) gindex; // DELETE!!!
 
         m0     = lattice_table_3(lattice_table,&coord,gindex,Y,&twist);    // [p,Y]
         staple = lattice_staple_3(lattice_table,gindex,Y,&twist);
+#ifdef GID_UPD
+prns[GID].x = (float) gindex;
+#endif
         mU     = lattice_heatbath3(&staple,&m0,&bet,prns);
 
 #ifndef BULK_UPDATES
@@ -410,7 +492,7 @@ update_even_Z(__global hgpu_float4 * lattice_table,
         m0     = lattice_table_2(lattice_table,&coord,gindex,Z,&twist);    // [p,Z]
         staple = lattice_staple_2(lattice_table,gindex,Z,&twist);
 #ifdef GID_UPD
-prns[GID].x = (float) gindex; // DELETE!!!
+prns[GID].x = (float) gindex;
 #endif
         mU     = lattice_heatbath_2(&staple,&m0,&bet,prns);
 
@@ -431,6 +513,9 @@ prns[GID].x = (float) gindex; // DELETE!!!
 
         m0     = lattice_table_3(lattice_table,&coord,gindex,Z,&twist);    // [p,Z]
         staple = lattice_staple_3(lattice_table,gindex,Z,&twist);
+#ifdef GID_UPD
+prns[GID].x = (float) gindex;
+#endif
         mU     = lattice_heatbath3(&staple,&m0,&bet,prns);
 
 #ifndef BULK_UPDATES
@@ -459,7 +544,7 @@ update_even_T(__global hgpu_float4 * lattice_table,
         m0     = lattice_table_2(lattice_table,&coord,gindex,T,&twist);    // [p,T]
         staple = lattice_staple_2(lattice_table,gindex,T,&twist);
 #ifdef GID_UPD
-prns[GID].x = (float) gindex; // DELETE!!!
+prns[GID].x = (float) gindex;
 #endif
         mU     = lattice_heatbath_2(&staple,&m0,&bet,prns);
 
@@ -480,6 +565,9 @@ prns[GID].x = (float) gindex; // DELETE!!!
 
         m0     = lattice_table_3(lattice_table,&coord,gindex,T,&twist);    // [p,T]
         staple = lattice_staple_3(lattice_table,gindex,T,&twist);
+#ifdef GID_UPD
+prns[GID].x = (float) gindex;
+#endif
         mU     = lattice_heatbath3(&staple,&m0,&bet,prns);
 
 #ifndef BULK_UPDATES
@@ -508,7 +596,7 @@ update_odd_X(__global hgpu_float4 * lattice_table,
         m0     = lattice_table_2(lattice_table,&coord,gindex,X,&twist);    // [p,X]
         staple = lattice_staple_2(lattice_table,gindex,X,&twist);
 #ifdef GID_UPD
-prns[GID].x = (float) gindex; // DELETE!!!
+prns[GID].x = (float) gindex;
 #endif
         mU     = lattice_heatbath_2(&staple,&m0,&bet,prns);
 
@@ -529,6 +617,9 @@ prns[GID].x = (float) gindex; // DELETE!!!
 
         m0     = lattice_table_3(lattice_table,&coord,gindex,X,&twist);    // [p,X]
         staple = lattice_staple_3(lattice_table,gindex,X,&twist);
+#ifdef GID_UPD
+prns[GID].x = (float) gindex;
+#endif
         mU     = lattice_heatbath3(&staple,&m0,&bet,prns);
 
 #ifndef BULK_UPDATES
@@ -557,7 +648,7 @@ update_odd_Y(__global hgpu_float4 * lattice_table,
         m0     = lattice_table_2(lattice_table,&coord,gindex,Y,&twist);    // [p,Y]
         staple = lattice_staple_2(lattice_table,gindex,Y,&twist);
 #ifdef GID_UPD
-prns[GID].x = (float) gindex; // DELETE!!!
+prns[GID].x = (float) gindex;
 #endif
         mU     = lattice_heatbath_2(&staple,&m0,&bet,prns);
 
@@ -578,6 +669,9 @@ prns[GID].x = (float) gindex; // DELETE!!!
 
         m0     = lattice_table_3(lattice_table,&coord,gindex,Y,&twist);    // [p,Y]
         staple = lattice_staple_3(lattice_table,gindex,Y,&twist);
+#ifdef GID_UPD
+prns[GID].x = (float) gindex;
+#endif
         mU     = lattice_heatbath3(&staple,&m0,&bet,prns);
 
 #ifndef BULK_UPDATES
@@ -606,7 +700,7 @@ update_odd_Z(__global hgpu_float4 * lattice_table,
         m0     = lattice_table_2(lattice_table,&coord,gindex,Z,&twist);    // [p,Z]
         staple = lattice_staple_2(lattice_table,gindex,Z,&twist);
 #ifdef GID_UPD
-prns[GID].x = (float) gindex; // DELETE!!!
+prns[GID].x = (float) gindex;
 #endif
         mU     = lattice_heatbath_2(&staple,&m0,&bet,prns);
 
@@ -627,6 +721,9 @@ prns[GID].x = (float) gindex; // DELETE!!!
 
         m0     = lattice_table_3(lattice_table,&coord,gindex,Z,&twist);    // [p,Z]
         staple = lattice_staple_3(lattice_table,gindex,Z,&twist);
+#ifdef GID_UPD
+prns[GID].x = (float) gindex;
+#endif
         mU     = lattice_heatbath3(&staple,&m0,&bet,prns);
 
 #ifndef BULK_UPDATES
@@ -656,7 +753,7 @@ update_odd_T(__global hgpu_float4 * lattice_table,
         m0     = lattice_table_2(lattice_table,&coord,gindex,T,&twist);    // [p,T]
         staple = lattice_staple_2(lattice_table,gindex,T,&twist);
 #ifdef GID_UPD
-prns[GID].x = (float) gindex; // DELETE!!!
+prns[GID].x = (float) gindex;
 #endif
         mU     = lattice_heatbath_2(&staple,&m0,&bet,prns);
 
@@ -677,6 +774,9 @@ prns[GID].x = (float) gindex; // DELETE!!!
 
         m0     = lattice_table_3(lattice_table,&coord,gindex,T,&twist);    // [p,T]
         staple = lattice_staple_3(lattice_table,gindex,T,&twist);
+#ifdef GID_UPD
+prns[GID].x = (float) gindex;
+#endif
         mU     = lattice_heatbath3(&staple,&m0,&bet,prns);
 
 #ifndef BULK_UPDATES
@@ -708,4 +808,5 @@ prns[GID].x = (float) gindex; // DELETE!!!
                                                                                                                                                                  
                                                                                                                                                                  
                                                                                                                                                                  
-                                                                                                                                                                 
+                                                                                                                                                                  
+                                                                                                                                                                  
