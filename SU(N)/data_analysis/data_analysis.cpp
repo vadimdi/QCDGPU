@@ -2,7 +2,7 @@
  * @file     data_analysis.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.4
+ * @version  1.5
  *
  * @brief    [QCDGPU]
  *           Data analysis block
@@ -44,6 +44,7 @@
 
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+#define hgpu_abs(a) (a > 0 ? a : -a)
 
 namespace analysis_CL{
 using analysis_CL::analysis;
@@ -74,21 +75,27 @@ using analysis_CL::analysis;
 
 bool        analysis::CPU_GPU_verification_single(double a, double b, const char* err_str){
     bool result = true;
-    if ((abs(a)>CHECKING_PRECISION_SINGLE) && (abs(b)>CHECKING_PRECISION_SINGLE))
-        if (abs(1.0-b/a)>VDELTA_SINGLE) {
+    if ((hgpu_abs(a)>CHECKING_PRECISION_SINGLE) && (hgpu_abs(b)>CHECKING_PRECISION_SINGLE))
+    {
+	float c = (float) (1.0 - b/a);
+        if (hgpu_abs(1.0-b/a)>VDELTA_SINGLE) {
             if (err_str) printf("%s test failed!\n",err_str);
             result = false;
         }
+    }
     results_verification &= result;
     return result;
 }
 bool        analysis::CPU_GPU_verification_double(double a, double b, const char* err_str){
     bool result = true;
-    if ((abs(a)>CHECKING_PRECISION_DOUBLE) && (abs(b)>CHECKING_PRECISION_DOUBLE))
-        if (abs(1.0-b/a)>VDELTA_DOUBLE) {
+    if ((hgpu_abs(a)>CHECKING_PRECISION_DOUBLE) && (hgpu_abs(b)>CHECKING_PRECISION_DOUBLE))
+    {
+	double c =1.0 - b/a;
+        if (hgpu_abs(c)>VDELTA_DOUBLE) {
             if (err_str) printf("%s test failed!\n",err_str);
             result = false;
         }
+    }
     results_verification &= result;
     return result;
 }
