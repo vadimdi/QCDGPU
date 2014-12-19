@@ -107,7 +107,7 @@ matrix_add2(su_2* u,su_2* v)
 }
 
                     __attribute__((always_inline)) void
-lattice_random2(gpu_su_2* matrix,__global const hgpu_single4 * prns,uint gidprn)
+lattice_random2(gpu_su_2* matrix,__global const hgpu_prng_float4 * prns,uint gidprn)
 {
     /* M. Di Pierro */
     gpu_su_2 m1;
@@ -431,7 +431,7 @@ lattice_staple_2(__global hgpu_float4 * lattice_table, uint gindex,const uint di
 }
 
                     __attribute__((always_inline)) void
-lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_single4 * prns,uint* indprng)
+lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_prng_float4 * prns,uint* indprng)
 {
     //Gattringer, Lang; Kennedy, Pendleton
     gpu_su_2 aH,c,d;
@@ -440,7 +440,7 @@ lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_single4 * prns,ui
     hgpu_float det,bdet,cosrnd,delta;
     hgpu_float costh,sinth,cosal,sinal,phi,sinphi,cosphi;
 #ifdef GID_UPD
-hgpu_float gid; //DELETE!!!
+hgpu_float gid;
 #endif
 
     uint i = 0;
@@ -517,7 +517,7 @@ rnd.w = (hgpu_float) fabs(sin((0.08+380.0/SITES)*gid));
 }
 
                     __attribute__((always_inline)) __private gpu_su_2
-lattice_heatbath_2(su_2* staple,gpu_su_2* m0,hgpu_float* beta,__global const hgpu_single4 * prns)
+lattice_heatbath_2(su_2* staple,gpu_su_2* m0,hgpu_float* beta,__global const hgpu_prng_float4 * prns)
 {
     gpu_su_2 reslt;
     su_2 U1;

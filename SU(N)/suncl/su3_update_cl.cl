@@ -141,7 +141,7 @@ matrix_times2(gpu_su_2* u,gpu_su_2* v)
 }
 
                     __attribute__((always_inline)) void
-lattice_random3(gpu_su_3* matrix,__global const hgpu_single4 * prns,uint gidprn1,uint gidprn2,uint gidprn3)
+lattice_random3(gpu_su_3* matrix,__global const hgpu_prng_float4 * prns,uint gidprn1,uint gidprn2,uint gidprn3)
 {
     __private gpu_su_3 m1;
     __private hgpu_float4 alpha,phi;
@@ -544,7 +544,7 @@ lattice_staple_3(__global hgpu_float4 * lattice_table, uint gindex,const uint di
 }
 
                     __attribute__((always_inline)) void
-lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_single4 * prns,uint* indprng)
+lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_prng_float4 * prns,uint* indprng)
 {
     gpu_su_2 aH,c,d;
 
@@ -633,7 +633,7 @@ rnd.w = (hgpu_float) fabs(sin((0.08+380.0/SITES)*gid));
 }
 
 __attribute__((always_inline)) __private gpu_su_3
-lattice_heatbath3(su_3* staple,gpu_su_3* m0,hgpu_float* beta,__global const hgpu_single4 * prns)
+lattice_heatbath3(su_3* staple,gpu_su_3* m0,hgpu_float* beta,__global const hgpu_prng_float4 * prns)
 {
     gpu_su_3 reslt;
 

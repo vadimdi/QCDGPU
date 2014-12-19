@@ -285,7 +285,7 @@ char*       model::lattice_make_header(void){
     header = (char*) calloc(header_size, sizeof(char));
     int j = 0;
 
-    j  += sprintf_s(header+j,header_size-j, " GPU SU(%u) simulator %s (QCDGPU-m-1-1)\n\n",lattice_group,version);
+    j  += sprintf_s(header+j,header_size-j, " GPU SU(%u) simulator %s (QCDGPU-m-2fd1)\n\n",lattice_group,version);
     j  += sprintf_s(header+j,header_size-j, " Monte Carlo simulation of %uD SU(%u) LGT\n\n",lattice_nd,lattice_group);
     j  += sprintf_s(header+j,header_size-j, " ***************************************************\n");
     j  += sprintf_s(header+j,header_size-j, " Active OpenCL platform   : %s\n",GPU0->platform_get_name(GPU0->GPU_platform));
@@ -311,6 +311,9 @@ char*       model::lattice_make_header(void){
     if (precision == model::model_precision_mixed)  j  += sprintf_s(header+j,header_size-j, " precision                   : mixed\n");
     if (precision == model::model_precision_double)
     {
+            if(PRNG0->PRNG_precision   == PRNG_CL::PRNG::PRNG_precision_double)
+            j  += sprintf_s(header+j,header_size-j, " precision                   : full double\n");
+        else
             j  += sprintf_s(header+j,header_size-j, " precision                   : double\n");
     }
     j  += sprintf_s(header+j,header_size-j, " ***************************************************\n");
@@ -1515,6 +1518,9 @@ void        model::lattice_make_programs(void)
     
     options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D PLK=%u",   getK(lattice_domain_n1, lattice_domain_size[1], GPU0->GPU_limit_max_workgroup_size));
 
+    if (PRNG0->PRNG_precision == PRNG_CL::PRNG::PRNG_precision_double)
+        options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D PRNG_PRECISION=2");
+    
     char options[1024];
     int options_length  = sprintf_s(options,sizeof(options),"%s",options_common);
         options_length += sprintf_s(options + options_length,sizeof(options)-options_length," -D NHIT=%u",        NHIT);

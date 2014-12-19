@@ -87,6 +87,28 @@
 #endif
 #endif
 
+#ifndef PRNG_PRECISION
+#define PRNG_PRECISION   0       // single precision by default
+#endif
+
+#if ((PRNG_PRECISION==0)||(PRNG_PRECISION==1))
+#define PRNG_PRECISION_SINGLE            // define single precision
+#elif (PRNG_PRECISION==2)
+#define PRNG_PRECISION_DOUBLE            // define double precision
+#endif
+
+#ifdef PRNG_PRECISION_DOUBLE
+#define hgpu_prng_float   hgpu_double
+#define hgpu_prng_float2  hgpu_double2
+#define hgpu_prng_float3  hgpu_double3
+#define hgpu_prng_float4  hgpu_double4
+#else
+#define hgpu_prng_float   float
+#define hgpu_prng_float2  float2
+#define hgpu_prng_float3  float3
+#define hgpu_prng_float4  float4
+#endif
+
 #define hgpu_single  float
 #define hgpu_single4 float4
 /**

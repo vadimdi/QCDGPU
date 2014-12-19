@@ -53,7 +53,7 @@
 
                                         __kernel void
 lattice_init_hot_X(__global hgpu_float4 * lattice_table,
-                   __global const hgpu_single4 * prns)
+                   __global const hgpu_prng_float4 * prns)
 {
 
 #if SUN == 2
@@ -80,7 +80,7 @@ lattice_init_hot_X(__global hgpu_float4 * lattice_table,
 
                                         __kernel void
 lattice_init_hot_Y(__global hgpu_float4 * lattice_table,
-                   __global const hgpu_single4 * prns)
+                   __global const hgpu_prng_float4 * prns)
 {
 
 #if SUN == 2
@@ -107,7 +107,7 @@ lattice_init_hot_Y(__global hgpu_float4 * lattice_table,
 
                                         __kernel void
 lattice_init_hot_Z(__global hgpu_float4 * lattice_table,
-                   __global const hgpu_single4 * prns)
+                   __global const hgpu_prng_float4 * prns)
 {
 
 #if SUN == 2
@@ -134,7 +134,7 @@ lattice_init_hot_Z(__global hgpu_float4 * lattice_table,
 
                                         __kernel void
 lattice_init_hot_T(__global hgpu_float4 * lattice_table,
-                   __global const hgpu_single4 * prns)
+                   __global const hgpu_prng_float4 * prns)
 {
 
 #if SUN == 2
@@ -371,7 +371,7 @@ lattice_GramSchmidt(__global hgpu_float4 * lattice_table,
                                         __kernel void
 update_even_X(__global hgpu_float4 * lattice_table,
               __global hgpu_float * lattice_parameters,
-              __global const hgpu_single4 * prns)
+              __global const hgpu_prng_float4 * prns)
 {
     coords_4 coord;
     uint gindex = lattice_even_gid();  // x_+/-_y,z,t
@@ -423,7 +423,7 @@ prns[GID].x = (float) gindex;
                                         __kernel void
 update_even_Y(__global hgpu_float4 * lattice_table,
               __global hgpu_float * lattice_parameters,
-              __global const hgpu_single4 * prns)
+              __global const hgpu_prng_float4 * prns)
 {
     coords_4 coord;
     uint gindex = lattice_even_gid();  // y_+/-_x,z,t
@@ -475,7 +475,7 @@ prns[GID].x = (float) gindex;
                                         __kernel void
 update_even_Z(__global hgpu_float4 * lattice_table,
               __global hgpu_float * lattice_parameters,
-              __global const hgpu_single4 * prns)
+              __global const hgpu_prng_float4 * prns)
 {
     coords_4 coord;
     uint gindex = lattice_even_gid();  // z_+/-_x,y,t
@@ -527,7 +527,7 @@ prns[GID].x = (float) gindex;
                                         __kernel void
 update_even_T(__global hgpu_float4 * lattice_table,
               __global hgpu_float * lattice_parameters,
-              __global const hgpu_single4 * prns)
+              __global const hgpu_prng_float4 * prns)
 {
     coords_4 coord;
     uint gindex = lattice_even_gid();  // t_+/-_x,y,z
@@ -579,7 +579,7 @@ prns[GID].x = (float) gindex;
                                         __kernel void
 update_odd_X(__global hgpu_float4 * lattice_table,
              __global hgpu_float * lattice_parameters,
-             __global const hgpu_single4 * prns)
+             __global const hgpu_prng_float4 * prns)
 {
     coords_4 coord;
     uint gindex = lattice_odd_gid();  // x_+/-_y,z,t
@@ -631,7 +631,7 @@ prns[GID].x = (float) gindex;
                                         __kernel void
 update_odd_Y(__global hgpu_float4 * lattice_table,
              __global hgpu_float * lattice_parameters,
-             __global const hgpu_single4 * prns)
+             __global const hgpu_prng_float4 * prns)
 {
     coords_4 coord;
     uint gindex = lattice_odd_gid();  // y_+/-_x,z,t
@@ -683,7 +683,7 @@ prns[GID].x = (float) gindex;
                                         __kernel void
 update_odd_Z(__global hgpu_float4 * lattice_table,
              __global hgpu_float * lattice_parameters,
-             __global const hgpu_single4 * prns)
+             __global const hgpu_prng_float4 * prns)
 {
     coords_4 coord;
     uint gindex = lattice_odd_gid();  // z_+/-_x,y,t
@@ -736,7 +736,7 @@ prns[GID].x = (float) gindex;
                                         __kernel void
 update_odd_T(__global hgpu_float4 * lattice_table,
              __global hgpu_float * lattice_parameters,
-             __global const hgpu_single4 * prns)
+             __global const hgpu_prng_float4 * prns)
 {
     coords_4 coord;
     uint gindex = lattice_odd_gid();  // t_+/-_x,y,z
