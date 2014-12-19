@@ -416,7 +416,6 @@ void                PRNG::RL_initialize(void)
 
         PRNG_randoms_id    = GPU0->buffer_init(GPU0->buffer_type_IO,        randoms_size,    PRNG_randoms,           sizeoftype);
     GPU0->print_stage("randoms initialized");
-printf("KKKKKKKKKK PRNG_randoms_id = %i\n", PRNG_randoms_id);
         int argument_id;
 
         const size_t global_size[]  = {PRNG_instances};                     // global_size
