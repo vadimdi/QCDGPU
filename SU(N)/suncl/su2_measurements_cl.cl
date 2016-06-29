@@ -2,14 +2,14 @@
  * @file     su2_measurements.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Definition of general functions used in measurements, corresponding to the SU(2) gauge group
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -85,7 +85,41 @@ lattice_sigma3(double_su_2* matrix)
     (*matrix).v2.im = 0.0;
 }
 
+                    __attribute__((always_inline)) __private hgpu_complex_double
+trace_sigma1_double(double_su_2* u)
+{
+    // -i Tr(u*sigma_1/2)
+    hgpu_complex_double tr;
+    
+    tr.re = (*u).u2.im;
+    tr.im = 0.0;
+    
+    return tr;
+}
 
+                    __attribute__((always_inline)) __private hgpu_complex_double
+trace_sigma2_double(double_su_2* u)
+{
+    // -i Tr(u*sigma_2/2)
+    hgpu_complex_double tr;
+    
+    tr.re = (*u).u2.re;
+    tr.im = 0.0;
+    
+    return tr;
+}
+
+                    __attribute__((always_inline)) __private hgpu_complex_double
+trace_sigma3_double(double_su_2* u)
+{
+    // -i Tr(u*sigma_3/2)
+    hgpu_complex_double tr;
+    
+    tr.re = (*u).u1.im;
+    tr.im = 0.0;
+    
+    return tr;
+}
 
 // _________________ double precision ________________________
                     __attribute__((always_inline)) double_su_2
@@ -135,6 +169,18 @@ matrix_trace2_double(const double_su_2* u)
        tmp.im = (*u).u1.im + (*u).v2.im;
     return tmp;
 }
+
+#ifdef BIGLAT
+__attribute__((always_inline)) __private gpu_su_2
+matrix_hermitian_gpu_su_2(gpu_su_2* a)
+{
+    gpu_su_2 m;
+    
+    m.uv1 = (hgpu_float4)((*a).uv1.x, -(*a).uv1.y, -(*a).uv1.z, -(*a).uv1.w);
+
+    return m;
+}
+#endif
 
                     __attribute__((always_inline)) __private double_su_2
 matrix_hermitian_su2_double(double_su_2* a)
@@ -187,7 +233,7 @@ lattice_retrace_plaquette2(gpu_su_2* u1, gpu_su_2* u2, gpu_su_2* u3, gpu_su_2* u
                     __attribute__((always_inline)) __private hgpu_double
 lattice_retrace_plaquette2_F(gpu_su_2* u1, gpu_su_2* u2, gpu_su_2* u3, gpu_su_2* u4, hgpu_complex_double* F3, hgpu_complex_double* F8){
     double_su_2 m1, m2, m3, m4;
-    double_su_2 w1, w2, w3, w4, w5;
+    double_su_2 w1, w2, w3;
     hgpu_double result;
 
     m1 = lattice_reconstruct2_double(u1);
@@ -202,18 +248,13 @@ lattice_retrace_plaquette2_F(gpu_su_2* u1, gpu_su_2* u2, gpu_su_2* u3, gpu_su_2*
     w1 = matrix_times_su2_double(&w3,&w2);
 
 #ifdef FMUNU1
-    lattice_sigma1(&w4);
+    (*F3) = trace_sigma1_double(&w1);
 #else
-    lattice_sigma3(&w4);
+    (*F3) = trace_sigma3_double(&w1);
 #endif
-    w5 = matrix_times_su2_double(&w1,&w4);
-    (*F3) = matrix_trace2_double(&w5);
 
 //FMUNU2
-    lattice_sigma2(&w4);
-
-    w5 = matrix_times_su2_double(&w1,&w4);
-    (*F8) = matrix_trace2_double(&w5);
+    (*F8) = trace_sigma2_double(&w1);
 
     result = matrix_retrace2_double(&w1);
 

@@ -2,14 +2,14 @@
  * @file     su3_measurements.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Definition of general functions used in measurements, corresponding to the SU(3) gauge group
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -344,13 +344,117 @@ matrix_times_su3_double(double_su_3* u,double_su_3* v)
     tmp.w1.re = -(*u).w1.im * (*v).u1.im + (*u).w1.re * (*v).u1.re - (*u).w2.im * (*v).v1.im + (*u).w2.re * (*v).v1.re - (*u).w3.im * (*v).w1.im + (*u).w3.re * (*v).w1.re;
     tmp.w1.im =  (*u).w1.re * (*v).u1.im + (*u).w1.im * (*v).u1.re + (*u).w2.re * (*v).v1.im + (*u).w2.im * (*v).v1.re + (*u).w3.re * (*v).w1.im + (*u).w3.im * (*v).w1.re;
 
-    tmp.w2.re = -(*u).w1.im * (*v).u2.im + (*u).w1.re * (*v).u2.re - (*u).w2.im * (*v).v2.im + (*u).w2.re * (*v).v2.re - (*u).w3.im * (*v).w2.im + (*u).w3.re * (*v).w2.re;
+   tmp .w2.re = -(*u).w1.im * (*v).u2.im + (*u).w1.re * (*v).u2.re - (*u).w2.im * (*v).v2.im + (*u).w2.re * (*v).v2.re - (*u).w3.im * (*v).w2.im + (*u).w3.re * (*v).w2.re;
     tmp.w2.im =  (*u).w1.re * (*v).u2.im + (*u).w1.im * (*v).u2.re + (*u).w2.re * (*v).v2.im + (*u).w2.im * (*v).v2.re + (*u).w3.re * (*v).w2.im + (*u).w3.im * (*v).w2.re;
 
     tmp.w3.re = -(*u).w1.im * (*v).u3.im + (*u).w1.re * (*v).u3.re - (*u).w2.im * (*v).v3.im + (*u).w2.re * (*v).v3.re - (*u).w3.im * (*v).w3.im + (*u).w3.re * (*v).w3.re;
     tmp.w3.im =  (*u).w1.re * (*v).u3.im + (*u).w1.im * (*v).u3.re + (*u).w2.re * (*v).v3.im + (*u).w2.im * (*v).v3.re + (*u).w3.re * (*v).w3.im + (*u).w3.im * (*v).w3.re;
 
     return tmp;
+}
+
+                    __attribute__((always_inline)) __private hgpu_complex_double
+trace_lambda1_double(double_su_3* u)
+{
+    // -i Tr(u*lambda_1/2)
+    hgpu_complex_double tr;
+
+    tr.re =  (*u).u2.im + (*u).v1.im;
+    tr.im = -(*u).u2.re - (*u).v1.re;
+
+    tr.re /= 2;          tr.im /= 2;
+    return tr;
+}
+
+                    __attribute__((always_inline)) __private hgpu_complex_double
+trace_lambda2_double(double_su_3* u)
+{
+    // -i Tr(u*lambda_2/2)
+    hgpu_complex_double tr;
+
+    tr.re =  (*u).u2.re - (*u).v1.re;
+    tr.im =  (*u).u2.im - (*u).v1.im;
+
+    tr.re /= 2;          tr.im /= 2;
+    return tr;
+}
+
+                    __attribute__((always_inline)) __private hgpu_complex_double//double_su_3
+trace_lambda3_double(double_su_3* u)
+{
+    // -i Tr(u*lambda_3/2)
+    hgpu_complex_double tr;
+
+    tr.re =  (*u).u1.im - (*u).v2.im;
+    tr.im = -(*u).u1.re + (*u).v2.re;
+
+    tr.re /= 2;          tr.im /= 2;
+    return tr;
+}
+
+                    __attribute__((always_inline)) __private hgpu_complex_double
+trace_lambda4_double(double_su_3* u)
+{
+    // -i Tr(u*lambda_4/2)
+    hgpu_complex_double tr;
+
+    tr.re =  (*u).u3.im + (*u).w1.im;
+    tr.im = -(*u).u3.re - (*u).w1.re;
+
+    tr.re /= 2;          tr.im /= 2;
+    return tr;
+}
+
+                    __attribute__((always_inline)) __private hgpu_complex_double
+trace_lambda5_double(double_su_3* u)
+{
+    // -i Tr(u*lambda_5/2)
+    hgpu_complex_double tr;
+
+    tr.re = (*u).u3.re - (*u).w1.re;
+    tr.im = (*u).u3.im - (*u).w1.im;
+
+    tr.re /= 2;          tr.im /= 2;
+    return tr;
+}
+
+                    __attribute__((always_inline)) __private hgpu_complex_double
+trace_lambda6_double(double_su_3* u)
+{
+    // -i Tr(u*lambda_6/2)
+    hgpu_complex_double tr;
+
+    tr.re =  (*u).v3.im + (*u).w2.im;
+    tr.im = -(*u).v3.re - (*u).w2.re;
+
+    tr.re /= 2;          tr.im /= 2;
+    return tr;
+}
+
+                    __attribute__((always_inline)) __private hgpu_complex_double
+trace_lambda7_double(double_su_3* u)
+{
+    // -i Tr(u*lambda_7/2)
+    hgpu_complex_double tr;
+
+    tr.re = (*u).v3.re - (*u).w2.re;
+    tr.im = (*u).v3.im - (*u).w2.im;
+
+    tr.re /= 2;          tr.im /= 2;
+    return tr;
+}
+
+                    __attribute__((always_inline)) __private hgpu_complex_double
+trace_lambda8_double(double_su_3* u)
+{
+    // -i Tr(u*lambda_8/2)
+    hgpu_complex_double tr;
+
+    tr.re = ( (*u).u1.im + (*u).v2.im - 2.0 * (*u).w3.im) * 0.57735026918962576450914878050196;   // x 1/Sqrt(3)
+    tr.im = (-(*u).u1.re - (*u).v2.re + 2.0 * (*u).w3.re) * 0.57735026918962576450914878050196;   // x 1/Sqrt(3)
+
+    tr.re /= 2;          tr.im /= 2;
+    return tr;
 }
 
                     __attribute__((always_inline)) __private hgpu_complex_double
@@ -391,6 +495,26 @@ matrix_hermitian_su3_double(double_su_3* a)
     return result;
 }
 
+#ifdef BIGLAT
+__attribute__((always_inline)) __private gpu_su_3
+matrix_hermitian_gpu_su_3(gpu_su_3* a)
+{
+    gpu_su_3 m;
+
+    hgpu_float w1Re, w1Im, w2Re, w2Im;
+    w1Re =   (*a).uv1.y * (*a).uv1.w - (*a).uv2.y * (*a).uv2.w - (*a).uv1.z * (*a).uv3.y + (*a).uv2.z * (*a).uv3.w;
+    w1Im =  -(*a).uv1.y * (*a).uv2.w - (*a).uv2.y * (*a).uv1.w + (*a).uv1.z * (*a).uv3.w + (*a).uv2.z * (*a).uv3.y;
+    w2Re =   (*a).uv1.z * (*a).uv3.x - (*a).uv2.z * (*a).uv3.z - (*a).uv1.x * (*a).uv1.w + (*a).uv2.x * (*a).uv2.w;
+    w2Im =  -(*a).uv1.z * (*a).uv3.z - (*a).uv2.z * (*a).uv3.x + (*a).uv1.x * (*a).uv2.w + (*a).uv2.x * (*a).uv1.w;
+    
+    m.uv1 = (hgpu_float4)((*a).uv1.x, (*a).uv3.x, w1Re, w2Re);
+    m.uv2 = (hgpu_float4)(-(*a).uv2.x, -(*a).uv3.z, -w1Im, -w2Im);
+    m.uv3 = (hgpu_float4)((*a).uv1.y, (*a).uv3.y, -(*a).uv2.y, -(*a).uv3.w);
+
+    return m;
+}
+#endif
+
                     __attribute__((always_inline)) __private hgpu_double
 matrix_retrace3_double(const double_su_3* u)
 {
@@ -425,7 +549,7 @@ lattice_retrace_plaquette3(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3, gpu_su_3* u
                     __attribute__((always_inline)) __private hgpu_double
 lattice_retrace_plaquette3_F(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3, gpu_su_3* u4, hgpu_complex_double* F3, hgpu_complex_double* F8){
     double_su_3 m1, m2, m3, m4;
-    double_su_3 w1, w2, w3, w4, w5;
+    double_su_3 w1, w2, w3;
     hgpu_double result;
 
     m1 = lattice_reconstruct3_double(u1);
@@ -440,28 +564,24 @@ lattice_retrace_plaquette3_F(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3, gpu_su_3*
     w1 = matrix_times_su3_double(&w3,&w2);
 
 #ifdef FMUNU1
-    lattice_lambda1(&w4);
-#elif defined(FMUNU2)
-    lattice_lambda2(&w4);
-#elif defined(FMUNU4)
-    lattice_lambda4(&w4);
+    (*F3) = trace_lambda1_double(&w1);
+#elif FMUNU2
+    (*F3) = trace_lambda2_double(&w1);
+#elif FMUNU4
+    (*F3) = trace_lambda4_double(&w1);
 #else
-    lattice_lambda3(&w4);
+    (*F3) = trace_lambda3_double(&w1);
 #endif
-    w5 = matrix_times_su3_double(&w1,&w4);
-    (*F3) = matrix_trace3_double(&w5);
 
 #ifdef FMUNU5
-    lattice_lambda5(&w4);
+    (*F8) = trace_lambda5_double(&w1);
 #elif defined(FMUNU6)
-    lattice_lambda6(&w4);
+    (*F8) = trace_lambda6_double(&w1);
 #elif defined(FMUNU7)
-    lattice_lambda7(&w4);
+    (*F8) = trace_lambda7_double(&w1);
 #else
-    lattice_lambda8(&w4);
+    (*F8) = trace_lambda8_double(&w1);
 #endif
-    w5 = matrix_times_su3_double(&w1,&w4);
-    (*F8) = matrix_trace3_double(&w5);
 
     result = matrix_retrace3_double(&w1);
 

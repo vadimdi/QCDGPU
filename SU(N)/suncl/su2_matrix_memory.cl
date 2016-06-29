@@ -2,14 +2,14 @@
  * @file     su2_matrix_memory.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Matrix memory organization for the SU(2) gauge group
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -65,7 +65,11 @@ lattice_table_2(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint
     	gpu_su_2 Omega;	
 	gpu_su_2 tmp;
 	
+#ifdef BIGLAT
+    if (((*coord).x + LEFT_SITES/N2N3N4 == 0)||((*coord).x + LEFT_SITES/N2N3N4 == FULL_SITES/N2N3N4)){
+#else
     if ((*coord).x == (N1-1)){
+#endif
 
 	hgpu_float cosphi, sinphi;
 	sinphi = (hgpu_float) sin((*twist).phi);

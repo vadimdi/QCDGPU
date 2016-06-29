@@ -2,14 +2,14 @@
  * @file     clinterface.cpp
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Interface for OpenCL AMD APP & nVidia SDK environment
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -51,7 +51,7 @@
 
 #define FNAME_MAX_LENGTH    128
 
-#define HASHES_SIZE         60
+#define HASHES_SIZE         64
 
 namespace GPU_CL{
 using GPU_CL::GPU;
@@ -169,6 +169,9 @@ using GPU_CL::GPU;
 }
                 GPU::buffers_hash::~buffers_hash(void)
 {
+#ifdef BIGLAT
+    if(host_ptr)
+#endif
       free(host_ptr);
 }
 
@@ -338,7 +341,11 @@ unsigned int    GPU::convert_to_uint(float value)
         return u2fconv.uint_value[0];
 }
 // ___ device _____________________________________________________________________________________
+#ifdef BIGLAT
+int             GPU::device_initialize(int k)
+#else
 int             GPU::device_initialize(void)
+#endif
 {
     // initialize CPU timers by time of device initialization time
     int current_time = clock();
@@ -388,6 +395,14 @@ int             GPU::device_initialize(void)
     GPU_info.max_workgroup_size  = clGetDeviceInfoUint(GPU_device,CL_DEVICE_MAX_WORK_GROUP_SIZE);
     GPU_info.memory_align_factor = clGetDeviceInfoUint(GPU_device,CL_DEVICE_MAX_WORK_GROUP_SIZE);
 
+#ifdef BIGLAT
+	if (GPU_limit_max_workgroup_size){
+		GPU_info.max_workgroup_size = GPU_limit_max_workgroup_size;
+		GPU_info.memory_align_factor = GPU_limit_max_workgroup_size;
+	}
+#endif
+	printf("GPU_info.max_workgroup_size = %i\n", GPU_info.max_workgroup_size);
+
     // create context
     GPU_context = clCreateContext(NULL,1,&GPU_device,NULL, NULL, &GPU_error);
     OpenCL_Check_Error(GPU_error,"clCreateContext failed");
@@ -401,11 +416,14 @@ int             GPU::device_initialize(void)
     GPU_info.local_memory_size  =          clGetDeviceInfoUlong(GPU_device,CL_DEVICE_LOCAL_MEM_SIZE);
     GPU_info.max_constant_size  =          clGetDeviceInfoUlong(GPU_device,CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE);
     GPU_info.max_memory_size    =          clGetDeviceInfoUlong(GPU_device,CL_DEVICE_MAX_MEM_ALLOC_SIZE);
-    GPU_info.max_memory_width   = (size_t) clGetDeviceInfoUlong(GPU_device,CL_DEVICE_IMAGE3D_MAX_WIDTH);
+	GPU_info.max_memory_width = (size_t) clGetDeviceInfoUlong(GPU_device,CL_DEVICE_IMAGE3D_MAX_WIDTH);
 
     if (!GPU_info.max_memory_width)  GPU_info.max_memory_width  = 32;
 
     GPU_info.device_name = device_get_name(GPU_device);
+#ifdef BIGLAT
+    GPU_info.device_ocl = device_get_OCL(GPU_device);
+#endif
 
     // GPU_debug.rebuild_binary
     if (GPU_debug.rebuild_binary) {
@@ -413,17 +431,30 @@ int             GPU::device_initialize(void)
         int err = 0;
         int file_idx = 1;
         while (!err) {
+#ifdef BIGLAT
+            err = inf_file_delete(k + 1, file_idx);
+#else
             err = inf_file_delete(file_idx);
+#endif
             file_idx++;
         }
     } else
+#ifdef BIGLAT
+    GPU_inf_max_n = inf_file_get_max_n(k);
+#else
     GPU_inf_max_n = inf_file_get_max_n();
+#endif
 
-    if (GPU_info.device_vendor == GPU_vendor_Intel) GPU_info.max_workgroup_size = 64;
+#ifndef IGNORE_INTEL
+	if (GPU_info.device_vendor == GPU_vendor_Intel) GPU_info.max_workgroup_size = 64;
+#endif
     if ((GPU_limit_max_workgroup_size) && (GPU_limit_max_workgroup_size<GPU_info.max_workgroup_size)) GPU_info.max_workgroup_size = GPU_limit_max_workgroup_size;
+
+    if(!GPU_limit_max_workgroup_size) GPU_limit_max_workgroup_size = GPU_info.max_workgroup_size;//Nat
 
     return GPU_devices_number;
 }
+
 int             GPU::device_finalize(int error_code)
 {
     free(GPU_max_work_item_sizes);
@@ -436,7 +467,14 @@ int             GPU::device_finalize(int error_code)
     }
 
     // clean GPU_buffers
-    for (int i=1; i<GPU_current_buffer; i++) buffer_kill(i);
+#ifndef BIGLAT
+    for (int i=1; i<GPU_current_buffer; i++)
+            buffer_kill(i);
+#else
+    for (int i=1; i<GPU_current_buffer; i++)
+        if(GPU_buffers[i].buffer)
+            buffer_kill(i);
+#endif
 
     // clean command queue and context
     if (GPU_queue) clReleaseCommandQueue(GPU_queue);
@@ -610,6 +648,18 @@ char*           GPU::platform_get_name(cl_platform_id platform){
     return result;
 }
 
+char*           GPU::device_get_OCL(cl_device_id device){
+    size_t result_length = 4096;
+    size_t result_actual_size;
+
+        char* result = (char*) calloc(result_length,sizeof(char));
+        OpenCL_Check_Error(clGetDeviceInfo(device, CL_DEVICE_VERSION, result_length, (void*) result, &result_actual_size),"clGetDeviceformInfo failed");
+        result = trim(result);
+        result = (char*) realloc(result,result_actual_size * sizeof(char));
+
+    return result;
+}
+
 // ___ source _____________________________________________________________________________________
 char*           GPU::source_read(const char* file_name)
 {
@@ -662,6 +712,208 @@ char*           GPU::source_add(char* source, const char* file_name)
 int             GPU::program_create(const char* source){
     return program_create(source,NULL);
 }
+
+#ifdef BIGLAT
+int             GPU::program_create_ndev(const char* source,const char* options, int ndev){
+    start_timer_CPU(10);
+
+    FILE * cl_program_file = NULL;
+    char buffer[FNAME_MAX_LENGTH];
+    char buffer_inf[FNAME_MAX_LENGTH];
+
+    GPU_current_program++;
+    GPU_active_program = GPU_current_program;
+
+    int GPU_active_file = 0;
+
+    // setup reserve kernel's source
+    int source_length = (int) strlen(source) + 1;
+    char* temporary_source = (char*) calloc(source_length + 1, sizeof(char));
+    
+    strncpy_s(temporary_source, source_length, source, source_length);
+    GPU_programs[GPU_active_program].source_ptr     = temporary_source;
+    GPU_programs[GPU_active_program].source_length  = source_length;
+    if (options!=NULL){
+       int options_length = (int) strlen(options) + 1;
+       char* temporary_options = (char*) calloc(options_length + 1, sizeof(char));
+       strncpy_s(temporary_options, options_length, options, options_length);
+        GPU_programs[GPU_active_program].options        = temporary_options;
+    } else {
+       GPU_programs[GPU_active_program].options        = NULL;
+    }
+	
+    GPU_programs[GPU_active_program].md5      = MD5(source);
+    GPU_programs[GPU_active_program].device   = device_get_name(GPU_device);
+    GPU_programs[GPU_active_program].platform = platform_get_name(GPU_platform);
+    GPU_programs[GPU_active_program].datetime = get_current_datetime();
+
+    for (int i = 1; i <= GPU_inf_max_n; i++){
+       sprintf_s(buffer_inf,FNAME_MAX_LENGTH,"program%u-%i.inf",i, ndev);
+       // get .inf-file
+       int parameters_items = 0;
+       GPU_init_parameters* parameters = get_init_file(buffer_inf);
+       if (parameters==NULL) {delete[] &buffer_inf; return 1;}
+       bool inf_number  = false;
+       bool inf_md5     = false;
+       bool inf_device  = false;
+       bool inf_platform= false;
+       bool inf_options = false;
+       int  inf_idx_md5     = 0;
+       int  inf_idx_device  = 0;
+       int  inf_idx_platform= 0;
+       int  inf_idx_options = 0;
+       bool parameters_flag = false;
+       while(!parameters_flag){
+          if (!strcmp(parameters[parameters_items].Variable,"NUMBER"))  {
+             if(parameters[parameters_items].iVarVal == GPU_active_program) {inf_number = true; 
+             }
+           }
+          if (!strcmp(parameters[parameters_items].Variable,"MD5"))  {
+             inf_md5 = true;
+             inf_idx_md5 = parameters_items;
+           }
+          if (!strcmp(parameters[parameters_items].Variable,"DEVICE"))  {
+             inf_device = true;
+             inf_idx_device = parameters_items;
+           }
+          if (!strcmp(parameters[parameters_items].Variable,"PLATFORM"))  {
+             inf_platform = true;
+             inf_idx_platform = parameters_items;
+           }
+          if (!strcmp(parameters[parameters_items].Variable,"OPTIONS"))  {
+             inf_options = true;
+             inf_idx_options = parameters_items;
+           }
+          parameters_flag = parameters[parameters_items].final;
+          parameters_items++;
+        }
+       // check parameters        
+       //inf_number = 1;
+       if (inf_number){
+            // check MD5
+            if (!strcmp(parameters[inf_idx_md5].txtVarVal,GPU_programs[GPU_active_program].md5)){
+                // check device and options
+                if ((!strcmp(parameters[inf_idx_device].txtVarVal,  GPU_programs[GPU_active_program].device))&&
+                    (!strcmp(parameters[inf_idx_platform].txtVarVal,GPU_programs[GPU_active_program].platform))&&
+                    (((GPU_programs[GPU_active_program].options==NULL)&&(!inf_options))||
+                     ((GPU_programs[GPU_active_program].options!=NULL)&&(!strcmp(parameters[inf_idx_options].txtVarVal,GPU_programs[GPU_active_program].options)))))
+                    {
+                        GPU_active_file = i;
+                        i = GPU_inf_max_n;
+                    }
+            // skip current .inf-file
+            } else {
+                // MD5 does not match
+                // kill current .inf-file and rename last .inf-file into current
+                //inf_file_delete(i);
+                inf_file_delete(ndev, i);
+                if (i < GPU_inf_max_n) inf_file_rename(ndev, GPU_inf_max_n, i);    // check if file is last
+                GPU_inf_max_n--;
+                i--;
+            }            
+        }
+     }
+
+    // if GPU_active_file == 0 then create files
+    if (GPU_active_file == 0) GPU_active_file = GPU_inf_max_n + 1;
+
+    int j = sprintf_s(buffer,    FNAME_MAX_LENGTH,"program%u-%i.bin",GPU_active_file, ndev);
+        j = sprintf_s(buffer_inf,FNAME_MAX_LENGTH,"program%u-%i.inf",GPU_active_file, ndev);
+    if (GPU_active_file <= GPU_inf_max_n)  {
+        // try to open .bin-file
+        fopen_s(&cl_program_file,buffer,"rb");
+     }
+
+    if((GPU_active_file > GPU_inf_max_n)||(!cl_program_file)){
+        printf("\nprogram%u-%i.bin is being compiled... \n",GPU_active_program, ndev);
+        GPU_programs[GPU_active_program].program = clCreateProgramWithSource(GPU_context, 1,&GPU_programs[GPU_active_program].source_ptr, NULL, &GPU_error);
+        OpenCL_Check_Error(GPU_error,"clCreateProgramWithSource failed");
+        OpenCL_Check_Error(clBuildProgram(GPU_programs[GPU_active_program].program, 1, &GPU_device, GPU_programs[GPU_active_program].options, NULL, NULL),"clBuildProgram failed");
+
+        cl_uint num_devices;
+        OpenCL_Check_Error(clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_NUM_DEVICES, sizeof(cl_uint), &num_devices, NULL),"clGetProgramInfo1 failed");
+
+        cl_device_id* devices = (cl_device_id*) calloc(num_devices, sizeof(cl_device_id));
+        OpenCL_Check_Error(clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_DEVICES, num_devices * sizeof(cl_device_id), devices, 0),"clGetProgramInfo2 failed");
+
+        size_t* binary_sizes = (size_t*) calloc(num_devices, sizeof(size_t));    
+        OpenCL_Check_Error(clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_BINARY_SIZES, num_devices * sizeof(size_t), binary_sizes, NULL),"clGetProgramInfo3 failed");
+
+        char** binary = (char**) calloc(num_devices, sizeof(char*));
+        for( unsigned int i=0; i<num_devices; ++i) binary[i]= (char*) malloc(binary_sizes[i]);
+
+        OpenCL_Check_Error(clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_BINARIES, num_devices * sizeof(size_t), binary, NULL),"clGetProgramInfo4 failed");
+
+                size_t size;
+                OpenCL_Check_Error(clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, 0, NULL, &size),"clGetProgramBuildInfo failed");
+                if (size>4) {
+                   GPU_programs[GPU_active_program].build_log = (char*) calloc(size,sizeof(char));
+                   OpenCL_Check_Error(clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, size, GPU_programs[GPU_active_program].build_log, NULL),"clGetProgramBuildInfo failed");
+                   if (GPU_debug.brief_report) printf("Program buid log: [%s]\n", GPU_programs[GPU_active_program].build_log);
+                 }
+
+        unsigned int idx = 0;
+        while( idx<num_devices && devices[idx] != GPU_device ) ++idx;
+
+        // save inf file
+        fopen_s(&cl_program_file,buffer_inf,"wb");
+        if ( (cl_program_file) && (idx < num_devices) && (binary_sizes[idx]>0) ){
+            fprintf(cl_program_file,"NUMBER=%u\n",GPU_active_program);
+            fprintf(cl_program_file,"MD5=%s\n",GPU_programs[GPU_active_program].md5);
+            if (GPU_programs[GPU_active_program].options!=NULL)
+                fprintf(cl_program_file,"OPTIONS=%s\n",GPU_programs[GPU_active_program].options);
+            fprintf(cl_program_file,"DEVICE=%s\n",GPU_programs[GPU_active_program].device);
+            fprintf(cl_program_file,"PLATFORM=%s\n",GPU_programs[GPU_active_program].platform);
+            fprintf(cl_program_file,"DATE=%s",GPU_programs[GPU_active_program].datetime);
+            if ( fclose(cl_program_file) ) printf( "The file was not closed!\n" );
+        }
+
+        printf("program%u-%i.bin compilation done (%f seconds)!\n",GPU_active_program, ndev, get_timer_CPU(10));
+
+        // save binary file
+        fopen_s(&cl_program_file,buffer,"wb");
+        if ( (cl_program_file) && (idx < num_devices) && (binary_sizes[idx]>0) ){
+           fwrite(binary[idx],1,binary_sizes[idx],cl_program_file);
+           if ( fclose(cl_program_file) ) printf( "The file was not closed!\n" );
+        }
+        free(devices);
+        free(binary_sizes);
+        for( unsigned int i=0; i<num_devices; ++i) free(binary[i]);
+        free(binary);
+        GPU_inf_max_n++;
+    } else {
+
+        // load binary file
+        fseek (cl_program_file, 0, SEEK_END);
+        const size_t binary_size = ftell(cl_program_file);
+        rewind(cl_program_file);
+        unsigned char* binary;
+        binary = (unsigned char*) malloc (binary_size);
+        fread(binary, 1, binary_size, cl_program_file);
+        fclose(cl_program_file);
+
+        cl_int status;
+        GPU_programs[GPU_active_program].program = clCreateProgramWithBinary(GPU_context, 1, &GPU_device, &binary_size, (const unsigned char**)&binary, &status, &GPU_error);
+        OpenCL_Check_Error(status,"clCreateProgramWithBinary failed");
+        OpenCL_Check_Error(GPU_error,"clCreateProgramWithBinary failed");
+
+        OpenCL_Check_Error(clBuildProgram(GPU_programs[GPU_active_program].program, 1, &GPU_device, GPU_programs[GPU_active_program].options, NULL, NULL),"clBuildProgram failed");
+
+                size_t size;
+                OpenCL_Check_Error(clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, 0, NULL, &size),"clGetProgramBuildInfo failed");
+                if (size>4) {
+                   GPU_programs[GPU_active_program].build_log = (char*) calloc(size,sizeof(char));
+                   OpenCL_Check_Error(clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, size, GPU_programs[GPU_active_program].build_log, NULL),"clGetProgramBuildInfo failed");
+                   if (GPU_debug.brief_report) printf("Program buid log: [%s]\n", GPU_programs[GPU_active_program].build_log);
+                 }
+        free(binary);
+    }
+
+    // setup program
+
+    return GPU_active_program;
+}
+#endif
 
 int             GPU::program_create(const char* source,const char* options){
     start_timer_CPU(10);
@@ -901,7 +1153,9 @@ int             GPU::kernel_init(const char* kernel_name, unsigned int work_dime
     OpenCL_Check_Error(clGetKernelWorkGroupInfo(GPU_kernels[GPU_current_kernel].kernel,GPU_device,CL_KERNEL_WORK_GROUP_SIZE,sizeof(size_t),&kernel_work_group_size,NULL),"clGetKernelWorkGroupInfo failed");
     kernel_work_group_size = (unsigned int) (1<<((int) floor(log((double) kernel_work_group_size)/log(2.0))));
     
+#ifndef IGNORE_INTEL
     if (GPU_info.device_vendor == GPU::GPU_vendor_Intel) kernel_work_group_size =  64;
+#endif
     
     if((GPU_limit_max_workgroup_size)&&(GPU_limit_max_workgroup_size < kernel_work_group_size)) kernel_work_group_size = GPU_limit_max_workgroup_size;
 
@@ -940,6 +1194,23 @@ int             GPU::kernel_init_buffer(int kernel_id,int buffer_id)
 
     return GPU_kernels[kernel_id].argument_id;
 }
+
+#ifdef BIGLAT
+int             GPU::kernel_init_buffer_Buf(int kernel_id, cl_mem buffer, int buffer_type, size_t buffer_size)
+{
+    if (buffer_type==buffer_type_LDS)
+     {
+       OpenCL_Check_Error(clSetKernelArg(GPU_kernels[kernel_id].kernel, GPU_kernels[kernel_id].argument_id, buffer_size, NULL),"clSetKernelArg failed");
+     } else {
+       printf("::: %li\t%li\n", buffer_size, sizeof(buffer));
+       OpenCL_Check_Error(clSetKernelArg(GPU_kernels[kernel_id].kernel, GPU_kernels[kernel_id].argument_id, sizeof(buffer), (void*) &buffer),"clSetKernelArg failed");
+       printf(":::::::::::::::::::::::::::::::\n");
+     }
+    GPU_kernels[kernel_id].argument_id++;
+
+    return GPU_kernels[kernel_id].argument_id;
+}
+#endif
 
 int             GPU::kernel_init_constant(int kernel_id,int*    host_ptr)
 {
@@ -980,7 +1251,6 @@ int             GPU::kernel_run(int kernel_id)
     if (GPU_debug.profiling){
         // run with profiling
         cl_ulong kernel_start, kernel_finish;
-
         OpenCL_Check_Error(clEnqueueNDRangeKernel(GPU_queue,GPU_kernels[kernel_id].kernel,GPU_kernels[kernel_id].work_dimensions,NULL,GPU_kernels[kernel_id].global_size,GPU_kernels[kernel_id].local_size, 0, NULL, &kernel_event),"clEnqueueNDRangeKernel failed");
         OpenCL_Check_Error(clWaitForEvents(1, &kernel_event),"clWaitForEvents failed");
         OpenCL_Check_Error(clGetEventProfilingInfo(kernel_event, CL_PROFILING_COMMAND_END,   sizeof(cl_ulong), &kernel_finish, 0),"clGetEventProfilingInfo failed");
@@ -997,6 +1267,7 @@ int             GPU::kernel_run(int kernel_id)
         OpenCL_Check_Error(clGetKernelWorkGroupInfo(GPU_kernels[kernel_id].kernel,GPU_device,CL_KERNEL_WORK_GROUP_SIZE,sizeof(size_t),&local_workgroup_size,NULL),"clGetKernelWorkGroupInfo failed");
         
         OpenCL_Check_Error(clEnqueueNDRangeKernel(GPU_queue,GPU_kernels[kernel_id].kernel,GPU_kernels[kernel_id].work_dimensions,NULL,GPU_kernels[kernel_id].global_size,GPU_kernels[kernel_id].local_size, 0, NULL, &kernel_event),"clEnqueueNDRangeKernel failed");
+        //printf("AAAAAAAAAAAA\n");
         OpenCL_Check_Error(clWaitForEvents(1, &kernel_event),"clWaitForEvents failed");
     }
     OpenCL_Check_Error(clFinish(GPU_queue),"clFinish failed");
@@ -1064,6 +1335,58 @@ int             GPU::buffer_init(int buffer_type, int size, void* host_ptr, int 
     return GPU_current_buffer;
 }
 
+#ifdef BIGLAT
+int             GPU::buffer_init(int buffer_type, int size, void* host_ptr, int size_of, int offset)
+{
+    //GPU_current_buffer++;
+    GPU_current_buffer += offset * BUFF_STEP;
+
+    // setup profiling data __________________________________________________
+    GPU_buffers[GPU_current_buffer].buffer_write_start                  = 0;
+    GPU_buffers[GPU_current_buffer].buffer_write_finish                 = 0;
+    GPU_buffers[GPU_current_buffer].buffer_write_elapsed_time           = 0.0;
+    GPU_buffers[GPU_current_buffer].buffer_write_elapsed_time_squared   = 0.0;
+    GPU_buffers[GPU_current_buffer].buffer_write_number_of              = 0;
+
+    GPU_buffers[GPU_current_buffer].buffer_read_start                   = 0;
+    GPU_buffers[GPU_current_buffer].buffer_read_finish                  = 0;
+    GPU_buffers[GPU_current_buffer].buffer_read_elapsed_time            = 0.0;
+    GPU_buffers[GPU_current_buffer].buffer_read_elapsed_time_squared    = 0.0;
+    GPU_buffers[GPU_current_buffer].buffer_read_number_of               = 0;
+
+        cl_mem_flags flags = 0;
+        cl_mem_flags flags2 = 0;
+        switch (buffer_type) {
+                case buffer_type_Input:      { flags = CL_MEM_READ_ONLY;  flags2 = CL_MEM_COPY_HOST_PTR; break;}
+                case buffer_type_Constant:   { flags = CL_MEM_READ_ONLY;  flags2 = CL_MEM_COPY_HOST_PTR; break;}
+#ifdef BIGLAT
+                case buffer_type_IO:         { flags = CL_MEM_READ_WRITE; flags2 = (CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR); break;}
+#else
+                case buffer_type_IO:         { flags = CL_MEM_READ_WRITE; flags2 = CL_MEM_COPY_HOST_PTR; break;}
+#endif
+                case buffer_type_Output:     { flags = CL_MEM_WRITE_ONLY;                                break;}
+                case buffer_type_Global:     { flags = CL_MEM_READ_WRITE;                                break;}
+        }
+        GPU_buffers[GPU_current_buffer].buffer_type = buffer_type;
+        GPU_buffers[GPU_current_buffer].size = size;
+        GPU_buffers[GPU_current_buffer].size_in_bytes = size * size_of;
+        GPU_buffers[GPU_current_buffer].host_ptr = host_ptr;
+        GPU_buffers[GPU_current_buffer].mapped_ptr = NULL;
+
+    if (buffer_type!=buffer_type_LDS){
+       flags = flags | flags2;
+
+       GPU_buffers[GPU_current_buffer].buffer = clCreateBuffer( GPU_context,flags,size * size_of,host_ptr, &GPU_error );
+       OpenCL_Check_Error(GPU_error,"clCreateKernel failed");
+       GPU_error = buffer_write(GPU_current_buffer);
+    } else {
+       GPU_buffers[GPU_current_buffer].buffer = NULL;
+    }
+
+    return GPU_current_buffer;
+}
+#endif
+
 int             GPU::buffer_write(int buffer_id)
 {
     cl_event buffer_event;
@@ -1088,7 +1411,9 @@ unsigned int*   GPU::buffer_map(int buffer_id)
     cl_uint *ptr;
     cl_event buffer_event;
     cl_ulong buffer_read_start, buffer_read_finish;
-    ptr = (cl_uint *) clEnqueueMapBuffer( GPU_queue,GPU_buffers[buffer_id].buffer,CL_TRUE,CL_MAP_READ,0,GPU_buffers[buffer_id].size_in_bytes,0, NULL, &buffer_event, &GPU_error );
+
+    ptr = (cl_uint *) clEnqueueMapBuffer( GPU_queue,GPU_buffers[buffer_id].buffer,CL_TRUE,CL_MAP_WRITE,0,GPU_buffers[buffer_id].size_in_bytes,0, NULL, &buffer_event, &GPU_error );
+
     OpenCL_Check_Error(GPU_error,"clEnqueueMapBuffer failed");
     if (GPU_debug.profiling){
         OpenCL_Check_Error(clWaitForEvents(1, &buffer_event),"clWaitForEvents failed");
@@ -1102,6 +1427,91 @@ unsigned int*   GPU::buffer_map(int buffer_id)
     GPU_buffers[buffer_id].mapped_ptr = ptr;
     return ptr;
 }
+
+#ifdef BIGLAT
+unsigned int*   GPU::buffer_map(int buffer_id, size_t offset, size_t size)
+{
+	cl_uint *ptr;
+	cl_event buffer_event;
+	cl_ulong buffer_read_start, buffer_read_finish;
+
+	ptr = (cl_uint *)clEnqueueMapBuffer(GPU_queue, GPU_buffers[buffer_id].buffer, CL_TRUE, CL_MAP_WRITE, offset, size, 0, NULL, &buffer_event, &GPU_error);
+
+	OpenCL_Check_Error(GPU_error, "clEnqueueMapBuffer failed");
+	if (GPU_debug.profiling){
+		OpenCL_Check_Error(clWaitForEvents(1, &buffer_event), "clWaitForEvents failed");
+		OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &buffer_read_finish, 0), "clGetEventProfilingInfo failed");
+		OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &buffer_read_start, 0), "clGetEventProfilingInfo failed");
+		GPU_buffers[buffer_id].buffer_read_elapsed_time += (double)(buffer_read_finish - buffer_read_start);
+		GPU_buffers[buffer_id].buffer_read_start = buffer_read_start;
+		GPU_buffers[buffer_id].buffer_read_finish = buffer_read_finish;
+		GPU_buffers[buffer_id].buffer_read_number_of++;
+	}
+	GPU_buffers[buffer_id].mapped_ptr = ptr;
+	return ptr;
+}
+
+void*   GPU::buffer_map_void(int buffer_id)
+{
+    void *ptr;
+    cl_event buffer_event;
+    cl_ulong buffer_read_start, buffer_read_finish;
+    ptr = clEnqueueMapBuffer( GPU_queue,GPU_buffers[buffer_id].buffer,CL_TRUE,CL_MAP_WRITE,0,GPU_buffers[buffer_id].size_in_bytes,0, NULL, &buffer_event, &GPU_error );
+    OpenCL_Check_Error(GPU_error,"clEnqueueMapBuffer failed");
+    if (GPU_debug.profiling){
+        OpenCL_Check_Error(clWaitForEvents(1, &buffer_event),"clWaitForEvents failed");
+        OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_END,   sizeof(cl_ulong), &buffer_read_finish, 0),"clGetEventProfilingInfo failed");
+        OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &buffer_read_start,  0),"clGetEventProfilingInfo failed");
+        GPU_buffers[buffer_id].buffer_read_elapsed_time   += (double) (buffer_read_finish-buffer_read_start);
+        GPU_buffers[buffer_id].buffer_read_start           = buffer_read_start;
+        GPU_buffers[buffer_id].buffer_read_finish          = buffer_read_finish;
+        GPU_buffers[buffer_id].buffer_read_number_of++;
+    }
+    GPU_buffers[buffer_id].mapped_ptr_void = ptr;
+    return ptr;
+}
+
+void*   GPU::buffer_map_part(int buffer_id, size_t start, size_t size)
+{
+    void *ptr;
+    cl_event buffer_event;
+    cl_ulong buffer_read_start, buffer_read_finish;
+    ptr = clEnqueueMapBuffer( GPU_queue,GPU_buffers[buffer_id].buffer,CL_TRUE,CL_MAP_READ, start, size, 0, NULL, &buffer_event, &GPU_error );
+    OpenCL_Check_Error(GPU_error,"clEnqueueMapBuffer failed");
+    if (GPU_debug.profiling){
+        OpenCL_Check_Error(clWaitForEvents(1, &buffer_event),"clWaitForEvents failed");
+        OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_END,   sizeof(cl_ulong), &buffer_read_finish, 0),"clGetEventProfilingInfo failed");
+        OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &buffer_read_start,  0),"clGetEventProfilingInfo failed");
+        GPU_buffers[buffer_id].buffer_read_elapsed_time   += (double) (buffer_read_finish-buffer_read_start);
+        GPU_buffers[buffer_id].buffer_read_start           = buffer_read_start;
+        GPU_buffers[buffer_id].buffer_read_finish          = buffer_read_finish;
+        GPU_buffers[buffer_id].buffer_read_number_of++;
+    }
+    GPU_buffers[buffer_id].mapped_ptr = (cl_uint*) ptr;
+    return ptr;
+}
+
+void    GPU::buffer_unmap(int buffer_id, void *ptr)
+{
+    cl_int err;
+
+    cl_event buffer_event;
+    cl_ulong buffer_read_start, buffer_read_finish;
+
+    err = clEnqueueUnmapMemObject(GPU_queue, GPU_buffers[buffer_id].buffer, ptr, 0, NULL, &buffer_event);
+    OpenCL_Check_Error(err,"clEnqueueUnmapMemObject failed");
+
+    if (GPU_debug.profiling){
+        OpenCL_Check_Error(clWaitForEvents(1, &buffer_event),"clWaitForEvents failed");
+        OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_END,   sizeof(cl_ulong), &buffer_read_finish, 0),"clGetEventProfilingInfo failed");
+        OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &buffer_read_start,  0),"clGetEventProfilingInfo failed");
+        GPU_buffers[buffer_id].buffer_read_elapsed_time   += (double) (buffer_read_finish-buffer_read_start);
+        GPU_buffers[buffer_id].buffer_read_start           = buffer_read_start;
+        GPU_buffers[buffer_id].buffer_read_finish          = buffer_read_finish;
+        GPU_buffers[buffer_id].buffer_read_number_of++;
+    }
+}
+#endif
 
 cl_float4*      GPU::buffer_map_float4(int buffer_id)
 {
@@ -1147,9 +1557,10 @@ int             GPU::buffer_kill(int buffer_id)
     cl_int result = CL_SUCCESS;
     if (GPU_buffers[buffer_id].buffer) {
         result = clReleaseMemObject(GPU_buffers[buffer_id].buffer);
+        if(result) printf("ERROR %i\n", result);
         GPU_buffers[buffer_id].buffer = NULL;
     }
-    else result = CL_INVALID_MEM_OBJECT;
+    //else result = CL_INVALID_MEM_OBJECT;
     return result;
 }
 
@@ -1176,6 +1587,18 @@ unsigned int    GPU::buffer_size_align(unsigned int size,unsigned int step)
 }
 
 // ___ print ______________________________________________________________________________________
+#ifdef BIGLAT
+void            GPU::print_actual_hardware(void)
+{
+    printf("Active OpenCL platform: %s\n",      platform_get_name(GPU_platform));
+    printf("Active OpenCL device:   %s\n\n",    GPU_info.device_name);
+}
+void            GPU::print_available_hardware(void)
+{
+    printf("OpenCL platforms available: %u\n",  GPU_platforms_number);
+    printf("OpenCL devices available:   %u\n\n",  GPU_total_devices_number);
+}
+#else
 void            GPU::print_available_hardware(void)
 {
     printf("OpenCL platforms available: %u\n",  GPU_platforms_number);
@@ -1183,6 +1606,7 @@ void            GPU::print_available_hardware(void)
     printf("Active OpenCL platform: %s\n",      platform_get_name(GPU_platform));
     printf("Active OpenCL device:   %s\n\n",    GPU_info.device_name);
 }
+#endif
 
 void            GPU::print_stage(const char * stage){
                 if (GPU_debug.show_stage) printf(">>> Runtime stage >>> %s\n",stage);
@@ -1315,7 +1739,7 @@ int             GPU::print_mapped_buffer_float4(int buffer_id,unsigned int numbe
     unsigned int* ptr = GPU_buffers[buffer_id].mapped_ptr;
     if (ptr==NULL) return GPU_error_no_buffer;
     for (unsigned int i = 0; i<number_of_elements; i++){
-        printf("[%4u] %f \t %f \t %f \t %f\n", i, convert_to_float(ptr[4*(i + offset)]), convert_to_float(ptr[4*(i + offset)+1]), convert_to_float(ptr[4*(i + offset)+2]), convert_to_float(ptr[4*(i + offset)+3]));
+        printf("[%4u] %f \t %f \t %f \t %f\n", i + offset, convert_to_float(ptr[4*(i + offset)]), convert_to_float(ptr[4*(i + offset)+1]), convert_to_float(ptr[4*(i + offset)+2]), convert_to_float(ptr[4*(i + offset)+3]));
     }
     return 0;
 }
@@ -1329,11 +1753,47 @@ int             GPU::print_mapped_buffer_double(int buffer_id,unsigned int numbe
     return 0;
 }
 
+int             GPU::print_mapped_buffer_double(int buffer_id,unsigned int number_of_elements, int offset){
+    unsigned int* ptr = GPU_buffers[buffer_id].mapped_ptr;
+    if (ptr==NULL) return GPU_error_no_buffer;
+    for (unsigned int i = 0; i<number_of_elements; i++){
+        printf("[%4u] %f\n", i + offset, convert_to_double(ptr[(i + offset)*2],ptr[(i + offset)*2+1]));
+    }
+    return 0;
+}
+
 int             GPU::print_mapped_buffer_double2(int buffer_id,unsigned int number_of_elements){
     unsigned int* ptr = GPU_buffers[buffer_id].mapped_ptr;
     if (ptr==NULL) return GPU_error_no_buffer;
     for (unsigned int i = 0; i<number_of_elements; i++){
         printf("[%4u] %f  \t  %f\n", i, convert_to_double(ptr[4*i],ptr[4*i+1]), convert_to_double(ptr[4*i+2],ptr[4*i+3]));
+    }
+    return 0;
+}
+
+int             GPU::print_mapped_buffer_double2(int buffer_id,unsigned int number_of_elements, unsigned int offset){
+    unsigned int* ptr = GPU_buffers[buffer_id].mapped_ptr;
+    if (ptr==NULL) return GPU_error_no_buffer;
+    for (unsigned int i = 0; i<number_of_elements; i++){
+        printf("[%4u] %f  \t  %f\n", i, convert_to_double(ptr[4*(i + offset)],ptr[4*(i + offset)+1]), convert_to_double(ptr[4*(i + offset)+2],ptr[4*(i + offset)+3]));
+    }
+    return 0;
+}
+
+int             GPU::print_mapped_buffer_double4(int buffer_id,unsigned int number_of_elements){
+    unsigned int* ptr = GPU_buffers[buffer_id].mapped_ptr;
+    if (ptr==NULL) return GPU_error_no_buffer;
+    for (unsigned int i = 0; i<number_of_elements; i++){
+        printf("[%4u] %f  \t  %f  \t  %f  \t  %f\n", i, convert_to_double(ptr[8*i],ptr[8*i+1]), convert_to_double(ptr[8*i+2],ptr[8*i+3]), convert_to_double(ptr[8*i+4],ptr[8*i+5]), convert_to_double(ptr[8*i+6],ptr[8*i+7]));
+    }
+    return 0;
+}
+
+int             GPU::print_mapped_buffer_double4(int buffer_id,unsigned int number_of_elements, unsigned int offset){
+    unsigned int* ptr = GPU_buffers[buffer_id].mapped_ptr;
+    if (ptr==NULL) return GPU_error_no_buffer;
+    for (unsigned int i = 0; i<number_of_elements; i++){
+        printf("[%4u] %f  \t  %f  \t  %f  \t  %f\n", (i + offset), convert_to_double(ptr[8*(i + offset)],ptr[8*(i + offset)+1]), convert_to_double(ptr[8*(i + offset)+2],ptr[8*(i + offset)+3]), convert_to_double(ptr[8*(i + offset)+4],ptr[8*(i + offset)+5]), convert_to_double(ptr[8*(i + offset)+6],ptr[8*(i + offset)+7]));
     }
     return 0;
 }
@@ -1601,21 +2061,26 @@ GPU::GPU_init_parameters*    GPU::get_init_file(char finitf[])
     int struc_length = 0;
 
     GPU_init_parameters* result = (GPU_init_parameters*) calloc(struc_quant, sizeof(GPU_init_parameters));
-
-    char line[250];
-    char buffer[250];
+    char line[LENGTH];
+    char buffer[LENGTH];
     int j,j2;
-    char Variable[250];
-    char txtVal[250];
+    char Variable[LENGTH];
+    char txtVal[LENGTH];
     int iVarVal;
     double fVarVal;
+#ifdef BIGLAT
+    int ivVarVal[NPARTS];
+    int ii = 0, len;
+    char *txtVal1;
+    txtVal1 = (char*)calloc(LENGTH, sizeof(char));
+#endif
 
     j = sprintf_s(buffer,sizeof(buffer),"%s",finitf);
 
     fopen_s(&stream,buffer,"r");
     if(stream)
     {
-    while(fgets( line, 250, stream ) != NULL)
+    while(fgets( line, LENGTH, stream ) != NULL)
       {
         int istart1 = 0;
         char ch=line[istart1];
@@ -1652,12 +2117,26 @@ GPU::GPU_init_parameters*    GPU::get_init_file(char finitf[])
 
             sscanf_s(txtVal,"%d", &iVarVal);
             sscanf_s(txtVal,"%lf", &fVarVal);
-
+#ifdef BIGLAT
+            sscanf_s(txtVal,"%['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ',', '{', '}']", txtVal1);
+#endif
+            
             if (struc_length>0) result[struc_length-1].final = false;
             j2 = sprintf_s(result[struc_length].Variable,sizeof(result[struc_length].Variable),"%s",Variable);
             j2 = sprintf_s(result[struc_length].txtVarVal,sizeof(result[struc_length].Variable),"%s",txtVal);
             result[struc_length].iVarVal = iVarVal;
             result[struc_length].fVarVal = fVarVal;
+            
+#ifdef BIGLAT
+            ii = 0;
+            txtVal1 += 1;
+            while (sscanf(txtVal1, "%d%n", &ivVarVal[ii], &len) == 1){
+                    txtVal1 += (len + 1);
+                    ii++;
+            }
+            for(int j = 0; j < NPARTS; j++)
+                result[struc_length].ivVarVal[j] = ivVarVal[j];
+#endif
             result[struc_length].final   = true;
 
             struc_length++;
@@ -1668,7 +2147,6 @@ GPU::GPU_init_parameters*    GPU::get_init_file(char finitf[])
     }
 
     if (struc_length == 0) free(result);
-
     return result;
 }
 
@@ -1753,6 +2231,23 @@ int             GPU::inf_file_delete(int index){
         return err;
 }
 
+#ifdef BIGLAT
+int             GPU::inf_file_delete(int k, int index){
+        int err;
+        char* buffer_inf = (char*) calloc(FNAME_MAX_LENGTH,sizeof(char));
+
+        // kill .inf-file
+        int j  = sprintf_s(buffer_inf,FNAME_MAX_LENGTH,"program%u-%i.inf", index, k);
+        err = remove(buffer_inf);
+        if (err) {delete[] buffer_inf; return err;}
+        j = sprintf_s(buffer_inf,FNAME_MAX_LENGTH,"program%u-%i.bin", index, k);
+        // kill .bin-file
+        err = remove(buffer_inf);
+        delete[] buffer_inf;
+        return err;
+}
+#endif
+
 int             GPU::inf_file_rename(int index_old,int index_new){
         int j;
         int err;
@@ -1774,6 +2269,46 @@ int             GPU::inf_file_rename(int index_old,int index_new){
 
         return err;
 }
+
+#ifdef BIGLAT
+int             GPU::inf_file_rename(int k, int index_old,int index_new){
+        int j;
+        int err;
+        char* buffer_old = (char*) calloc(FNAME_MAX_LENGTH,sizeof(char));
+        char* buffer_new = (char*) calloc(FNAME_MAX_LENGTH,sizeof(char));
+
+            j = sprintf_s(buffer_old,FNAME_MAX_LENGTH,"program%u-%i.inf", index_old, k);
+            j = sprintf_s(buffer_new,FNAME_MAX_LENGTH,"program%u-%i.inf", index_new, k);
+        // rename .inf-file
+        err = rename(buffer_old,buffer_new);
+        if (err) {delete[] buffer_old; delete[] buffer_new; return err;}
+
+            j = sprintf_s(buffer_old,FNAME_MAX_LENGTH,"program%u-%i.bin", index_old, k);
+            j = sprintf_s(buffer_new,FNAME_MAX_LENGTH,"program%u-%i.bin", index_new, k);
+        // rename .bin-file
+        err = rename(buffer_old,buffer_new);
+        delete[] buffer_old;
+        delete[] buffer_new;
+
+        return err;
+}
+
+int             GPU::inf_file_get_max_n(int k){
+        char* buffer_inf = (char*) calloc(FNAME_MAX_LENGTH,sizeof(char));
+        int j = 0;
+
+        int result = 1;
+        bool flag = true;
+        while(flag){
+            j = sprintf_s(buffer_inf,FNAME_MAX_LENGTH,"program%u-%i.inf",result, k+1);
+            flag = is_file_exist(buffer_inf);
+            result++;
+        }
+        result -= 2;
+        free(buffer_inf);
+        return result;
+}
+#endif
 
 int             GPU::inf_file_get_max_n(void){
         char* buffer_inf = (char*) calloc(FNAME_MAX_LENGTH,sizeof(char));

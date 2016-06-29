@@ -2,14 +2,14 @@
  * @file     suncl.h
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Lattice simulation procedures (header)
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -37,12 +37,27 @@
 #ifndef suncl_h
 #define suncl_h
 
+#ifndef CPU_RUN
 #include "../clinterface/clinterface.h"
+#else
+#include "../suncpp/IO/io.h"
+#endif
+#include "../clinterface/platform.h"
 #include "../data_analysis/data_analysis.h"
 #include "../random/random.h"
 #include "../kernel/complex.h"
 
+#define X   0
+#define Y   1
+#define Z   2
+#define T   3
+
 namespace model_CL{
+
+#ifndef CPU_RUN
+class SubLattice;
+#endif
+
 class model {
 
         public:
@@ -58,7 +73,6 @@ class model {
                 model_precision_mixed              // mixed precision (32 bit + 32 bit)
             } model_precision;
 
-                       //
                       char*    version;            // version of MC programm
                       char*    path;               // path for output files
                       char*    finishpath;         // path for files start.txt and finish.txt
@@ -75,12 +89,29 @@ class model {
                        int*    lattice_full_size;     // Lattice size
                        int*    lattice_domain_size;   // Lattice size
 
+#ifdef BIGLAT
+                       int     lattice_Nparts;
+			  unsigned int     Ndevices;
+			  unsigned int*    devParts;
+			  unsigned int*    devLeftParts;
+
+                SubLattice*    SubLat;
+
+                      void     Fmunu_defaults(void);
+					  void     UpdateEdges(void);
+                      void     UpdateEdges(int dir);
+#endif
+
                        int     lattice_group;         // Lattice group
+#ifdef CPU_RUN
+                       int     lattice_sites;
+#endif
+                       
+        unsigned int     lattice_full_site;     // Total number of lattice sites
                        int     lattice_full_n1n2;     // n1 * n2
                        int     lattice_full_n2n3;     // n2 * n3
                        int     lattice_full_n1n2n3;   // n1 * n2 * n3
                        int     lattice_full_n2n3n4;   // n2 * n3 * n4
-              unsigned int     lattice_full_site;     // Total number of lattice sites
                        int     lattice_domain_n1;     // (n1+B.C.)
                        int     lattice_domain_n1n2;   // (n1+B.C.) * n2
                        int     lattice_domain_n2n3;   // n2 * n3
@@ -92,7 +123,7 @@ class model {
 
 
                        // calculational flags
-                      bool     big_lattice;        // simulate big lattice (lattice is divided into several parts)
+                     // bool     big_lattice;        // simulate big lattice (lattice is divided into several parts)
 
                       bool     get_actions_avr;    // calculate mean actions
                       bool     get_plaquettes_avr; // calculate mean plaquettes
@@ -125,6 +156,7 @@ class model {
                        int     NITER;              // niter: number of bulk simulations between measurements
               unsigned int*    lattice_data;       // Lattice data
                        int     NHIT;               // parameter for multihit
+                       int     NHITPar;               // parameter for multihit Parisi
                     double     BETA;               // beta
                        int     NAV;                // number of thermalization cycles
                        int     wilson_R;           // R size for Wilson loop
@@ -133,7 +165,7 @@ class model {
               unsigned int     PL_level;           // level for calculation Polyakov loops (0 - do not calculate PL, 1 - PL only, 2 - PL, PL^2, PL^4)
                     double     PHI;                // phi angle (lambda_3)
                     double     OMEGA;              // omega angle (lambda_8)
-
+#ifndef CPU_RUN
                     double     write_lattice_state_every_secs;  // write lattice state every ... seconds
 
               // runtime counters
@@ -184,7 +216,7 @@ class model {
               unsigned int     desired_device;
                       bool     device_select;
                GPU_CL::GPU*    GPU0;                // pointer to GPU instance
-
+#endif
 
 #define MODEL_parameter_size    6   // number of parameters for parameters buffer
 #define MODEL_energies_size     7   // number of measurements in energy buffer
@@ -254,7 +286,7 @@ analysis_CL::analysis::data_analysis*   Analysis_S_Z;
 
             model(void);
            ~model(void);
-
+#ifndef CPU_RUN
              int*   lattice_group_elements;
 
             // identificators for kernels
@@ -347,7 +379,7 @@ analysis_CL::analysis::data_analysis*   Analysis_S_Z;
     cl_double2*     plattice_action_diff_x;
     cl_double2*     plattice_action_diff_y;
     cl_double2*     plattice_action_diff_z;
-
+#endif
 
             // functions
             void    lattice_init(void);
@@ -365,6 +397,36 @@ analysis_CL::analysis::data_analysis*   Analysis_S_Z;
             bool    lattice_load_bin_header(unsigned int* head);
              int    model_make_header(char* header,int header_size);
             void    lattice_make_programs(void);
+#ifdef BIGLAT
+            void    lattice_set_devParts(void);
+            void    lattice_mp_Sim(void);
+            void    lattice_kern_init_Sim(void);
+            void    lattice_kern_update_Sim(void);
+
+            void    lattice_mp_Meas(void);
+			void    lattice_kern_init_Tables(void);
+            void    lattice_kern_init_Plq(void);
+            void    lattice_kern_init_Action(void);
+            void    lattice_kern_init_Action_diff(void);
+
+            void    lattice_mp_PL(void);
+            void    lattice_kern_init_PL(void);
+            void    lattice_mp_WL(void);
+            void    lattice_kern_init_WL(void);
+            void    lattice_make_WLx(void);
+
+            void    lattice_analysis1(int index_spat, int index_temp, int index_total, unsigned int (SubLattice::*ZZ));
+            void    lattice_analysis1(int index_spat, int index_temp, int index_total, unsigned int (SubLattice::*ZZ), int denominator);
+            void    lattice_analysisScalar(int index, unsigned int (SubLattice::*ZZ));
+            void    lattice_analysis_Fmunu(void);
+            void    lattice_analysis_P2P4(void);
+             int    lattice_get_part_PL(int x);
+            void    lattice_analysis_PLx(analysis_CL::analysis::data_analysis *analysis,  unsigned int (SubLattice::*ZZ), int q, int k, int offset, int denominator);
+            void    lattice_analysis_PL_diff(void);
+            void    lattice_analysis_Action_diff(void);
+            void    lattice_analysis_SLtoL(int index);
+            void    lattice_analysis_SLtoL(analysis_CL::analysis::data_analysis *analysis1, analysis_CL::analysis::data_analysis (SubLattice::*ZZ));
+#endif
             void    lattice_create_buffers(void);
 
     unsigned int        convert_str_uint(const char* str,unsigned int offset);
@@ -403,6 +465,240 @@ analysis_CL::analysis::data_analysis*   Analysis_S_Z;
            void    model_lattice_init(void);    // subroutine for tunning lattice initialization for SU(N) model
 
 };
+
+#ifndef CPU_RUN
+class SubLattice
+{
+public:
+             int    Nx;
+             int    Ny;
+             int    Nz;
+             int    Nt;
+
+    unsigned int    desired_platform;
+    unsigned int    desired_device;
+            bool    device_select;
+     GPU_CL::GPU*   GPU0;
+	unsigned int    device_no;
+
+   PRNG_CL::PRNG*   PRNG0;
+    unsigned int    prngstep;            // step between two threads in prng table
+
+             int    sublattice_sites;
+             int    sublattice_Sites;
+
+             int    sublattice_table_Size;
+			 int    sublattice_table_size;
+             int    sublattice_table_row_size;
+			 int    sublattice_table_row_size1;
+             int    sublattice_table_row_Size;
+             int    sublattice_table_row_size_half;
+             int    sublattice_table_row_Size_half;
+             int    sublattice_table_yzt_size;
+             int    sublattice_Lt_rowsize;
+
+    unsigned int    sublattice_parameters_size;
+
+    unsigned int    sublattice_measurement_size;
+    unsigned int    sublattice_measurement_offset;
+    unsigned int    sublattice_measurement_size_F;
+             int    sublattice_action_size;
+    unsigned int    sublattice_action_x_size;
+    unsigned int    sublattice_action_y_size;
+    unsigned int    sublattice_action_z_size;
+    unsigned int    sublattice_energies_offset;
+    unsigned int    sublattice_energies_size;
+    unsigned int    sublattice_polyakov_size;
+    unsigned int    sublattice_polyakov_x_size;
+    unsigned int    sublattice_polyakov_y_size;
+    unsigned int    sublattice_polyakov_z_size;
+    unsigned int    sublattice_polyakov_loop_size;
+    unsigned int    sublattice_polyakov_loop_offset;
+    unsigned int    sublattice_Lt_size;
+    unsigned int    sublattice_Lr1_size;
+    unsigned int    sublattice_Lr2_size;
+    unsigned int    sublattice_WLx_size;
+    unsigned int    sublattice_wlx_size;
+    unsigned int    iterr;
+
+    unsigned int*   sublattice_pointer_initial;
+    unsigned int*   sublattice_pointer_last;
+
+             int    size_sublattice_table;
+			 int    size_sublattice_table_small;
+    unsigned int    size_sublattice_parameters;
+             int    size_sublattice_measurement;
+             int    size_sublattice_measurement_diff;
+    unsigned int    size_sublattice_plq;
+    unsigned int    size_sublattice_energies;
+    unsigned int    size_sublattice_polyakov_loop;
+    unsigned int    size_sublattice_Lt;
+    unsigned int    size_sublattice_Lr1;
+    unsigned int    size_sublattice_Lr2;
+    unsigned int    size_sublattice_WLx;
+    unsigned int    size_sublattice_wlx;
+    unsigned int    size_sublattice_aux;
+
+       cl_float4*   psublattice_table_float;
+      cl_double4*   psublattice_table_double;
+        cl_float*   psublattice_parameters_float;
+       cl_double*   psublattice_parameters_double;
+      cl_double2*   psublattice_measurement;
+      cl_double2*   psublattice_measurement_diff;
+      cl_double2*   psublattice_plq;
+      cl_double2*   psublattice_energies;
+      cl_double2*   psublattice_polyakov_loop;
+      cl_double4*   psublattice_Lt;
+      cl_double4*   psublattice_Lr1;
+      cl_double4*   psublattice_Lr2;
+      cl_double4*   psublattice_aux;
+      cl_double4*   psublattice_WL_x;
+       cl_double*   psublattice_wlx;
+       cl_double*   psublattice_wilson_loop;
+      cl_double2*   psublattice_polyakov_loop_diff_x;
+      cl_double2*   psublattice_polyakov_loop_diff_y;
+      cl_double2*   psublattice_polyakov_loop_diff_z;
+      cl_double2*   psublattice_action_diff_x;
+      cl_double2*   psublattice_action_diff_y;
+      cl_double2*   psublattice_action_diff_z;
+
+    unsigned int    sublattice_table;
+	unsigned int    sublattice_table_small;
+    unsigned int    sublattice_parameters;
+    unsigned int    sublattice_lds;
+    unsigned int    sublattice_measurement;
+    unsigned int    sublattice_measurement_diff;
+    unsigned int    sublattice_plq;
+    unsigned int    sublattice_energies;
+    unsigned int    sublattice_polyakov_loop;
+    unsigned int    sublattice_Lt;
+    unsigned int    sublattice_Lr1;
+    unsigned int    sublattice_Lr2;
+    unsigned int    sublattice_aux;
+    unsigned int    sublattice_WL_x;
+    unsigned int    sublattice_m;
+    unsigned int    sublattice_wlx;
+    unsigned int    sublattice_wilson_loop;
+    unsigned int    sublattice_polyakov_loop_diff_x;
+    unsigned int    sublattice_polyakov_loop_diff_y;
+    unsigned int    sublattice_polyakov_loop_diff_z;
+    unsigned int    sublattice_action_diff_x;
+    unsigned int    sublattice_action_diff_y;
+    unsigned int    sublattice_action_diff_z;
+
+          size_t    local_size_intel;
+             
+             int    sun_init_id;
+             int    sun_init_X_id;
+             int    sun_init_Y_id;
+             int    sun_init_Z_id;
+             int    sun_init_T_id;
+             int    sun_GramSchmidt_id;
+
+             int    sun_update_odd_X_id;
+             int    sun_update_odd_Y_id;
+             int    sun_update_odd_Z_id;
+             int    sun_update_odd_T_id;
+             int    sun_update_even_X_id;
+             int    sun_update_even_Y_id;
+             int    sun_update_even_Z_id;
+             int    sun_update_even_T_id;
+
+			 int    sun_tables_id;
+             int    sun_measurement_plq_id;
+             int    sun_measurement_plq_reduce_id;
+             int    sun_measurement_id;
+             int    sun_measurement_reduce_id;
+             int    sun_polyakov_id;
+             int    sun_polyakov_reduce_id;
+             int    sun_measurement_Lt_id;
+             int    sun_measurement_Lr_id;
+             int    sun_measurement_Lr1_id;
+             int    sun_measurement_Lr2_id;
+             int    sun_measurement_WLx0_id;
+             int    sun_measurement_WLx1_id;
+             int    sun_measurement_WLx2_id;
+             int    sun_measurement_WLx3_id;
+             int    sun_measurement_WLx4_id;
+             int    sun_measurement_wilson_id;
+             int    sun_wilson_loop_reduce_id;
+
+             int    sun_polyakov_diff_x_id;
+	         int    sun_polyakov_diff_y_id;
+	         int    sun_polyakov_diff_z_id;
+	         int    sun_polyakov_diff_x_reduce_id;
+	         int    sun_polyakov_diff_y_reduce_id;
+	         int    sun_polyakov_diff_z_reduce_id;
+
+             int    sun_action_diff_x_id;
+	         int    sun_action_diff_y_id;
+	         int    sun_action_diff_z_id;
+	         int    sun_action_diff_x_reduce_id;
+	         int    sun_action_diff_y_reduce_id;
+	         int    sun_action_diff_z_reduce_id;
+
+             int    argument_measurement_index;
+             int    argument_plq_index;
+             int    argument_polyakov_index;
+             int    argument_polyakov_diff_x_index;
+             int    argument_polyakov_diff_y_index;
+             int    argument_polyakov_diff_z_index;
+             int    argument_wilson_index;
+             int    argument_action_diff_x_index;
+             int    argument_action_diff_y_index;
+             int    argument_action_diff_z_index;
+
+             int    plq_index;
+             int    measurement_index;
+             int    polyakov_index;
+             int    polyakov_diff_index;
+             int    action_diff_index;
+
+          time_t    ltimestart;
+          time_t    ltimeend;
+            char*   timestart;
+            char*   timeend;
+
+             int    denominator;
+
+             int*   m; //часть, на кот-й заканчивается вильсоновская петля для данного х
+             int*   dx; //расстояние от 0-го слоя m-й части до правой стороны вильс. петли
+             int    left_x;
+
+            analysis_CL::analysis::data_analysis*   Analysis;
+                           analysis_CL::analysis*   D_A;                    // pointer to data_analysis instance
+            analysis_CL::analysis::data_analysis*   Analysis_PL_Y;
+            analysis_CL::analysis::data_analysis*   Analysis_PL_Y_im;
+            analysis_CL::analysis::data_analysis*   Analysis_PL_Z;
+            analysis_CL::analysis::data_analysis*   Analysis_PL_Z_im;
+            analysis_CL::analysis::data_analysis    Analysis_PL;
+
+            analysis_CL::analysis::data_analysis*   Analysis_S_X_s;         // array for differentiated S measurements (spat)
+            analysis_CL::analysis::data_analysis*   Analysis_S_X_t;      // array for differentiated S measurements (temp)
+            analysis_CL::analysis::data_analysis*   Analysis_S_Y_s;         // array for differentiated S measurements (spat)
+            analysis_CL::analysis::data_analysis*   Analysis_S_Y_t;      // array for differentiated S measurements (temp)
+            analysis_CL::analysis::data_analysis*   Analysis_S_Z_s;         // array for differentiated S measurements (spat)
+            analysis_CL::analysis::data_analysis*   Analysis_S_Z_t;      // array for differentiated S measurements (temp)
+
+            analysis_CL::analysis::data_analysis*   Analysis_S_X;
+            analysis_CL::analysis::data_analysis*   Analysis_S_Y;
+            analysis_CL::analysis::data_analysis*   Analysis_S_Z;
+
+    SubLattice(void);
+   ~SubLattice(void);
+
+   void    sublattice_analysis_SpatTemp(int data_size, model::enum_model_precision prec, int index, int index_total, unsigned int buff, int denom);
+   void    sublattice_Measure_Plq(unsigned int counter);
+   void    sublattice_Measure_Action(unsigned int counter);
+   void    sublattice_Measure_Action_diff(unsigned int counter);
+   void    sublattice_Measure_PL(unsigned int counter);
+   void    sublattice_Measure_PL_diff(unsigned int counter);
+   void    sublattice_Measure_WL(unsigned int counter);
+
+private:
 };
+#endif
+};
+
 
 #endif

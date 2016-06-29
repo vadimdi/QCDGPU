@@ -10,7 +10,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik
+ * Copyright (c) 2013-2016 Vadim Demchik
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,

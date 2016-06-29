@@ -2,14 +2,14 @@
  * @file     QCDGPU.h
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Header to the main program file
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -37,12 +37,20 @@
 #ifndef qcdgpu_H
 #define qcdgpu_H
 
+#ifndef CPU_RUN
 #include "clinterface/clinterface.h"    // interface with OpenCL nVidia SDK and AMD APP SDK
+#endif
 #include "kernel/complex.h"             // basic constants, types and algebra used in program
 #include "random/random.h"              // pseudo-random number generators library
 #include "suncl/suncl.h"                // SU(N) kernel
 #include "suncl/suncpu.h"               // SU(N) CPU kernel
+#ifndef CPU_RUN
 #include "suncl/su2cpu.h"               // SU(N) CPU kernel
 #include "suncl/su3cpu.h"               // SU(N) CPU kernel
+#else
+#include "suncpp/suncpp.h"               // SU(N) CPU kernel
+#endif
+
+#include "suncpp/su2/algebra_su2.h"
 
 #endif

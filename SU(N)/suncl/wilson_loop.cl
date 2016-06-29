@@ -2,14 +2,14 @@
  * @file     wilson_loop.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Measurement of the Wilson loop
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -463,9 +463,33 @@ reduce_wilson_double2(__global hgpu_double2 * lattice_measurement,
     reduce_final_step_double2(lattice_lds,lattice_measurement,size);
     if (GID==0) lattice_wilson_loop[index] = lattice_lds[0].x;
 }
-
-
-
-
-
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

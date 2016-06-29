@@ -2,14 +2,14 @@
  * @file     clinterface.h
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU] 
  *           Interface for OpenCL AMD APP & nVidia SDK environment
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,8 +38,17 @@
 #define clinterface_h
 
 #include <CL/cl.h>
+#include <CL/cl_ext.h>
 #include "platform.h"
 
+#ifdef BIGLAT
+#define BUFF_STEP 64
+#ifdef USE_OPENMP
+#include <omp.h>
+#endif
+#endif
+
+#define LENGTH 384
 
 namespace GPU_CL{
 class GPU {
@@ -102,10 +111,13 @@ class GPU {
             * Defines initial conditions for simulation, as physical as hardware
             */
             typedef struct _GPU_init_parameters{
-                char   Variable[250];            /**< The name of a member of the structure*/
+                char   Variable[LENGTH];            /**< The name of a member of the structure*/
                 int    iVarVal;                  /**< The integer value of a member of the structure*/
+#ifdef BIGLAT
+                int    ivVarVal[NPARTS];
+#endif
                 double fVarVal;                  /**< The float value of a member of the structure*/
-                char   txtVarVal[250];           /**< The text value of a member of the structure*/
+                char   txtVarVal[LENGTH];           /**< The text value of a member of the structure*/
                 bool   final;                    /**< The flag defining that a member of the strucure is the last in a set of such members*/
             } GPU_init_parameters;
 
@@ -121,6 +133,9 @@ class GPU {
                 size_t      max_workgroup_size;             /**< The greatest of the maximal numbers of OpenCL work items in work group for each compute dimension */   // max(CL_DEVICE_MAX_WORK_ITEM_SIZES)
                 size_t      memory_align_factor;            /**< The factor for buffers aligment*/   // memory align factor for buffers
              GPU_vendors    platform_vendor;                /**< The vendor of the platform containing the desired device*/   // active platform vendor
+#ifdef BIGLAT
+                    char*   device_ocl;
+#endif
              GPU_vendors    device_vendor;                  /**< The vendor of desired compute device*/   // active device vendor
             } GPU_device_info;
 
@@ -179,23 +194,33 @@ class GPU {
            static double convert_to_double(unsigned int value_LOW, unsigned int value_HIGH);
 
             // ___________________________________________ public functions
+#ifdef BIGLAT
+            int     device_initialize(int k);
+#endif
             int     device_initialize(void);
             int     device_finalize(int error_code);
             bool    device_auto_select(int platform_vendor,int vendor);
             bool    device_select(unsigned int platform_id,unsigned int device_id);
             char*   device_get_name(cl_device_id device);
             char*   platform_get_name(cl_platform_id platform);
+            char*   device_get_OCL(cl_device_id device);
 
             char*   source_read(const char* file_name);
             char*   source_add(char* source, const char* file_name);
 
             int     program_create(const char* source);
             int     program_create(const char* source,const char* options);
+#ifdef BIGLAT
+            int     program_create_ndev(const char* source,const char* options, int ndev);
+#endif
             int     program_set_active(int program_id);
             int     program_get_active(void);
 
             int     kernel_init(const char* kernel_name, unsigned int work_dimensions, const size_t* global_size, const size_t* local_size);
             int     kernel_init_buffer(int kernel_id,int buffer_id);
+#ifdef BIGLAT
+            int     kernel_init_buffer_Buf(int kernel_id, cl_mem buffer, int buffer_type, size_t buffer_size);
+#endif
             int     kernel_init_constant(int kernel_id,int* host_ptr);
             int     kernel_init_constant_reset(int kernel_id,int* host_ptr,int argument_id);
             int     kernel_init_constant(int kernel_id,cl_uint4* host_ptr);
@@ -206,8 +231,17 @@ class GPU {
  GPU_time_deviation kernel_get_execution_time(int kernel_id);
 
             int     buffer_init(int buffer_type, int size, void* host_ptr, int size_of);
+#ifdef BIGLAT
+            int     buffer_init(int buffer_type, int size, void* host_ptr, int size_of, int offset);
+#endif
             int     buffer_write(int buffer_id);
    unsigned int*    buffer_map(int buffer_id);
+#ifdef BIGLAT
+   unsigned int*    buffer_map(int buffer_id, size_t offset, size_t size);
+           void*    buffer_map_part(int buffer_id, size_t start, size_t size);
+           void*    buffer_map_void(int buffer_id);
+           void     buffer_unmap(int buffer_id, void *ptr);
+#endif
       cl_float4*    buffer_map_float4(int buffer_id);
       cl_float4*    buffer_read_float4(int buffer_id);
             int     buffer_kill(int buffer_id);
@@ -222,6 +256,9 @@ class GPU {
             bool    is_file_exist(char* path);
 
             void    print_available_hardware(void);
+#ifdef BIGLAT
+            void    print_actual_hardware(void);
+#endif
             void    print_stage(const char * stage);
             void    print_memory_utilized(void);
             int     print_mapped_buffer_uint   (int buffer_id,unsigned int number_of_elements);
@@ -234,7 +271,11 @@ class GPU {
             int     print_mapped_buffer_float4 (int buffer_id,unsigned int number_of_elements);
             int     print_mapped_buffer_float4 (int buffer_id,unsigned int number_of_elements,unsigned int offset);
             int     print_mapped_buffer_double (int buffer_id,unsigned int number_of_elements);
+            int     print_mapped_buffer_double (int buffer_id,unsigned int number_of_elements, int offset);//Nat
             int     print_mapped_buffer_double2(int buffer_id,unsigned int number_of_elements);
+            int     print_mapped_buffer_double2(int buffer_id,unsigned int number_of_elements, unsigned int offset);
+            int     print_mapped_buffer_double4(int buffer_id,unsigned int number_of_elements);
+            int     print_mapped_buffer_double4(int buffer_id,unsigned int number_of_elements, unsigned int offset);
             int     print_time_detailed(void);
 
             int     start_timer_CPU(void);
@@ -247,7 +288,7 @@ class GPU {
            char*    trim(char* str);
              int    str_char_replace(char* str, char search, char replace);
 
-    private:
+    public:
 
       class kernels_hash {
          public:
@@ -280,7 +321,10 @@ class GPU {
                 void*        host_ptr;
                 int          size;
                 size_t       size_in_bytes;                     // buffer size in bytes ( size*sizeof(...) )
-              unsigned int*  mapped_ptr;                        // ptr to corresponding host memory after mapping
+#ifdef BIGLAT
+                void*        mapped_ptr_void;                        // ptr to corresponding host memory after mapping
+#endif
+                unsigned int*  mapped_ptr;                        // ptr to corresponding host memory after mapping
                 // profiling data __________________________
                 cl_ulong     buffer_write_start;                // buffer start write time
                 cl_ulong     buffer_write_finish;               // buffer finish write time
@@ -333,7 +377,7 @@ class GPU {
             programs_hash*   GPU_programs;          // Hash for programs pointers 
 
             // ____________________________________ MD5 section
-            #define MD5_blocksize   64
+#define MD5_blocksize   64
             unsigned char MD5_buffer[MD5_blocksize];
             unsigned int  MD5_T[MD5_blocksize];
             unsigned int  MD5_s[MD5_blocksize];
@@ -361,6 +405,11 @@ class GPU {
             double      time_megabytes_per_second(double elapsed_time,double size);
             int         inf_file_delete(int index);
             int         inf_file_rename(int index_old,int index_new);
+#ifdef BIGLAT
+            int         inf_file_delete(int k, int index);
+            int         inf_file_rename(int k, int index_old,int index_new);
+            int         inf_file_get_max_n(int k);
+#endif
             int         inf_file_get_max_n(void);
 
 };

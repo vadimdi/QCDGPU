@@ -2,14 +2,14 @@
  * @file     model.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Description of lattice geometry, gauge groups, etc.
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -149,13 +149,13 @@ typedef struct{
 } gpu_su_3;
 #else
 typedef struct{
-    float4 uv1;
+    hgpu_float4 uv1;
 } gpu_su_2;
 
 typedef struct{
-    float4 uv1;
-    float4 uv2;
-    float4 uv3;
+    hgpu_float4 uv1;
+    hgpu_float4 uv2;
+    hgpu_float4 uv3;
 } gpu_su_3;
 #endif
 

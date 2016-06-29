@@ -2,14 +2,14 @@
  * @file     complex.h
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Defines basic constants, types and algebra used in program
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -37,6 +37,9 @@
 #ifndef COMPLEX_H
 #define COMPLEX_H
 
+#ifdef CPU_RUN
+#include "../clinterface/platform.h"
+#endif
 // complex algebra
 #if defined(cl_khr_fp64)
 

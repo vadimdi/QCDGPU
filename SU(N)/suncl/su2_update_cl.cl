@@ -2,14 +2,14 @@
  * @file     su2_update_cl.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Contains functions for lattice update (SU(2) gauge theory)
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -463,10 +463,17 @@ hgpu_float gid;
 #ifdef GID_UPD
         gid = prns[(*indprng)].x;
 
+#ifdef BIGLAT
+rnd.x = (hgpu_float) fabs(sin((0.005*(1 + NHIT)+270.0/FULL_SITES)*gid));
+rnd.y = (hgpu_float) fabs(cos((0.005*(1 + NHIT)+ 60.0/FULL_SITES)*gid));
+rnd.z = (hgpu_float) fabs(sin((0.005*(1 + NHIT)-150.0/FULL_SITES)*gid));
+rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/FULL_SITES)*gid));
+#else
 rnd.x = (hgpu_float) fabs(sin((0.005*(1 + NHIT)+270.0/SITES)*gid));
 rnd.y = (hgpu_float) fabs(cos((0.005*(1 + NHIT)+ 60.0/SITES)*gid));
 rnd.z = (hgpu_float) fabs(sin((0.005*(1 + NHIT)-150.0/SITES)*gid));
 rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/SITES)*gid));
+#endif
 #else
         rnd.x = (hgpu_float) prns[(*indprng)].x;
         rnd.y = (hgpu_float) prns[(*indprng)].y;
@@ -486,10 +493,17 @@ rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/SITES)*gid));
 
         if (flag) {
 #ifdef GID_UPD
+#ifdef BIGLAT
+rnd.x = (hgpu_float) fabs(cos((0.08-270.0/FULL_SITES)*gid));
+rnd.y = (hgpu_float) fabs(sin((0.08-60.0/FULL_SITES)*gid));
+rnd.z = (hgpu_float) fabs(cos((0.08+150.0/FULL_SITES)*gid));
+rnd.w = (hgpu_float) fabs(sin((0.08+380.0/FULL_SITES)*gid));
+#else
 rnd.x = (hgpu_float) fabs(cos((0.08-270.0/SITES)*gid));
 rnd.y = (hgpu_float) fabs(sin((0.08-60.0/SITES)*gid));
 rnd.z = (hgpu_float) fabs(cos((0.08+150.0/SITES)*gid));
 rnd.w = (hgpu_float) fabs(sin((0.08+380.0/SITES)*gid));
+#endif
 #else
             rnd.x = (hgpu_float) prns[(*indprng)].x;
             rnd.y = (hgpu_float) prns[(*indprng)].y;

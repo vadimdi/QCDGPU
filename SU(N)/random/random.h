@@ -1,7 +1,11 @@
 #ifndef prngs_h
 #define prngs_h
 
+#ifndef CPU_RUN
 #include "../clinterface/clinterface.h"
+#else
+#include "../clinterface/platform.h"
+#endif
 
 namespace PRNG_CL{
 class PRNG {
@@ -39,7 +43,7 @@ class PRNG {
           unsigned int PRNG_srandtime;
 
           unsigned int PRNG_counter;        // counter runs of subroutine PRNG_produce
-
+#ifndef CPU_RUN
             cl_uint*   PRNG_seeds;                      // input seed table (uint)
            cl_uint4*   PRNG_seeds4;                     // input seed table (uint4)
            cl_uint4*   PRNG_seed_table_uint4;           // seed table
@@ -53,11 +57,12 @@ class PRNG {
          unsigned int  PRNG_randoms_kernel_id;          // kernel ID
 
           GPU_CL::GPU* GPU0;                            // pointer to GPU instance
-
+#endif
           PRNG(void);
          ~PRNG(void);
 
           double  trunc(double x);
+          void  initialize_CPU(void); //Nat
             void  initialize(void);                                              // PRNG initialization
             void  produce(void);                                                 // PRNG produce on GPU
             void  produce_CPU(float* randoms_cpu);                               // PRNG produce on CPU (float)
@@ -74,11 +79,17 @@ class PRNG {
     unsigned int      convert_generator_to_uint(PRNG::PRNG_generators generator);
 PRNG::PRNG_generators convert_uint_to_generator(unsigned int generator);
 
+#ifdef BIGLAT
+             int  ndev;
+#endif
+
         private:
 
         // ___ Common section___________________________________________________________
+#ifndef CPU_RUN
      static char  prngs_source[FILENAME_MAX]; // path to OpenCL-kernels
             char* random;                     // source of kernels
+#endif
     unsigned int  seeds_size;                 // input seed table size
     unsigned int  seed_table_size;            // seed table size
     unsigned int  randoms_size;               // size of output buffer
@@ -108,7 +119,9 @@ PRNG::PRNG_generators convert_uint_to_generator(unsigned int generator);
              int  RL_get_seed_table_index(int skip,int produced);                // RANLUX get seed table index
 
         // ___ XOR128___________________________________________________________________
+#ifndef CPU_RUN
         cl_uint4  XOR128_state;
+#endif
 
             void  XOR128_initialize(void);                                       // XOR128 generator initialization on GPU
             void  XOR128_initialize_CPU(void);                                   // XOR128 generator initialization on CPU

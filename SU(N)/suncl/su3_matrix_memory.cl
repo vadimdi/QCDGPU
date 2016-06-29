@@ -2,14 +2,14 @@
  * @file     su3_matrix_memory.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Matrix memory organization for the SU(3) gauge group
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -56,7 +56,11 @@ lattice_table_3(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint
 
 #ifdef  TBC
 //twist here if coord.x = N1 - 1; H = (0, 0, Hz)
+#ifdef BIGLAT
+    if (((*coord).x + LEFT_SITES/N2N3N4 == 0)||((*coord).x + LEFT_SITES/N2N3N4 == FULL_SITES/N2N3N4)){
+#else
     if ((*coord).x == (N1-1)){
+#endif
        hgpu_float4 m1,m2,m3,m4,m5,m6;
        hgpu_float phi_p_omega_2 = ((*twist).phi + (*twist).omega)/2;
        hgpu_float omega_m_phi_2 = ((*twist).omega - (*twist).phi)/2;
@@ -169,7 +173,35 @@ lattice_store_3(__global hgpu_float4 * lattice_table,gpu_su_3* m,uint gindex,con
         default:
             break;
     }
-}  
+}
+
+					__attribute__((always_inline)) void
+lattice_store_3_rowsize(__global hgpu_float4 * lattice_table, gpu_su_3* m, uint gindex, const uint dir, int rowsize){
+	switch (dir){
+		case 0:
+			lattice_table[gindex + 0 * rowsize] = (*m).uv1;
+			lattice_table[gindex + 4 * rowsize] = (*m).uv2;
+			lattice_table[gindex + 8 * rowsize] = (*m).uv3;
+			break;
+		case 1:
+			lattice_table[gindex + 1 * rowsize] = (*m).uv1;
+			lattice_table[gindex + 5 * rowsize] = (*m).uv2;
+			lattice_table[gindex + 9 * rowsize] = (*m).uv3;
+			break;
+		case 2:
+			lattice_table[gindex + 2 * rowsize] = (*m).uv1;
+			lattice_table[gindex + 6 * rowsize] = (*m).uv2;
+			lattice_table[gindex + 10 * rowsize] = (*m).uv3;
+			break;
+		case 3:
+			lattice_table[gindex + 3 * rowsize] = (*m).uv1;
+			lattice_table[gindex + 7 * rowsize] = (*m).uv2;
+			lattice_table[gindex + 11 * rowsize] = (*m).uv3;
+			break;
+		default:
+			break;
+	}
+}
 
 
 

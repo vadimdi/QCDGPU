@@ -2,14 +2,14 @@
  * @file     sun_measurements_cl.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Measurements of the Wilson action, plaquette average and components of the chromoelectromagnetic field tensor
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -173,14 +173,17 @@ lattice_measurement(__global hgpu_float4  * lattice_table,
         retrac_temp += lattice_retrace_plaquette3(&m5,&m2,&m3,&m6); // z-t: [p,Z]-[p+Z,T]-[p+T,Z]*-[p,T]*
 
         // first reduction
-        out.x = bet * (9.0 - retrac_spat);
-        out.y = bet * (9.0 - retrac_temp);
+		out.x = bet * (9.0 - retrac_spat);
+		out.y = bet * (9.0 - retrac_temp);
     }
+    
     reduce_first_step_val_double2(lattice_lds,&out, &out2);
+
     if(TID == 0) lattice_measurement[BID] = out2;
 #endif
 }
 
+#if (defined PLK) || (defined PLKx)
                                         __kernel void
 lattice_action_diff_x(__global hgpu_float4  * lattice_table,
                     __global hgpu_double2 * lattice_measurement,
@@ -202,7 +205,11 @@ lattice_action_diff_x(__global hgpu_float4  * lattice_table,
     
     lattice_gidK_x_to_gid(&gdiK,&gindex); // => 1 workgroup corresponds to the same x for N2 = N1 {z1 {=gid} = z3 * N2*PLK; N2 * PLK ~ workgroup_size}.
     
+#ifndef BIGLAT
     if (gindex<SITES) {
+#else
+    if (gindex<(N1+1)*N2N3N4) {
+#endif
         coords_4 coord;
         coords_4 coordX,coordY,coordZ,coordT;
         uint gdiX,gdiY,gdiZ,gdiT;
@@ -268,7 +275,11 @@ lattice_action_diff_x(__global hgpu_float4  * lattice_table,
     
     lattice_gidK_x_to_gid(&gdiK,&gindex);
     
+#ifndef BIGLAT
     if (gindex<SITES) {
+#else
+    if (gindex<(N1+1)*N2N3N4) {
+#endif
         coords_4 coord;
         coords_4 coordX,coordY,coordZ,coordT;
         uint gdiX,gdiY,gdiZ,gdiT;
@@ -601,6 +612,7 @@ lattice_action_diff_z(__global hgpu_float4  * lattice_table,
     if(TID == 0) lattice_measurement[BID] = out2;
 #endif
 }
+#endif
 
                                         __kernel void
 reduce_measurement_double2(__global hgpu_double2 * lattice_measurement,
@@ -973,7 +985,7 @@ lattice_measurement_plq(__global hgpu_float4  * lattice_table,
         coords_4 coordX,coordY,coordZ,coordT;
         uint gdiX,gdiY,gdiZ,gdiT;
 
-        gpu_su_3 m1,m2,m3,m4,m5,m6;
+        gpu_su_2 m1,m2,m3,m4,m5,m6;
 
         lattice_gid_to_coords(&gindex,&coord);
 

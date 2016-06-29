@@ -2,14 +2,14 @@
  * @file     polyakov.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Measurement of the Polyakov loop
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -139,7 +139,6 @@ lattice_polyakov(__global hgpu_float4  * lattice_table,
 #endif
     }
 }
-
                  __kernel void
 lattice_polyakov_diff_x(__global hgpu_float4  * lattice_table,
                  __global hgpu_double2 * lattice_measurement,
@@ -170,7 +169,11 @@ lattice_polyakov_diff_x(__global hgpu_float4  * lattice_table,
     twist.phi   = lattice_parameters[1];
 
     lattice_lds[TID] = (hgpu_double2) 0.0;
-     if(gindex < N1N2N3N4){
+#ifdef BIGLAT
+    if(gindex < (N1 + 1) * N2N3N4){
+#else
+    if(gindex < N1N2N3N4){
+#endif
         lattice_gid_to_coords(&gindex,&coord);
 	
         m0 = lattice_table_2(lattice_table,&coord,gindex,T,&twist);       // [p,T]
@@ -190,7 +193,8 @@ lattice_polyakov_diff_x(__global hgpu_float4  * lattice_table,
         polyakov_loop_im = matrix_imtrace_su2(&v0);
         out = (hgpu_double2)(polyakov_loop_re,polyakov_loop_im);
     }
-#elif SUN == 3
+#endif
+#if SUN == 3
     gpu_su_3 m0,m1;
     su_3 v0,v1,v2;
     
@@ -199,7 +203,12 @@ lattice_polyakov_diff_x(__global hgpu_float4  * lattice_table,
     twist.omega = lattice_parameters[2];
     
     lattice_lds[TID] = (hgpu_double2) 0.0;
-     if(gindex < N1N2N3N4){
+    
+#ifdef BIGLAT
+    if(gindex < (N1 + 1) * N2N3N4){
+#else
+    if(gindex < N1N2N3N4){
+#endif
         lattice_gid_to_coords(&gindex,&coord);
 	
         m0 = lattice_table_3(lattice_table,&coord,gindex,T,&twist);       // [p,T]
@@ -238,12 +247,10 @@ lattice_polyakov_diff_y(__global hgpu_float4  * lattice_table,
 {
     hgpu_double2 out  = (hgpu_double2) 0.0;
     hgpu_double2 out2 = (hgpu_double2) 0.0;
-    hgpu_double2 out3 = (hgpu_double2) 0.0;
-    hgpu_double2 out4 = (hgpu_double2) 0.0;
     hgpu_double polyakov_loop_re = 0.0;
     hgpu_double polyakov_loop_im = 0.0;
 
-    uint gindex;
+    uint gindex = GID;
     uint gdiK = GID;
 
     lattice_gidK_y_to_gid_xyz(&gdiK,&gindex);
@@ -307,7 +314,7 @@ lattice_polyakov_diff_y(__global hgpu_float4  * lattice_table,
 #endif
     // first reduction
     reduce_first_step_val_double2(lattice_lds,&out, &out2);
-
+    
     if(TID == 0) {
       lattice_measurement[BID] = out2;
     }
@@ -322,8 +329,6 @@ lattice_polyakov_diff_z(__global hgpu_float4  * lattice_table,
 {
     hgpu_double2 out  = (hgpu_double2) 0.0;
     hgpu_double2 out2 = (hgpu_double2) 0.0;
-    hgpu_double2 out3 = (hgpu_double2) 0.0;
-    hgpu_double2 out4 = (hgpu_double2) 0.0;
     hgpu_double polyakov_loop_re = 0.0;
     hgpu_double polyakov_loop_im = 0.0;
 
@@ -435,7 +440,9 @@ reduce_polyakov_diff_x_double2(__global hgpu_double2 * lattice_measurement,
 {
 #if (PL > 2)
     hgpu_double2 out[N1];
+#ifndef BIGLAT
     hgpu_double2 out2 = (hgpu_double2) 0.0;
+#endif
     uint size    = param.x / N1;
     int i;
 
@@ -449,17 +456,22 @@ reduce_polyakov_diff_x_double2(__global hgpu_double2 * lattice_measurement,
        out[i] = lattice_lds[TID];
     }
 
+#ifndef BIGLAT
 	 offset  = param.y;
 	 size    = param.x;
+#endif
     uint offset2 = param.z;
 
+#ifndef BIGLAT
     reduce_final_step_double2_offset(lattice_lds,lattice_measurement,size, offset);
     out2 = lattice_lds[TID];
+#endif
 
     if (GID==0) {
        for(i = 0; i < N1; i++) lattice_polyakov_loop[index + offset2 * i] = out[i];
-
+#ifndef BIGLAT
        lattice_polyakov_loop[index + offset2 * N1] = out2;
+#endif
     }
 #endif
 }
@@ -473,7 +485,9 @@ reduce_polyakov_diff_y_double2(__global hgpu_double2 * lattice_measurement,
 {
 #if (PL > 2)
     hgpu_double2 out[N2];
+#ifndef BIGLAT
     hgpu_double2 out2 = (hgpu_double2) 0.0;
+#endif
     uint size    = param.x / N2;
     int i;
 
@@ -487,17 +501,22 @@ reduce_polyakov_diff_y_double2(__global hgpu_double2 * lattice_measurement,
        out[i] = lattice_lds[TID];
     }
 
+#ifndef BIGLAT
 	 offset  = param.y;
 	 size    = param.x;
+#endif
     uint offset2 = param.z;
 
+#ifndef BIGLAT
     reduce_final_step_double2_offset(lattice_lds,lattice_measurement,size, offset);
     out2 = lattice_lds[TID];
+#endif
 
     if (GID==0) {
        for(i = 0; i < N2; i++) lattice_polyakov_loop[index + offset2 * i] = out[i];
-       
+#ifndef BIGLAT
        lattice_polyakov_loop[index + offset2 * N2] = out2;
+#endif
     }
 #endif
 }
@@ -511,7 +530,9 @@ reduce_polyakov_diff_z_double2(__global hgpu_double2 * lattice_measurement,
 {
 #if (PL > 2)
     hgpu_double2 out[N3];
+#ifndef BIGLAT
     hgpu_double2 out2 = (hgpu_double2) 0.0;
+#endif
     uint size    = param.x / N3;
     int i;
 
@@ -525,16 +546,21 @@ reduce_polyakov_diff_z_double2(__global hgpu_double2 * lattice_measurement,
        out[i] = lattice_lds[TID];
     }
 
+#ifndef BIGLAT
 	 offset  = param.y;
 	 size    = param.x;
+#endif
     uint offset2 = param.z;
+#ifndef BIGLAT
     reduce_final_step_double2_offset(lattice_lds,lattice_measurement,size, offset);
     out2 = lattice_lds[TID];
+#endif
 
     if (GID==0) {
        for(i = 0; i < N3; i++) lattice_polyakov_loop[index + offset2 * i] = out[i];
-
+#ifndef BIGLAT
        lattice_polyakov_loop[index + offset2 * N3] = out2;
+#endif
     }
  #endif
 }

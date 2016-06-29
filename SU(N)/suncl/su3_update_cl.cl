@@ -2,14 +2,14 @@
  * @file     su3_update_cl.cl
  * @author   Vadim Demchik <vadimdi@yahoo.com>,
  * @author   Natalia Kolomoyets <rknv7@mail.ru>
- * @version  1.5
+ * @version  1.6
  *
  * @brief    [QCDGPU]
  *           Contains functions for lattice update (SU(3) gauge theory)
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, 2014 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -37,6 +37,8 @@
 #ifndef SU3UPDATECL_CL
 #define SU3UPDATECL_CL
 
+#include "su3cl.cl"
+
 // _________________ single precision ________________________
                      __attribute__((always_inline)) void
 lattice_unity_2(su_2* matrix)
@@ -55,11 +57,30 @@ lattice_unity_2(su_2* matrix)
 }
 
                     __attribute__((always_inline)) void
-lattice_unity3(gpu_su_3* matrix)
+lattice_unity2(gpu_su_2* matrix)
 {
     (*matrix).uv1 = (hgpu_float4) (1.0, 0.0, 0.0, 0.0);
+}
+
+                    __attribute__((always_inline)) void
+lattice_zero3(gpu_su_3* matrix)
+{
+    (*matrix).uv1 = (hgpu_float4) (0.0, 0.0, 0.0, 0.0);
     (*matrix).uv2 = (hgpu_float4) (0.0, 0.0, 0.0, 0.0);
-    (*matrix).uv3 = (hgpu_float4) (0.0, 1.0, 0.0, 0.0);
+    (*matrix).uv3 = (hgpu_float4) (0.0, 0.0, 0.0, 0.0);
+}
+
+                    __attribute__((always_inline)) void
+lattice_zero_3(su_3* matrix)
+{
+    (*matrix).u1.re = 0.0;     (*matrix).u2.re = 0.0;     (*matrix).u3.re = 0.0;
+    (*matrix).u1.im = 0.0;     (*matrix).u2.im = 0.0;     (*matrix).u3.im = 0.0;
+    
+    (*matrix).v1.re = 0.0;     (*matrix).v2.re = 0.0;     (*matrix).v3.re = 0.0;
+    (*matrix).v1.im = 0.0;     (*matrix).v2.im = 0.0;     (*matrix).v3.im = 0.0;
+    
+    (*matrix).w1.re = 0.0;     (*matrix).w2.re = 0.0;     (*matrix).w3.re = 0.0;
+    (*matrix).w1.im = 0.0;     (*matrix).w2.im = 0.0;     (*matrix).w3.im = 0.0;
 }
 
                     __attribute__((always_inline)) __private gpu_su_3
@@ -549,26 +570,27 @@ lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_prng_float4 * prn
     gpu_su_2 aH,c,d;
 
     bool flag = false;
-    hgpu_float4 rnd,M;
+    hgpu_float4 rnd;
     hgpu_float det,bdet,cosrnd,delta;
     hgpu_float costh,sinth,cosal,sinal,phi,sinphi,cosphi;
+
 #ifdef GID_UPD
     hgpu_float gid;
 #endif
 
     uint i = 0;
 
-    M.x = ((*a).u1.re + (*a).v2.re);
-    M.y = ((*a).u1.im - (*a).v2.im);
-    M.z = ((*a).u2.re - (*a).v1.re);
-    M.w = ((*a).u2.im + (*a).v1.im);
+    aH.uv1.x =  ((*a).u1.re + (*a).v2.re);
+    aH.uv1.z = -((*a).u1.im - (*a).v2.im);
+    aH.uv1.y = -((*a).u2.re - (*a).v1.re);
+    aH.uv1.w = -((*a).u2.im + (*a).v1.im);
 
-    det = sqrt(M.x * M.x + M.y * M.y + M.z * M.z + M.w * M.w);
+    det = sqrt(aH.uv1.x * aH.uv1.x + aH.uv1.y * aH.uv1.y + aH.uv1.z * aH.uv1.z + aH.uv1.w * aH.uv1.w);
 
-    aH.uv1.x =  M.x / det;
-    aH.uv1.z = -M.y / det;
-    aH.uv1.y = -M.z / det;
-    aH.uv1.w = -M.w / det;
+    aH.uv1.x /= det;
+    aH.uv1.z /= det;
+    aH.uv1.y /= det;
+    aH.uv1.w /= det;
 
     bdet = (*beta) * det;
 
@@ -576,10 +598,17 @@ lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_prng_float4 * prn
 #ifdef GID_UPD
         gid = prns[(*indprng)].x;
 
+#ifdef BIGLAT
+rnd.x = (hgpu_float) fabs(sin((0.005*(1 + NHIT)+270.0/FULL_SITES)*gid));
+rnd.y = (hgpu_float) fabs(cos((0.005*(1 + NHIT)+ 60.0/FULL_SITES)*gid));
+rnd.z = (hgpu_float) fabs(sin((0.005*(1 + NHIT)-150.0/FULL_SITES)*gid));
+rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/FULL_SITES)*gid));
+#else
 rnd.x = (hgpu_float) fabs(sin((0.005*(1 + NHIT)+270.0/SITES)*gid));
 rnd.y = (hgpu_float) fabs(cos((0.005*(1 + NHIT)+ 60.0/SITES)*gid));
 rnd.z = (hgpu_float) fabs(sin((0.005*(1 + NHIT)-150.0/SITES)*gid));
 rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/SITES)*gid));
+#endif
 #else
         rnd.x = (hgpu_float) prns[(*indprng)].x;
         rnd.y = (hgpu_float) prns[(*indprng)].y;
@@ -595,16 +624,22 @@ rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/SITES)*gid));
 #else
         if ((rnd.w * rnd.w)<=(1.0 - 0.5 * delta)) {flag=true;}
 #endif
-
         i++;
     }
 
         if (flag) {
 #ifdef GID_UPD
+#ifdef BIGLAT
+rnd.x = (hgpu_float) fabs(cos((0.08-270.0/FULL_SITES)*gid));
+rnd.y = (hgpu_float) fabs(sin((0.08-60.0/FULL_SITES)*gid));
+rnd.z = (hgpu_float) fabs(cos((0.08+150.0/FULL_SITES)*gid));
+rnd.w = (hgpu_float) fabs(sin((0.08+380.0/FULL_SITES)*gid));
+#else
 rnd.x = (hgpu_float) fabs(cos((0.08-270.0/SITES)*gid));
 rnd.y = (hgpu_float) fabs(sin((0.08-60.0/SITES)*gid));
 rnd.z = (hgpu_float) fabs(cos((0.08+150.0/SITES)*gid));
 rnd.w = (hgpu_float) fabs(sin((0.08+380.0/SITES)*gid));
+#endif
 #else
             rnd.x = (hgpu_float) prns[(*indprng)].x;
             rnd.y = (hgpu_float) prns[(*indprng)].y;
@@ -629,155 +664,119 @@ rnd.w = (hgpu_float) fabs(sin((0.08+380.0/SITES)*gid));
 
         } else {
             lattice_unity_2(a);
+            (*indprng) += PRNGSTEP;
         }
 }
 
 __attribute__((always_inline)) __private gpu_su_3
 lattice_heatbath3(su_3* staple,gpu_su_3* m0,hgpu_float* beta,__global const hgpu_prng_float4 * prns)
 {
-    gpu_su_3 reslt;
+    gpu_su_3 reslt, Vg, m1, m2, m3;
 
-su_3 x0,x1,x2;
-su_3 U0,U1,U2,U3;
-su_3 V0,V1,V2;
-hgpu_float4 uv1,uv2,uv3;
+su_3 x0;
+su_3 U0;
 
-       uint indprng = GID;
+uint indprng = GID;
+
+su_2 r0;
 
        U0 = lattice_reconstruct3(m0);
-       x0 = matrix_times_su3(&U0,staple);
-
-        su_2 r0,r2,r4;
-
-        r0.u1.re = x0.u1.re;
-        r0.u1.im = x0.u1.im;
-        r0.u2.re = x0.u2.re;
-        r0.u2.im = x0.u2.im;
-        r0.v1.re = x0.v1.re;
+       m3 = *m0;
+for(int j = 0; j < NHITPar; j++)
+{
+       x0 = matrix_times_su3(&U0,staple);                                          /////////////////////////
+                                                                                   //                     //
+        r0.u1.re = x0.u1.re;                                                       //   /  u1  u2  0  \   //
+        r0.u1.im = x0.u1.im;                                                       //   |  v1  v2  0  |   //
+        r0.u2.re = x0.u2.re;                                                       //   \  0   0   1  /   //
+        r0.u2.im = x0.u2.im;                                                       //                     //
+        r0.v1.re = x0.v1.re;                                                       /////////////////////////
         r0.v1.im = x0.v1.im;
         r0.v2.re = x0.v2.re;
         r0.v2.im = x0.v2.im;
 
         lattice_heatbath2(&r0,beta,prns,&indprng);  // r0->(heatbath)->r0
+        
+        Vg.uv1.x = r0.u1.re;
+        Vg.uv1.y = r0.u2.re;
+        Vg.uv1.z = 0.0;
+        Vg.uv1.w = 0.0;
+            Vg.uv2.x = r0.u1.im;
+            Vg.uv2.y = r0.u2.im;
+            Vg.uv2.z = 0.0;
+            Vg.uv2.w = 0.0;
+        Vg.uv3.x = r0.v1.re;
+        Vg.uv3.y = r0.v2.re;
+        Vg.uv3.z = r0.v1.im;
+        Vg.uv3.w = r0.v2.im;
 
-        V0.u1.re = r0.u1.re;
-        V0.u1.im = r0.u1.im;
-        V0.u2.re = r0.u2.re;
-        V0.u2.im = r0.u2.im;
-        V0.u3.re = 0.0;
-        V0.u3.im = 0.0;
+        m1 = matrix_times3(&Vg,&m3);
+        U0 = lattice_reconstruct3(&m1);
 
-        V0.v1.re = r0.v1.re;
-        V0.v1.im = r0.v1.im;
-        V0.v2.re = r0.v2.re;
-        V0.v2.im = r0.v2.im;
-        V0.v3.re = 0.0;
-        V0.v3.im = 0.0;
+        x0 = matrix_times_su3(&U0,staple);                                         /////////////////////////
+                                                                                   //                     //
+        r0.u1.re = x0.u1.re;                                                       //   /  u1  0  u2  \   //
+        r0.u1.im = x0.u1.im;                                                       //   |  0   1  0   |   //
+        r0.u2.re = x0.u3.re;                                                       //   \  v1  0  v2  /   //
+        r0.u2.im = x0.u3.im;                                                       //                     //
+        r0.v1.re = x0.w1.re;                                                       /////////////////////////
+        r0.v1.im = x0.w1.im;
+        r0.v2.re = x0.w3.re;
+        r0.v2.im = x0.w3.im;
 
-        V0.w1.re = 0.0;
-        V0.w1.im = 0.0;
-        V0.w2.re = 0.0;
-        V0.w2.im = 0.0;
-        V0.w3.re = 1.0;
-        V0.w3.im = 0.0;
+        lattice_heatbath2(&r0,beta,prns,&indprng);  // r2->(heatbath)->r2
 
-        U1 = matrix_times_su3(&V0,&U0);
+        Vg.uv1.x = r0.u1.re;
+        Vg.uv1.y = 0.0;
+        Vg.uv1.z = r0.u2.re;
+        Vg.uv1.w = 0.0;
+            Vg.uv2.x = r0.u1.im;
+            Vg.uv2.y = 0.0;
+            Vg.uv2.z = r0.u2.im;
+            Vg.uv2.w = 0.0;
+        Vg.uv3.x = 0.0;
+        Vg.uv3.y = 1.0;
+        Vg.uv3.z = 0.0;
+        Vg.uv3.w = 0.0;
 
-        x1 = matrix_times_su3(&U1,staple);
+        m2 = matrix_times3(&Vg,&m1);
+        U0 = lattice_reconstruct3(&m2);
 
-        r2.u1.re = x1.u1.re;
-        r2.u1.im = x1.u1.im;
-        r2.u2.re = x1.u3.re;
-        r2.u2.im = x1.u3.im;
-        r2.v1.re = x1.w1.re;
-        r2.v1.im = x1.w1.im;
-        r2.v2.re = x1.w3.re;
-        r2.v2.im = x1.w3.im;
+        x0 = matrix_times_su3(&U0,staple);                                         /////////////////////////
+                                                                                   //                     //
+        r0.u1.re = x0.v2.re;                                                       //   / 1   0   0   \   //
+        r0.u1.im = x0.v2.im;                                                       //   | 0   u1  u2  |   //
+        r0.u2.re = x0.v3.re;                                                       //   \ 0   v1  v2  /   //
+        r0.u2.im = x0.v3.im;                                                       //                     //
+        r0.v1.re = x0.w2.re;                                                       /////////////////////////
+        r0.v1.im = x0.w2.im;
+        r0.v2.re = x0.w3.re;
+        r0.v2.im = x0.w3.im;
 
-        lattice_heatbath2(&r2,beta,prns,&indprng);  // r2->(heatbath)->r2
+        lattice_heatbath2(&r0,beta,prns,&indprng);  // r4->(heatbath)->r4
 
-        V1.u1.re = r2.u1.re;
-        V1.u1.im = r2.u1.im;
-        V1.u2.re = 0.0;
-        V1.u2.im = 0.0;
-        V1.u3.re = r2.u2.re;
-        V1.u3.im = r2.u2.im;
+        Vg.uv1.x = 1.0;
+        Vg.uv1.y = 0.0;
+        Vg.uv1.z = 0.0;
+        Vg.uv1.w = r0.u2.re;
+            Vg.uv2.x = 0.0;
+            Vg.uv2.y = 0.0;
+            Vg.uv2.z = 0.0;
+            Vg.uv2.w = r0.u2.im;
+        Vg.uv3.x = 0.0;
+        Vg.uv3.y = r0.u1.re;
+        Vg.uv3.z = 0.0;
+        Vg.uv3.w = r0.u1.im;
 
-        V1.v1.re = 0.0;
-        V1.v1.im = 0.0;
-        V1.v2.re = 1.0;
-        V1.v2.im = 0.0;
-        V1.v3.re = 0.0;
-        V1.v3.im = 0.0;
+        m3 = matrix_times3(&Vg,&m2);
+        reslt = m3;
 
-        V1.w1.re = r2.v1.re;
-        V1.w1.im = r2.v1.im;
-        V1.w2.re = 0.0;
-        V1.w2.im = 0.0;
-        V1.w3.re = r2.v2.re;
-        V1.w3.im = r2.v2.im;
-
-        U2 = matrix_times_su3(&V1,&U1);
-
-        x2 = matrix_times_su3(&U2,staple);
-
-        r4.u1.re = x2.v2.re;
-        r4.u1.im = x2.v2.im;
-        r4.u2.re = x2.v3.re;
-        r4.u2.im = x2.v3.im;
-        r4.v1.re = x2.w2.re;
-        r4.v1.im = x2.w2.im;
-        r4.v2.re = x2.w3.re;
-        r4.v2.im = x2.w3.im;
-
-        lattice_heatbath2(&r4,beta,prns,&indprng);  // r4->(heatbath)->r4
-
-        V2.u1.re = 1.0;
-        V2.u1.im = 0.0;
-        V2.u2.re = 0.0;
-        V2.u2.im = 0.0;
-        V2.u3.re = 0.0;
-        V2.u3.im = 0.0;
-
-        V2.v1.re = 0.0;
-        V2.v1.im = 0.0;
-        V2.v2.re = r4.u1.re;
-        V2.v2.im = r4.u1.im;
-        V2.v3.re = r4.u2.re;
-        V2.v3.im = r4.u2.im;
-
-        V2.w1.re = 0.0;
-        V2.w1.im = 0.0;
-        V2.w2.re = r4.v1.re;
-        V2.w2.im = r4.v1.im;
-        V2.w3.re = r4.v2.re;
-        V2.w3.im = r4.v2.im;
-
-        U3 = matrix_times_su3(&V2,&U2);
-
-        uv1.x = U3.u1.re;
-        uv1.y = U3.u2.re;
-        uv1.z = U3.u3.re;
-        uv1.w = U3.v3.re;
-
-        uv2.x = U3.u1.im;
-        uv2.y = U3.u2.im;
-        uv2.z = U3.u3.im;
-        uv2.w = U3.v3.im;
-
-        uv3.x = U3.v1.re;
-        uv3.y = U3.v2.re;
-        uv3.z = U3.v1.im;
-        uv3.w = U3.v2.im;
-
-
-        reslt.uv1 = uv1;
-        reslt.uv2 = uv2;
-        reslt.uv3 = uv3;
+        lattice_GramSchmidt3(&reslt);
+        U0 = lattice_reconstruct3(&reslt);
+}
 
         return reslt;
 }
-
 
 #endif
                                                                                                                                                                   
