@@ -1294,16 +1294,16 @@ double*         SU::lattice_avr_plaquette_plq_cpu(model* lat){
                         ((dir1==0) && (dir2==3) && (lat->get_F0mu)))    // _____XT for get_F0mu
                     {
                         matrix_5 = lattice_matrix_times3(plaquette,lattice_lambda(lat->Fmunu_index1));
-                        re_trace = lattice_retrace(matrix_5);
-                        im_trace = lattice_imtrace(matrix_5);
+                        re_trace = lattice_imtrace(matrix_5)/2;
+                        im_trace = -lattice_retrace(matrix_5)/2;
                         F_xy_3_re_temp += re_trace;
                         F_xy_3_im_temp += im_trace;
                         F_xy_3_re_variance += re_trace * re_trace;
                         F_xy_3_im_variance += im_trace * im_trace;
 
                         matrix_5 = lattice_matrix_times3(plaquette,lattice_lambda(lat->Fmunu_index2));
-                        re_trace = lattice_retrace(matrix_5);
-                        im_trace = lattice_imtrace(matrix_5);
+                        re_trace = lattice_imtrace(matrix_5)/2;
+                        im_trace = -lattice_retrace(matrix_5)/2;
                         F_xy_8_re_temp += re_trace;
                         F_xy_8_im_temp += im_trace;
                         F_xy_8_re_variance += re_trace * re_trace;
@@ -1313,16 +1313,16 @@ double*         SU::lattice_avr_plaquette_plq_cpu(model* lat){
                         ((dir1==1) && (dir2==3) && (lat->get_F0mu)))    // _____YT for get_F0mu
                     {
                         matrix_5 = lattice_matrix_times3(plaquette,lattice_lambda(lat->Fmunu_index1));
-                        re_trace = lattice_retrace(matrix_5);
-                        im_trace = lattice_imtrace(matrix_5);
+                        re_trace = lattice_imtrace(matrix_5)/2;
+                        im_trace = -lattice_retrace(matrix_5)/2;
                         F_xz_3_re_temp += re_trace;
                         F_xz_3_im_temp += im_trace;
                         F_xz_3_re_variance += re_trace * re_trace;
                         F_xz_3_im_variance += im_trace * im_trace;
 
                         matrix_5 = lattice_matrix_times3(plaquette,lattice_lambda(lat->Fmunu_index2));
-                        re_trace = lattice_retrace(matrix_5);
-                        im_trace = lattice_imtrace(matrix_5);
+                        re_trace = lattice_imtrace(matrix_5)/2;
+                        im_trace = -lattice_retrace(matrix_5)/2;
                         F_xz_8_re_temp += re_trace;
                         F_xz_8_im_temp += im_trace;
                         F_xz_8_re_variance += re_trace * re_trace;
@@ -1332,16 +1332,16 @@ double*         SU::lattice_avr_plaquette_plq_cpu(model* lat){
                         ((dir1==2) && (dir2==3) && (lat->get_F0mu)))    // _____ZT for get_F0mu
                     {
                         matrix_5 = lattice_matrix_times3(plaquette,lattice_lambda(lat->Fmunu_index1));
-                        re_trace = lattice_retrace(matrix_5);
-                        im_trace = lattice_imtrace(matrix_5);
+                        re_trace = lattice_imtrace(matrix_5)/2;
+                        im_trace = -lattice_retrace(matrix_5)/2;
                         F_yz_3_re_temp += re_trace;
                         F_yz_3_im_temp += im_trace;
                         F_yz_3_re_variance += re_trace * re_trace;
                         F_yz_3_im_variance += im_trace * im_trace;
 
                         matrix_5 = lattice_matrix_times3(plaquette,lattice_lambda(lat->Fmunu_index2));
-                        re_trace = lattice_retrace(matrix_5);
-                        im_trace = lattice_imtrace(matrix_5);
+                        re_trace = lattice_imtrace(matrix_5)/2;
+                        im_trace = -lattice_retrace(matrix_5)/2;
                         F_yz_8_re_temp += re_trace;
                         F_yz_8_im_temp += im_trace;
                         F_yz_8_re_variance += re_trace * re_trace;
