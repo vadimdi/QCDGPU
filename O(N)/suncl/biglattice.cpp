@@ -280,7 +280,7 @@ void            BL::simulate(void){
             int idx = lattice_data[i]->models_index;
             if (models[idx]->NAV_counter==j) models[idx]->NAV_counter = j+1;
         }
-	    if (j % 10 == 0) printf("\rGPU thermalization [%i]",j);
+        if (j % 10 == 0) printf("\rGPU thermalization [%i]",j);
 
         // save lattice state
             

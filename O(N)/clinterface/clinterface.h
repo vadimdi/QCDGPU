@@ -302,7 +302,7 @@ static GPU_init_parameters* get_init_file(char finitf[]);
       
       class buffers_hash{
          public:
-	               cl_mem    buffer;
+                   cl_mem    buffer;
                       int    buffer_type;
                      void*   host_ptr;
                       int    size;
@@ -324,7 +324,7 @@ static GPU_init_parameters* get_init_file(char finitf[]);
                       int    buffer_read_number_of;             // total number of reads - for deviation calculation
                 
             buffers_hash(void);
-	       ~buffers_hash(void);
+           ~buffers_hash(void);
       };
       
       class programs_hash{
@@ -342,7 +342,7 @@ static GPU_init_parameters* get_init_file(char finitf[]);
                 programs_hash(void);
                 ~programs_hash(void);
       };
-	    
+        
             typedef union _Uint_and_Float{          // Uint <---> Float converter
                 unsigned int uint_value[1];
                 float        float_value;

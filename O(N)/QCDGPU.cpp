@@ -60,6 +60,20 @@ char*           str_parameter_init(char* str_source){
        return str_destination;
 }
 
+#ifdef _WIN32
+int setenv(const char* name, const char* value, int overwrite)
+{
+    int errcode = 0;
+    if (!overwrite) {
+        size_t envsize = 0;
+        errcode = getenv_s(&envsize, NULL, 0, name);
+        if (errcode || envsize) return errcode;
+    }
+    return _putenv_s(name, value);
+}
+#endif
+
+
 
 int main(int argc, char ** argv)
 {
@@ -73,8 +87,7 @@ int main(int argc, char ** argv)
     BL* lattice = new(BL);
 
     setenv("CUDA_CACHE_DISABLE", "1", 1);
-//    model0->GPU0->GPU_limit_max_workgroup_size = 32;
-    
+
     // setup debug_level
     lattice->global_run->GPU_debug->local_run             = true;
     lattice->global_run->GPU_debug->rebuild_binary        = false;
@@ -97,12 +110,12 @@ int main(int argc, char ** argv)
     lattice->global_run->PRNG_generator   = PRNG_CL::PRNG::PRNG_generator_RANLUX3; // CONSTANT;
     lattice->global_run->PRNG_randseries  = 7;                     // constant random series
 
-    lattice->global_run->lattice_nd       = 4;
-    lattice->global_run->lattice_type     = MODEL_ON;       // sites or links
-            lattice->global_run->lattice_full_size[0] = 18;  // X
-            lattice->global_run->lattice_full_size[1] = 18;  // Y
-            lattice->global_run->lattice_full_size[2] = 18;  // Z
-            lattice->global_run->lattice_full_size[3] = 4;  // T
+    lattice->global_run->lattice_nd   = 4;
+    lattice->global_run->lattice_type = MODEL_ON;   // sites or links
+    lattice->global_run->lattice_full_size[0] = 18;  // X
+    lattice->global_run->lattice_full_size[1] = 18;  // Y
+    lattice->global_run->lattice_full_size[2] = 18;  // Z
+    lattice->global_run->lattice_full_size[3] =  4;  // T
 #if (MODEL_ON == 1)
     // O(1) params
     lattice->global_run->lattice_group = 1;     // O(1) group
@@ -113,10 +126,10 @@ int main(int argc, char ** argv)
     lattice->global_run->ON_eta        = 0.1;
     lattice->global_run->ON_b          = 9.661840260273483;
 
-    lattice->global_run->correlator_X   = 6; // offset for correlator in X direction
-    lattice->global_run->correlator_Y   = 6; // offset for correlator in Y direction
-    lattice->global_run->correlator_Z   = 6; // offset for correlator in Z direction
-    lattice->global_run->correlator_T   = 6; // offset for correlator in T direction
+    lattice->global_run->correlator_X   = 4; // offset for correlator in X direction
+    lattice->global_run->correlator_Y   = 4; // offset for correlator in Y direction
+    lattice->global_run->correlator_Z   = 4; // offset for correlator in Z direction
+    lattice->global_run->correlator_T   = 4; // offset for correlator in T direction
 
     lattice->global_run->get_correlators       = true;
 #else
@@ -131,21 +144,21 @@ int main(int argc, char ** argv)
 #endif
 
     lattice->global_run->precision = model::model_precision_double;
-    lattice->global_run->ints          = model::model_start_cold;  // setup start type
-    lattice->global_run->INIT          = 1;                        // start simulations (0 - continue, 1 - start)
-    lattice->global_run->NAV           = 50;                       // number of thermalization cycles
-    lattice->global_run->ITER          = 200;                      // number of working iterations (note: first measurement is performing on the initial configuration!!!)
-    lattice->global_run->NITER         = 10;                       // Number of bulk iterations between measurements
-    lattice->global_run->NHIT          = 10;
+    lattice->global_run->ints      = model::model_start_cold;  // setup start type
+    lattice->global_run->INIT      = 1;                        // start simulations (0 - continue, 1 - start)
+    lattice->global_run->NAV       = 50;                       // number of thermalization cycles
+    lattice->global_run->ITER      = 200;                      // number of working iterations (note: first measurement is performing on the initial configuration!!!)
+    lattice->global_run->NITER     = 10;                       // Number of bulk iterations between measurements
+    lattice->global_run->NHIT      = 10;
 
-lattice->global_run->write_lattice_state_every_secs = 2.0;         // write lattice configuration every ... seconds (default: 15 minutes)
-lattice->global_run->turnoff_state_save  = true;                   // do not write lattice states (binary .qcg files)
-lattice->global_run->turnoff_config_save = false;                  // do not write configurations (text .cnf files)
-lattice->global_run->turnoff_updates     = false;                  // turn off lattice updates
-lattice->global_run->turnoff_prns        = false;                  // turn off prn production
-lattice->global_run->get_plaquettes_avr  = true;                   // calculate mean plaquette values
-lattice->global_run->get_acceptance_rate   = true;
-lattice->global_run->turnoff_boundary_extraction = true;           // do not extract boundaries
+lattice->global_run->write_lattice_state_every_secs = 2.0;     // write lattice configuration every ... seconds (default: 15 minutes)
+lattice->global_run->turnoff_state_save             = true;    // do not write lattice states (binary .qcg files)
+lattice->global_run->turnoff_config_save            = false;   // do not write configurations (text .cnf files)
+lattice->global_run->turnoff_updates                = false;   // turn off lattice updates
+lattice->global_run->turnoff_prns                   = false;   // turn off prn production
+lattice->global_run->get_plaquettes_avr             = true;    // calculate mean plaquette values
+lattice->global_run->get_acceptance_rate            = true;
+lattice->global_run->turnoff_boundary_extraction    = true;    // do not extract boundaries
 #if (MODEL_ON == 1)
 #else
 lattice->global_run->PL_level            = 2;                  // level of Polyakov loop calculation (0 = do not calculate PL, 1 = calculate PL only, 2 = calculate PL, PL^2, PL^4)
@@ -178,7 +191,7 @@ lattice->global_run->check_prngs         = true;   // check PRNG production
                     for(unsigned int j=1;j<param_name_end;j++) param_name[j-1]=argv[i][j];
                     for(unsigned int j=param_name_end+1;j<param_len;j++) param_text[j-param_name_end-1]=argv[i][j];
                     sscanf_s(param_text,"%d", &iVarVal);
-			        sscanf_s(param_text,"%lf", &fVarVal);
+                    sscanf_s(param_text,"%lf", &fVarVal);
                     model_CL::model::parameters_setup(param_name,&iVarVal,&fVarVal,param_text,lattice->global_run);
                     free(param_text);
                     free(param_name);
@@ -186,7 +199,7 @@ lattice->global_run->check_prngs         = true;   // check PRNG production
             }
 
         }
-	}
+    }
 
     lattice->global_run->device_select    = false;
     lattice->big_lattice_parts      = 1; // 0=autoselection, other=number of sublattices
@@ -200,8 +213,8 @@ lattice->global_run->check_prngs         = true;   // check PRNG production
     lattice->compute_devices[0]->device        = 0;
     lattice->compute_devices[0]->platform      = 0;
     lattice->compute_devices[0]->performance   = 1.0;
-    lattice->compute_devices[0]->lattice_parts = 1;               // if compute_devices_number=1, then is copied from big_lattice_parts
-    lattice->compute_devices[0]->lattice_domain_size[0] =  18;    // X (other directions are copied from global_run_lattice_full_site)
+    lattice->compute_devices[0]->lattice_parts = 1;             // if compute_devices_number=1, then is copied from big_lattice_parts
+    lattice->compute_devices[0]->lattice_domain_size[0] = 18;   // X (other directions are copied from global_run_lattice_full_site)
 
 /*    // available device 1
     lattice->compute_devices[1]->device_select = true;
