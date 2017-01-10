@@ -48,10 +48,10 @@ class model {
 
         public:
             typedef enum enum_model_starts{
-				model_start_hot,                   // hot start
-				model_start_cold,                  // cold start
+                model_start_hot,                   // hot start
+                model_start_cold,                  // cold start
                 model_start_gid                    // fill the lattice with GIDs (for testing purposes)
-			} model_starts;
+            } model_starts;
 
             typedef enum enum_model_precision{
                 model_precision_single,            // float (32 bit)

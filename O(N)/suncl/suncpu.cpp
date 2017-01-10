@@ -54,12 +54,12 @@ using model_CL::model;
 SU::SU(void)
 {
         SU::directions = (char**) calloc(4,sizeof(char*));        // setup path to output files
-	
+    
     SU::directions[0] = (char*) calloc(strlen(direction_X) + 1,sizeof(char));        // setup path to output files
-	SU::directions[1] = (char*) calloc(strlen(direction_Y) + 1,sizeof(char));
-	SU::directions[2] = (char*) calloc(strlen(direction_Z) + 1,sizeof(char));
-	SU::directions[3] = (char*) calloc(strlen(direction_T) + 1,sizeof(char));
-	
+    SU::directions[1] = (char*) calloc(strlen(direction_Y) + 1,sizeof(char));
+    SU::directions[2] = (char*) calloc(strlen(direction_Z) + 1,sizeof(char));
+    SU::directions[3] = (char*) calloc(strlen(direction_T) + 1,sizeof(char));
+    
         strcpy_s(SU::directions[0],(strlen(direction_X) + 1),direction_X);
         strcpy_s(SU::directions[1],(strlen(direction_Y) + 1),direction_Y);
         strcpy_s(SU::directions[2],(strlen(direction_Z) + 1),direction_Z);
@@ -69,8 +69,10 @@ SU::SU(void)
 }
 SU::~SU(void)
 {
-    for(int i=0; i<4; i++) free(directions[i]);
-    free(directions);
+    for(int i=0; i<4; i++) FREE(directions[i]);
+    FREE(directions);
+    FREE(lattice_data);
+    FREE(lattice_data_o1);
 }
 
 SU::o_1         SU::lattice_table_o1(model* lat,unsigned int gindex){
@@ -1834,6 +1836,7 @@ void            SU::lattice_check_cpu(model* lat){
                 delete[] correls;
         }
 
+        FREE(lattice_data_o1);
 #else
         lattice_data    = (su_3*) calloc(lat->lattice_table_row_size * lat->run->lattice_nd, sizeof(su_3));
 
@@ -1911,8 +1914,7 @@ void            SU::lattice_check_cpu(model* lat){
             lat->Analysis[DM_Polyakov_loop_P4].CPU_last_value += pl_avr[3];
 
             delete[] pl_avr;
-        free(lattice_data);
-
+        FREE(lattice_data);
 #endif
 
     }
@@ -2055,8 +2057,8 @@ void            SU::lattice_simulate(model* lat,unsigned int* lattice_pointer){
 
     lattice_analysis_cpu(lat);
 
-    delete[] plaq;
-    delete[] pl_avr;
+    if (plaq)   delete[] plaq;
+    if (pl_avr) delete[] pl_avr;
 
     }
 }

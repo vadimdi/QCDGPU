@@ -57,19 +57,19 @@ using SUN_CPU::SU;
 
     printf("compute_devices_number = %u\n",compute_devices_number);
     for (int i=0;i<compute_devices_number;i++){
-        delete compute_devices[i];
-        delete models[i];
-        delete SUNcpu[i];    
+        if (compute_devices[i]) delete compute_devices[i];
+        if (models[i]) delete models[i];
+        if (SUNcpu[i]) delete SUNcpu[i];
     }
 
     for (int i=0;i<big_lattice_parts;i++){
-        delete lattice_data[i];
+        if (lattice_data[i]) delete lattice_data[i];
     }
-    delete[] compute_devices;
-    delete[] models;
-    delete[] SUNcpu;
-    delete[] lattice_data;
-    delete global_run;
+    if (compute_devices) delete[] compute_devices;
+    if (models) delete[] models;
+    if (SUNcpu) delete[] SUNcpu;
+    if (lattice_data) delete[] lattice_data;
+    if (global_run) delete global_run;
 }
                 BL::lattice_data_buffers::lattice_data_buffers(void){
     plattice_table_float  = NULL;
@@ -84,7 +84,7 @@ using SUN_CPU::SU;
         for (int i=0;i<ND_MAX;i++) lattice_domain_size[i] = 0;
 }
                 BL::lattice_devices::~lattice_devices(void){
-        delete lattice_domain_size;
+        if (lattice_domain_size) delete lattice_domain_size;
 }
 
 char*           BL::str_parameter_init(char* str_source){

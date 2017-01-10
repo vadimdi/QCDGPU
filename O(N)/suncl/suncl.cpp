@@ -60,7 +60,6 @@ const char* REIM[] = {"re","im"};         // markers for re / im
 #define TIMER_FOR_SAVE         2  // index of timer for saving lattice states during simulation
 #define ND_MAX                32  // maximum dimensions
 #define BIN_HEADER_SIZE       64  // length of binary header (in dwords)
-#define FNAME_MAX_LENGTH     250  // max length of filename with path
 
 #if (MODEL_ON==1)
 #define SOURCE_UPDATE       "oncl/oncl.cl"
@@ -76,9 +75,9 @@ const char* REIM[] = {"re","im"};         // markers for re / im
 #define SOURCE_WILSON_LOOP  "suncl/wilson_loop.cl"
 #endif
 
-char model::path_oncl[FILENAME_MAX]          = "oncl/";
-char model::path_suncl[FILENAME_MAX]         = "suncl/";
-char model::path_kernel[FILENAME_MAX]        = "kernel/";
+char model::path_oncl[FNAME_MAX_LENGTH]   = "oncl/";
+char model::path_suncl[FNAME_MAX_LENGTH]  = "suncl/";
+char model::path_kernel[FNAME_MAX_LENGTH] = "kernel/";
 
 
 // SU(N) section __________________________________________________________________________________________
@@ -114,7 +113,7 @@ char model::path_kernel[FILENAME_MAX]        = "kernel/";
 }
             model::~model(void) {
         delete[] Analysis;
-        free(lattice_group_elements);   lattice_group_elements = NULL;
+        FREE(lattice_group_elements);
 
         if (GPU0->GPU_debug->profiling) GPU0->print_time_detailed();
 
@@ -178,10 +177,10 @@ char model::path_kernel[FILENAME_MAX]        = "kernel/";
         wilson_T = 1;
 }
             model::run_parameters::~run_parameters(void){
-        delete run_PRNG;
-        delete GPU_debug;
-        delete[] lattice_domain_size;
-        delete[] lattice_full_size;
+        if (run_PRNG)  delete run_PRNG;
+        if (GPU_debug) delete GPU_debug;
+        if (lattice_domain_size) delete[] lattice_domain_size;
+        if (lattice_full_size)   delete[] lattice_full_size;
 
 }
 void        model::run_parameters::run_parameters_copy(run_parameters* src,run_parameters* dst){
@@ -1096,7 +1095,7 @@ void        model::lattice_save_state(void){
 
         if ( fclose(stream) ) printf( "The file was not closed!\n" );
     }
-    free(head); head = NULL;
+    FREE(head);
 }
 unsigned int*   model::lattice_make_bin_header(void){
     int k;
@@ -1241,7 +1240,7 @@ void        model::lattice_load_state(void){
         }
         LOAD_state++;
     }
-    free(head); head = NULL;
+    FREE(head);
 }
  
 void        model::model_lattice_init(void){

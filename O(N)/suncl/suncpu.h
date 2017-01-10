@@ -82,9 +82,9 @@ class SU {
            GPU_CL::GPU*     GPU0;                             // pointer to GPU instance
          PRNG_CL::PRNG*     PRNG0;                            // pointer to PRNG instance
 
-	    SU(void);
-	   ~SU(void);
-	   
+        SU(void);
+       ~SU(void);
+       
            void             lattice_check_cpu(model_CL::model* lat);
            void             lattice_load_cpu(model_CL::model* lat,unsigned int* lattice_pointer);
            double*          lattice_avr_plaquette_cpu(model_CL::model* lat);

@@ -193,8 +193,8 @@ lattice->global_run->check_prngs         = true;   // check PRNG production
                     sscanf_s(param_text,"%d", &iVarVal);
                     sscanf_s(param_text,"%lf", &fVarVal);
                     model_CL::model::parameters_setup(param_name,&iVarVal,&fVarVal,param_text,lattice->global_run);
-                    free(param_text);
-                    free(param_name);
+                    FREE(param_text);
+                    FREE(param_name);
                 }
             }
 
@@ -232,7 +232,7 @@ lattice->global_run->check_prngs         = true;   // check PRNG production
     lattice->simulate();  // MC simulations
 
     // new code____________________
-    delete lattice;
+    if (lattice) delete lattice;
 
     printf("\n[...Program is completed successfully...]\n\n");
     return result;

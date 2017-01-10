@@ -49,14 +49,12 @@
 #define PATH_SEPARATOR      "/"
 #endif
 
-#define FNAME_MAX_LENGTH    128
-
 #define HASHES_SIZE         30
 
 namespace GPU_CL{
 using GPU_CL::GPU;
 
-    char GPU::current_path[FILENAME_MAX]= "\0";     // FILENAME_MAX is definned by <stdio.h>
+    char GPU::current_path[FNAME_MAX_LENGTH]= "\0";
 
                 GPU::GPU(void)
 {
@@ -116,13 +114,12 @@ using GPU_CL::GPU;
 }
                 GPU::~GPU(void)
 {
-    delete GPU_debug;
-    delete[] GPU_kernels;
-    delete[] GPU_buffers;
-    delete[] GPU_programs;
-
-//    free(cl_root_path); cl_root_path = NULL;
-//    free(CPU_timer); CPU_timer = NULL;
+    if (GPU_debug)    delete GPU_debug;
+    if (GPU_kernels)  delete[] GPU_kernels;
+    if (GPU_buffers)  delete[] GPU_buffers;
+    if (GPU_programs) delete[] GPU_programs;
+    FREE(cl_root_path);
+    FREE(CPU_timer);
 }
 
                 GPU::GPU_debug_flags::GPU_debug_flags(void){
@@ -136,7 +133,7 @@ using GPU_CL::GPU;
 }
                 GPU::GPU_debug_flags::~GPU_debug_flags(void){
 
-                }
+}
 
                 GPU::kernels_hash::kernels_hash(void)
 {
@@ -154,9 +151,9 @@ using GPU_CL::GPU;
 }
                 GPU::kernels_hash::~kernels_hash(void)
 {
-      free((void*)(kernel_name));  kernel_name = NULL;
-      free(global_size);  global_size = NULL;
-      free(local_size); local_size = NULL;
+      FREE(kernel_name);
+      FREE(global_size);
+      FREE(local_size);
 }
 
                 GPU::buffers_hash::buffers_hash(void)
@@ -177,8 +174,8 @@ using GPU_CL::GPU;
 }
                 GPU::buffers_hash::~buffers_hash(void)
 {
-      free(name);   name = NULL;
-      free(host_ptr); host_ptr = NULL;
+      FREE(name);
+      FREE(host_ptr);
 }
 
                 GPU::programs_hash::programs_hash(void)
@@ -193,12 +190,12 @@ using GPU_CL::GPU;
 }
                 GPU::programs_hash::~programs_hash(void)
 {
-      free((void*)(source_ptr)); source_ptr = NULL;
-      free((void*)(options)); options = NULL;
-//      free((void*)(md5)); md5 = NULL;
-      free((void*)(datetime)); datetime = NULL;
-      free((void*)(device)); device = NULL;
-      free((void*)(build_log)); build_log = NULL;
+      FREE(source_ptr);
+      FREE(options);
+//      FREE(md5);
+      FREE(datetime);
+      FREE(device);
+      FREE(build_log);
 }
 
 char*           GPU::trim(char* str)
@@ -258,7 +255,7 @@ void            GPU::OpenCL_Check_Error(cl_int CL_Error_code,const char * CL_Err
                 clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_STATUS, 
                                         clBuildLog_size+1, clBuildLog, &clBuildLog_actual_size );
                 printf("\nBuild status:\n%s\n", clBuildLog);
-                free(clBuildLog); clBuildLog = NULL;
+                FREE(clBuildLog);
 
                 clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_OPTIONS, 
                                         0, NULL, &clBuildLog_size );
@@ -266,7 +263,7 @@ void            GPU::OpenCL_Check_Error(cl_int CL_Error_code,const char * CL_Err
                 clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_OPTIONS, 
                                         clBuildLog_size+1, clBuildLog, &clBuildLog_actual_size );
                 printf("\nBuild options:\n%s\n", clBuildLog);
-                free(clBuildLog); clBuildLog = NULL;
+                FREE(clBuildLog);
 
 
                 clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, 
@@ -282,7 +279,7 @@ void            GPU::OpenCL_Check_Error(cl_int CL_Error_code,const char * CL_Err
                     fprintf(stream,clBuildLog);
                     if ( fclose(stream) ) {printf( "The file was not closed!\n" ); }
                 }
-                free(clBuildLog); clBuildLog = NULL;
+                FREE(clBuildLog);
         }
         device_finalize(-1);
         exit(-1);
@@ -354,7 +351,7 @@ int             GPU::device_initialize(void)
     for (int i = 0; i < CPU_timers; i++) CPU_timer[i] = current_time;
 
     // setup current path for loading .cl files
-    if (!GetCurrentDir(current_path, FILENAME_MAX)) {
+    if (!GetCurrentDir(current_path, FNAME_MAX_LENGTH)) {
         GPU_error = GPU_error_device_initialization_failed;
         return 0;
     }
@@ -441,7 +438,7 @@ int             GPU::device_initialize(void)
 }
 int             GPU::device_finalize(int error_code)
 {
-    free(GPU_max_work_item_sizes); GPU_max_work_item_sizes = NULL;
+    FREE(GPU_max_work_item_sizes);
 
     // clean GPU_kernels and programms
 
@@ -457,8 +454,8 @@ int             GPU::device_finalize(int error_code)
     if (GPU_queue) clReleaseCommandQueue(GPU_queue);
     if (GPU_context) clReleaseContext(GPU_context);
 
-     if (GPU_info.device_name) delete[] GPU_info.device_name;
-     if (CPU_timer) delete[] CPU_timer;
+    FREE(GPU_info.device_name);
+    FREE(CPU_timer);
 
     if (GPU_debug->wait_for_keypress) {printf("\nPress any key to exit...\n"); _getch();}
 
@@ -533,7 +530,7 @@ bool            GPU::device_auto_select(int platform_vendor,int vendor)
                         t = devices_number;
                     }
                 }
-                if (devices) delete[] devices;
+                FREE(devices);
             }
         }
     }
@@ -593,8 +590,8 @@ bool            GPU::device_select(unsigned int platform_id,unsigned int device_
     else if (strstr(infobuf,"Advanced Micro Devices")!=NULL) { GPU_info.device_vendor = GPU_vendor_AMD; }
     else if (strstr(infobuf,"Intel")!=NULL)                  { GPU_info.device_vendor = GPU_vendor_Intel; }
 
-    if(GPU_platforms) delete[] GPU_platforms;
-    if(GPU_devices)   delete[] GPU_devices;
+    FREE(GPU_platforms);
+    FREE(GPU_devices);
 
     GPU_platform_id = platform_id;
     GPU_device_id   = device_id;
@@ -664,8 +661,8 @@ char*           GPU::source_add(char* source, const char* file_name)
     error_code += (int) (strlen(result_source2) + strlen(temporary_source) - _snprintf_s(result_source, result_source_length * sizeof(char), _TRUNCATE, "%s%s", result_source2, temporary_source));
     if (error_code) return source;
 
-    free(temporary_source); temporary_source = NULL;
-    free(result_source2);   result_source2 = NULL;
+    FREE(temporary_source);
+    FREE(result_source2);
 
     return result_source;
 }
@@ -710,7 +707,7 @@ int             GPU::program_create(const char* source,const char* options){
         // get .inf-file
         int parameters_items = 0;
         GPU_init_parameters* parameters = get_init_file(buffer_inf);
-        if (parameters==NULL) {delete[] &buffer_inf; return 1;}
+        if (parameters==NULL) return 1;
         bool inf_number  = false;
         bool inf_md5     = false;
         bool inf_device  = false;
@@ -788,7 +785,7 @@ int             GPU::program_create(const char* source,const char* options){
 
             sprintf_s(srcbuf,new_srcbuflen,"%s\n// Build: %s",GPU_programs[GPU_active_program].source_ptr,get_current_datetime());
             GPU_programs[GPU_active_program].program = clCreateProgramWithSource(GPU_context, 1,(const char**) &srcbuf, NULL, &GPU_error);
-            free(srcbuf);   srcbuf = NULL;
+            FREE(srcbuf);
         } else {
             GPU_programs[GPU_active_program].program = clCreateProgramWithSource(GPU_context, 1,&GPU_programs[GPU_active_program].source_ptr, NULL, &GPU_error);
         }
@@ -841,12 +838,12 @@ int             GPU::program_create(const char* source,const char* options){
            fwrite(binary[idx],1,binary_sizes[idx],cl_program_file);
            if ( fclose(cl_program_file) ) printf( "The file was not closed!\n" );
         }
-        free(devices);  devices = NULL;
-        free(binary_sizes); binary_sizes = NULL;
+        FREE(devices);
+        FREE(binary_sizes);
         for (unsigned int i = 0; i < num_devices; ++i) {
-            free(binary[i]);  binary[i] = NULL;
+            FREE(binary[i]);
         }
-        free(binary);   binary = NULL;
+        FREE(binary);
         GPU_inf_max_n++;
     } else {
 
@@ -873,7 +870,7 @@ int             GPU::program_create(const char* source,const char* options){
             OpenCL_Check_Error(clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, size, GPU_programs[GPU_active_program].build_log, NULL),"clGetProgramBuildInfo failed");
             if (GPU_debug->brief_report) printf("Program buid log: [%s]\n", GPU_programs[GPU_active_program].build_log);
         }
-        free(binary);   binary = NULL;
+        FREE(binary);
     }
 
     // setup program
@@ -1750,9 +1747,7 @@ GPU::GPU_init_parameters*    GPU::get_init_file(char finitf[])
       fclose( stream );
     }
 
-    if (struc_length == 0) {
-        free(result); result = NULL;
-    }
+    if (struc_length == 0) FREE(result);
 
     return result;
 }
@@ -1828,11 +1823,13 @@ int             GPU::inf_file_delete(int index){
         // kill .inf-file
         int j  = sprintf_s(buffer_inf,FNAME_MAX_LENGTH,"program%u.inf",index);
         err = remove(buffer_inf);
-        if (err) {delete[] buffer_inf; return err;}
-            j = sprintf_s(buffer_inf,FNAME_MAX_LENGTH,"program%u.bin",index);
-        // kill .bin-file
-        err = remove(buffer_inf);
-        delete[] buffer_inf;
+        if (!err)
+        {
+            j = sprintf_s(buffer_inf, FNAME_MAX_LENGTH, "program%u.bin", index);
+            // kill .bin-file
+            err = remove(buffer_inf);
+        }
+        FREE(buffer_inf);
         return err;
 }
 int             GPU::inf_file_rename(int index_old,int index_new){
@@ -1845,15 +1842,16 @@ int             GPU::inf_file_rename(int index_old,int index_new){
         j = sprintf_s(buffer_new,FNAME_MAX_LENGTH,"program%u.inf",index_new);
         // rename .inf-file
         err = rename(buffer_old,buffer_new);
-        if (err) {delete[] buffer_old; delete[] buffer_new; return err;}
+        if (!err)
+        {
+            j = sprintf_s(buffer_old, FNAME_MAX_LENGTH, "program%u.bin", index_old);
+            j = sprintf_s(buffer_new, FNAME_MAX_LENGTH, "program%u.bin", index_new);
+            // rename .bin-file
+            err = rename(buffer_old, buffer_new);
+        }
 
-        j = sprintf_s(buffer_old,FNAME_MAX_LENGTH,"program%u.bin",index_old);
-        j = sprintf_s(buffer_new,FNAME_MAX_LENGTH,"program%u.bin",index_new);
-        // rename .bin-file
-        err = rename(buffer_old,buffer_new);
-        delete[] buffer_old;
-        delete[] buffer_new;
-
+        FREE(buffer_old);
+        FREE(buffer_new);
         return err;
 }
 int             GPU::inf_file_get_max_n(void){
@@ -1868,7 +1866,7 @@ int             GPU::inf_file_get_max_n(void){
             result++;
         }
         result -= 2;
-        free(buffer_inf);  buffer_inf = NULL;
+        FREE(buffer_inf);
         return result;
 }
 

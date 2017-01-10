@@ -43,8 +43,6 @@ using PRNG_CL::PRNG;
 
 #define SOURCE_PRNG         "random/random.cl"
 
-#define FNAME_MAX_LENGTH     250  // max length of filename with path
-
 
                     PRNG::PRNG(void){
     random = NULL;
@@ -381,9 +379,9 @@ unsigned int        PRNG::check(void)
         }
     }
 
-    delete[] randoms_cpu;
-
     printf("PRNG check result: %u errors (%u samples)\n\n",result,run_PRNG->PRNG_samples*4);
+
+    FREE(randoms_cpu);
 
     return result;
 }

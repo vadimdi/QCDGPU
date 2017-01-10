@@ -45,14 +45,14 @@
   #include <windows.h>
   #include <conio.h>
   #include <direct.h>
-  #define GetCurrentDir _getcwd
+  #define GetCurrentDir(ptr,size)   (_getcwd(ptr,size))
   static const char slash[]="\\"; 
   #define snprintf(b,size,fmt,...) _snprintf_s((b),(size),_TRUNCATE,(fmt),##__VA_ARGS__)
 #else
   #include <string.h>
   #include <cstdlib>
   #include <unistd.h>
-  #define GetCurrentDir getcwd
+  #define GetCurrentDir(ptr,size)   (getcwd(ptr,size))
   static const char slash[]="/";
   
   #define	sprintf_s(b,size,fmt,...) sprintf((b),(fmt),##__VA_ARGS__)
@@ -77,5 +77,9 @@
 #include <string>
 #include <time.h>
 #include <malloc.h>
+
+#define FREE(ptr)     {free((void*)ptr); ptr=NULL;}
+#define FNAME_MAX_LENGTH    FILENAME_MAX  // FILENAME_MAX is definned by <stdio.h>
+
 
 #endif
