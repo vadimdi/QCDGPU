@@ -175,15 +175,15 @@ class GPU {
 
 
             // ___________________________________________ debug section
-                    void OpenCL_Check_Error(cl_int CL_Error_code,const char * CL_Error_description);
-            unsigned int convert_to_uint(float value);
-            unsigned int convert_to_uint_HIGH(double x);
-            unsigned int convert_to_uint_LOW(double x);
-                   float convert_to_float(unsigned int value);
-                   float convert_to_float(double value);
-                  double convert_to_double(float value);
-           static double convert_to_double(unsigned int value);
-           static double convert_to_double(unsigned int value_LOW, unsigned int value_HIGH);
+                    void OpenCL_Check_Error(const cl_int CL_Error_code, const char * CL_Error_description);
+           static unsigned int convert_to_uint(float value);
+           static unsigned int convert_to_uint_HIGH(double x);
+           static unsigned int convert_to_uint_LOW(double x);
+           static float  convert_to_float(const unsigned int value);
+           static float  convert_to_float(const double value);
+           static double convert_to_double(const float value);
+           static double convert_to_double(const unsigned int value);
+           static double convert_to_double(const unsigned int value_LOW, const unsigned int value_HIGH);
 
             // ___________________________________________ public functions
             int     device_initialize(void);
@@ -265,11 +265,10 @@ static GPU_init_parameters* get_init_file(char finitf[]);
           double    get_timer_CPU(int timer);
            char*    get_current_datetime(void);
 
-            void    trim(char* str);
-             int    str_char_replace(char* str, char search, char replace);
-
      static void    copy_debug_flags(GPU_debug_flags* GPU_debug_source,GPU_debug_flags* GPU_debug_destination);
 
+     static void    trim(char* str);
+     static  int    str_char_replace(char* str, const char search, const char replace);
 
 
 

@@ -194,25 +194,7 @@ namespace GPU_CL{
       FREE(device);
       FREE(build_log);
 }
-void           GPU::trim(char* str)
-{
-    int start_str = 0;
-    int str_len   = (int)strlen_s(str);
-    int end_str   = str_len - 1;
-    if (end_str < 0) return;
-
-    while (end_str && (str[end_str] == ' ')) --end_str;
-    while ((start_str < end_str) && (str[start_str] == ' ')) ++start_str;
-
-    str_len = _MAX( 0, end_str - start_str + 1);
-
-    if (start_str) memmove(str, (str + start_str), str_len);
-
-    str[str_len] = 0;
-}
-void            GPU::OpenCL_Check_Error(cl_int CL_Error_code,const char * CL_Error_description)
-{
-    using GPU_CL::GPU;
+void            GPU::OpenCL_Check_Error(const cl_int CL_Error_code, const char * CL_Error_description){
     if (CL_Error_code != CL_SUCCESS){
         printf("ERROR %i: (%s)\n", CL_Error_code, CL_Error_description);
         if (GPU_current_kernel>0)
@@ -262,7 +244,7 @@ void            GPU::OpenCL_Check_Error(cl_int CL_Error_code,const char * CL_Err
                 fopen_s(&stream,buffer,"w+");
                 if(stream) {
                     fprintf(stream,clBuildLog);
-                    if ( fclose(stream) ) {printf( "The file was not closed!\n" ); }
+                    if ( fclose(stream) ) printf( "The file was not closed!\n" );
                 }
                 FREE(clBuildLog);
         }
@@ -270,67 +252,56 @@ void            GPU::OpenCL_Check_Error(cl_int CL_Error_code,const char * CL_Err
         exit(-1);
     }
 }
-cl_uint         GPU::clGetDeviceInfoUint(cl_device_id device,cl_device_info inf)
-{
+cl_uint         GPU::clGetDeviceInfoUint(cl_device_id device,cl_device_info inf){
     size_t result; // cl_uint 
     OpenCL_Check_Error(clGetDeviceInfo(device,inf,sizeof(result), &result, NULL),(char*) "clGetDeviceInfo failed");
     return (cl_uint) result;
 }
-cl_ulong        GPU::clGetDeviceInfoUlong(cl_device_id device,cl_device_info device_info)
-{
+cl_ulong        GPU::clGetDeviceInfoUlong(cl_device_id device,cl_device_info device_info){
     cl_ulong result;
     OpenCL_Check_Error(clGetDeviceInfo(device,device_info,sizeof(result), &result, NULL),(char*) "clGetDeviceInfo failed");
     return result;
 }
 // ___ converting _________________________________________________________________________________
-float           GPU::convert_to_float(unsigned int value)
-{
+float           GPU::convert_to_float(const unsigned int value){
     _Uint_and_Float u2fconv;
     u2fconv.uint_value[0]=value;
     return u2fconv.float_value;
 }
-float           GPU::convert_to_float(double value)
-{
+float           GPU::convert_to_float(const double value){
     return (float) value;
 }
-double          GPU::convert_to_double(float value)
-{
+double          GPU::convert_to_double(const float value){
     return (double) value;
 }
-double          GPU::convert_to_double(unsigned int value)
-{
+double          GPU::convert_to_double(const unsigned int value){
     _Uint_and_Float u2fconv;
     u2fconv.uint_value[0]=value;
     return (double) u2fconv.float_value;
 }
-double          GPU::convert_to_double(unsigned int value_LOW,unsigned int value_HIGH)
-{
+double          GPU::convert_to_double(const unsigned int value_LOW, const unsigned int value_HIGH){
     Int_to_Double test;
         test.int_value[0] = value_LOW;
         test.int_value[1] = value_HIGH;
     return test.double_value;
 }
-unsigned int    GPU::convert_to_uint_HIGH(double x)
-{
+unsigned int    GPU::convert_to_uint_HIGH(const double x){
     Int_to_Double test;
         test.double_value= x;
     return test.int_value[1];
 }
-unsigned int    GPU::convert_to_uint_LOW(double x)
-{
+unsigned int    GPU::convert_to_uint_LOW(const double x){
     Int_to_Double test;
         test.double_value = x;
     return test.int_value[0];
 }
-unsigned int    GPU::convert_to_uint(float value)
-{
+unsigned int    GPU::convert_to_uint(const float value){
     Uint_and_Float u2fconv;
     u2fconv.float_value = value;
     return u2fconv.uint_value[0];
 }
 // ___ device _____________________________________________________________________________________
-int             GPU::device_initialize(void)
-{
+int             GPU::device_initialize(void){
     // initialize CPU timers by time of device initialization time
     int current_time = clock();
     for (int i = 0; i < CPU_timers; i++) CPU_timer[i] = current_time;
@@ -1649,16 +1620,6 @@ double          GPU::time_megabytes_per_second(double elapsed_time,double size){
     else
         return (size/elapsed_time/(1.024*1.024*1.024)*1024.0); // converting bytes->megabytes
 }
-
-int             GPU::str_char_replace(char* str, char search, char replace){
-      int result = 0;
-        for (size_t i = 0; i<strlen(str); i++)
-            if (str[i]==search){
-                str[i] = replace;
-                result++;
-            }
-      return result;
-}
 GPU::GPU_init_parameters*    GPU::get_init_file(char finitf[])
 {
     FILE *stream;
@@ -1879,4 +1840,30 @@ char*           GPU::str_parameter_init(char* str_source){
        return str_destination;
 }
 
+
+void            GPU::trim(char* str){
+    int start_str = 0;
+    int str_len = (int)strlen_s(str);
+    int end_str = str_len - 1;
+    if (end_str < 0) return;
+
+    while (end_str && (str[end_str] == HGPU_CHAR_SPACE)) --end_str;
+    while ((start_str < end_str) && (str[start_str] == HGPU_CHAR_SPACE)) ++start_str;
+
+    str_len = _MAX(0, end_str - start_str + 1);
+
+    if (start_str) memmove(str, (str + start_str), str_len);
+
+    str[str_len] = 0;
 }
+int             GPU::str_char_replace(char* str, const char search, const char replace){
+    const int str_len = (int)strlen_s(str);
+    int result = 0;
+    for (; result < str_len; ++result)
+        if (str[result] == search)
+            str[result] = replace;
+    return result;
+}
+
+
+} // namespace GPU_CL
