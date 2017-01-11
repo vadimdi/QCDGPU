@@ -43,8 +43,6 @@ namespace SUN_CPU{
 using SUN_CPU::SU;
 using model_CL::model;
 
-#define MIN(a,b) ((a) < (b)) ? (a) : (b)
-
       char direction_X[] = "X";
       char direction_Y[] = "Y";
       char direction_Z[] = "Z";
@@ -95,6 +93,7 @@ SU::o_1         SU::lattice_get_o1(model* lat,unsigned int * lattice_table,unsig
 double          SU::o1_Phi(model* lat,o_1 Ux){
     double a = (-1.0+0.5*lat->run->ON_eta*(log(1.0-Ux.u1)))*log(1.0-Ux.u1);
     double result = 0.5*a*a*lat->run->ON_b;
+
     return result;
 }
 double          SU::o1_action(model* lat,o_1 Ux,o_1 U0,o_1 U1,o_1 U2,o_1 U3){
@@ -113,7 +112,7 @@ double          SU::o1_action(model* lat,o_1 Ux,o_1 U0,o_1 U1,o_1 U2,o_1 U3){
            term    += lat->run->ON_zeta*lat->run->ON_zeta*logPhi3*logPhi3;
 
     double S = Phi*(Phi-1.0+lat->run->ON_sqrt_z_lambda_zeta*term)/lat->run->ON_z
-              -0.5*(lat->run->ON_SK_group-1.0)*log(2.0-MIN(1.9999999999,sqrt(2.0*Phi)))
+              -0.5*(lat->run->ON_SK_group-1.0)*log(2.0-_MIN(1.9999999999,sqrt(2.0*Phi)))
               -log((1.0-lat->run->ON_eta*log(1.0-Ux.u1))/(1.0-Ux.u1));
 
     return S;

@@ -134,7 +134,7 @@ o1_action(hgpu_float* S,hgpu_float* Ux,hgpu_float4* Uxmu, __global const hgpu_fl
 
     (*S) =
             // potentail term
-            -SKGROUPM1_2 * log(2.0-min(1.9999999999,sqrt(2.0*Phi)))
+            -SKGROUPM1_2 * log(2.0-MIN(1.9999999999,sqrt(2.0*Phi)))
             -log((1.0-eta*log_one_m_Ux)/(1.0-(*Ux)))
             +Phi*(Phi-1.0
 

@@ -265,7 +265,7 @@ static GPU_init_parameters* get_init_file(char finitf[]);
           double    get_timer_CPU(int timer);
            char*    get_current_datetime(void);
 
-           char*    trim(char* str);
+            void    trim(char* str);
              int    str_char_replace(char* str, char search, char replace);
 
      static void    copy_debug_flags(GPU_debug_flags* GPU_debug_source,GPU_debug_flags* GPU_debug_destination);

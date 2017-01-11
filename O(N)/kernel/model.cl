@@ -39,9 +39,9 @@
 #define MODEL_CL
 
 #if defined(cl_amd_fp64)  // AMD extension available?
-	#pragma OPENCL EXTENSION cl_amd_fp64 : enable
+    #pragma OPENCL EXTENSION cl_amd_fp64 : enable
 #elif defined(cl_khr_fp64)  // Khronos extension available?
-	#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+    #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 #endif
 
 #ifndef PRECISION
@@ -56,13 +56,12 @@
 #define PRECISION_MIXED             // define mixed precision
 #endif
 
-#define ON_SUB_SCHEME   // for symmetric scheme for differences
-
+//#define ON_SUB_SCHEME   // for symmetric scheme for differences
 
 // ________________ additional functions
-#define MIN(a,b) ((a) < (b)) ? (a) : (b)
-#define MAX(a,b) ((a) > (b)) ? (a) : (b)
-#define CEIL(a) ((a - (int)a)==0 ? (int)a : (int)a+1)
+#define MIN(a,b)    (((a) < (b)) ? (a) : (b))
+#define MAX(a,b)    (((a) > (b)) ? (a) : (b))
+#define CEIL(a)     ((a - (int)a)==0 ? (int)a : (int)a+1)
 
 #define GID_SIZE    (get_global_size(0) * get_global_size(1) * get_global_size(2))
 #define GID         (get_global_id(0) + get_global_id(1) * get_global_size(0) + get_global_id(2) * get_global_size(0) * get_global_size(1))
@@ -153,8 +152,8 @@
 #endif
 
 typedef union _Float_and_Double{         // Float <---> Double converter
-				float       flVal[2];
-				hgpu_double dbVal;
+                float       flVal[2];
+                hgpu_double dbVal;
 } Float_and_Double;
 
 

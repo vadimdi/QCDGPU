@@ -48,13 +48,6 @@ using analysis_CL::analysis;
 const char* FXYZ[] = {"x","y","z","t"};   // markers for axis
 const char* REIM[] = {"re","im"};         // markers for re / im
 
-#ifndef min
-#define min(a,b) ((a) < (b)) ? (a) : (b)
-#endif
-#ifndef max
-#define max(a,b) ((a) > (b)) ? (a) : (b)
-#endif
-
 #define TIMER_FOR_ELAPSED      0  // index of timer for elapsed time calculation
 #define TIMER_FOR_SIMULATIONS  1  // index of timer for  simulation time calculation
 #define TIMER_FOR_SAVE         2  // index of timer for saving lattice states during simulation

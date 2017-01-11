@@ -52,9 +52,8 @@
 #define HASHES_SIZE         30
 
 namespace GPU_CL{
-using GPU_CL::GPU;
 
-    char GPU::current_path[FNAME_MAX_LENGTH]= "\0";
+    char GPU::current_path[FNAME_MAX_LENGTH] = {0};
 
                 GPU::GPU(void)
 {
@@ -114,14 +113,13 @@ using GPU_CL::GPU;
 }
                 GPU::~GPU(void)
 {
-    if (GPU_debug)    delete GPU_debug;
+    if (GPU_debug)    delete   GPU_debug;
     if (GPU_kernels)  delete[] GPU_kernels;
     if (GPU_buffers)  delete[] GPU_buffers;
     if (GPU_programs) delete[] GPU_programs;
     FREE(cl_root_path);
     FREE(CPU_timer);
 }
-
                 GPU::GPU_debug_flags::GPU_debug_flags(void){
     // setup debug_level
     wait_for_keypress = false;
@@ -155,7 +153,6 @@ using GPU_CL::GPU;
       FREE(global_size);
       FREE(local_size);
 }
-
                 GPU::buffers_hash::buffers_hash(void)
 {
       buffer_type                       = 0;
@@ -197,34 +194,22 @@ using GPU_CL::GPU;
       FREE(device);
       FREE(build_log);
 }
-
-char*           GPU::trim(char* str)
+void           GPU::trim(char* str)
 {
-    int start_str=0;
-    int end_str=(int) strlen(str) - 1;
-    if (end_str<=0) return str;
-    bool start_flag = true;
-    bool end_flag   = true;
-    while ((start_flag) && (start_str<(int) strlen(str))) {
-        if (str[start_str]==32) start_str++;
-        else start_flag = false;
-    }
-    while ((end_flag) && (end_str>0)) {
-        if (str[end_str]==32) end_str--;
-        else end_flag = false;
-    }
-    int str_len = end_str - start_str + 1;
-    if (str_len<0) str_len=0;
-    char* result = (char*) calloc(str_len+1,sizeof(char));
-    int j = 0;
-    for (int i=start_str;i<end_str+1;i++){
-        result[j] =str[i];
-        j++;
-    }
-    result[j]=0;
-    return result;
-}
+    int start_str = 0;
+    int str_len   = (int)strlen_s(str);
+    int end_str   = str_len - 1;
+    if (end_str < 0) return;
 
+    while (end_str && (str[end_str] == ' ')) --end_str;
+    while ((start_str < end_str) && (str[start_str] == ' ')) ++start_str;
+
+    str_len = _MAX( 0, end_str - start_str + 1);
+
+    if (start_str) memmove(str, (str + start_str), str_len);
+
+    str[str_len] = 0;
+}
 void            GPU::OpenCL_Check_Error(cl_int CL_Error_code,const char * CL_Error_description)
 {
     using GPU_CL::GPU;
@@ -604,7 +589,7 @@ char*           GPU::device_get_name(cl_device_id device){
 
         char* result = (char*) calloc(result_length,sizeof(char));
         OpenCL_Check_Error(clGetDeviceInfo(device,CL_DEVICE_NAME,result_length, (void*) result, &result_actual_size),"clGetDeviceInfo failed");
-        result = trim(result);
+        trim(result);
         result = (char*) realloc(result,result_actual_size * sizeof(char));
 
     return result;
@@ -615,7 +600,7 @@ char*           GPU::platform_get_name(cl_platform_id platform){
 
         char* result = (char*) calloc(result_length,sizeof(char));
         OpenCL_Check_Error(clGetPlatformInfo(platform,CL_PLATFORM_NAME,result_length, (void*) result, &result_actual_size),"clGetPlatformInfo failed");
-        result = trim(result);
+        trim(result);
         result = (char*) realloc(result,result_actual_size * sizeof(char));
 
     return result;

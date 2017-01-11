@@ -78,7 +78,10 @@
 #include <time.h>
 #include <malloc.h>
 
-#define FREE(ptr)     {free((void*)ptr); ptr=NULL;}
+#define strlen_s(str)       ((str) ? strlen(str) : 0)
+#define _MIN(x,y)           ( ((x)<(y)) ? (x) : (y) )
+#define _MAX(x,y)           ( ((x)>(y)) ? (x) : (y) )
+#define FREE(ptr)           {free((void*)ptr); ptr=NULL;}
 #define FNAME_MAX_LENGTH    FILENAME_MAX  // FILENAME_MAX is definned by <stdio.h>
 
 

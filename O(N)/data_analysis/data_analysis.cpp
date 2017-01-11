@@ -37,11 +37,8 @@
 
 #include "data_analysis.h"
 
-#define VDELTA_DOUBLE  0.00000000001 // accuracy for results verification (double precision)
-#define VDELTA_SINGLE  0.00005       // accuracy for results verification (single precision)
-
-#define min(a,b) (((a) < (b)) ? (a) : (b))
-#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define VDELTA_DOUBLE  0.0000000001 // accuracy for results verification (double precision)
+#define VDELTA_SINGLE  0.00005      // accuracy for results verification (single precision)
 
 namespace analysis_CL{
 using analysis_CL::analysis;
@@ -69,7 +66,7 @@ using analysis_CL::analysis;
                 part_number         = 0;
 }
             analysis::data_analysis::~data_analysis(void) {
-	        free(data);
+            free(data);
             free(CPU_data);
 }
 
@@ -187,9 +184,9 @@ void        analysis::lattice_data_analysis_CPU(data_analysis* data){
     data->CPU_last_value = data->CPU_data[last_index];
 }
 void        analysis::lattice_data_analysis_joint(data_analysis* data,data_analysis* data1,data_analysis* data2){
-    data->data_size = min(data1->data_size,data2->data_size);
-    data->number_of_series = max(data1->number_of_series,data2->number_of_series);
-    data->part_number = min(data1->part_number,data2->part_number);
+    data->data_size = _MIN(data1->data_size,data2->data_size);
+    data->number_of_series = _MAX(data1->number_of_series,data2->number_of_series);
+    data->part_number = _MIN(data1->part_number,data2->part_number);
     data->storage_type = GPU_CL::GPU::GPU_storage_joint;
     int last_index = (data->data_size - 1);
     if (data->data==NULL) data->data = (double*) calloc((data->data_size*data->number_of_series)+1,sizeof(double));
@@ -213,9 +210,9 @@ void        analysis::lattice_data_analysis_joint(data_analysis* data,data_analy
 }
 void        analysis::lattice_data_analysis_joint_variance(data_analysis* data,data_analysis* data1,data_analysis* data2){
 
-    data->data_size = min(data1->data_size,data2->data_size);
-    data->number_of_series = max(data1->number_of_series,data2->number_of_series);
-    data->part_number = min(data1->part_number,data2->part_number);
+    data->data_size = _MIN(data1->data_size,data2->data_size);
+    data->number_of_series = _MAX(data1->number_of_series,data2->number_of_series);
+    data->part_number = _MIN(data1->part_number,data2->part_number);
     data->storage_type = GPU_CL::GPU::GPU_storage_joint;
     int last_index = (data->data_size - 1);
     if (data->data==NULL) data->data = (double*) calloc((data->data_size*data->number_of_series)+1,sizeof(double));
@@ -237,9 +234,9 @@ void        analysis::lattice_data_analysis_joint_variance(data_analysis* data,d
 }
 
 void        analysis::lattice_data_analysis_joint_CPU(data_analysis* data,data_analysis* data1,data_analysis* data2){
-    data->data_size = min(data1->data_size,data2->data_size);
-    data->number_of_series = max(data1->number_of_series,data2->number_of_series);
-    data->part_number = min(data1->part_number,data2->part_number);
+    data->data_size = _MIN(data1->data_size,data2->data_size);
+    data->number_of_series = _MAX(data1->number_of_series,data2->number_of_series);
+    data->part_number = _MIN(data1->part_number,data2->part_number);
     data->storage_type = GPU_CL::GPU::GPU_storage_joint;
     int last_index = (data->data_size - 1);
     if(data->CPU_data==NULL) data->CPU_data = (double*) calloc((data->data_size*data->number_of_series)+1,sizeof(double));
@@ -255,9 +252,9 @@ void        analysis::lattice_data_analysis_joint_CPU(data_analysis* data,data_a
 }
 void        analysis::lattice_data_analysis_joint3(data_analysis* data,data_analysis* data1,
                                                    data_analysis* data2,data_analysis* data3){
-    data->data_size = min(min(data1->data_size,data2->data_size),data3->data_size);
-    data->number_of_series = max(max(data1->number_of_series,data2->number_of_series),data3->number_of_series);
-    data->part_number = min(min(data1->part_number,data2->part_number),data3->part_number);
+    data->data_size = _MIN(_MIN(data1->data_size,data2->data_size),data3->data_size);
+    data->number_of_series = _MAX(_MAX(data1->number_of_series,data2->number_of_series),data3->number_of_series);
+    data->part_number = _MIN(_MIN(data1->part_number,data2->part_number),data3->part_number);
     data->storage_type = GPU_CL::GPU::GPU_storage_joint;
     int last_index = (data->data_size - 1);
     if (data->data==NULL) data->data = (double*) calloc((data->data_size*data->number_of_series)+1,sizeof(double));
