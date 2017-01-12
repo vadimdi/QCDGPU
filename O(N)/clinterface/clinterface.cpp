@@ -197,8 +197,7 @@ namespace GPU_CL{
 void            GPU::OpenCL_Check_Error(const cl_int CL_Error_code, const char * CL_Error_description){
     if (CL_Error_code != CL_SUCCESS){
         printf("ERROR %i: (%s)\n", CL_Error_code, CL_Error_description);
-        if (GPU_current_kernel>0)
-        {
+        if (GPU_current_kernel>0){
             char* clBuildLog;
             size_t clBuildLog_size, clBuildLog_actual_size;
             FILE *stream;
@@ -242,7 +241,7 @@ void            GPU::OpenCL_Check_Error(const cl_int CL_Error_code, const char *
 
                 j  = sprintf_s(buffer  ,sizeof(buffer),  "%s",PRG_ERROR_DEBUG);
                 fopen_s(&stream,buffer,"w+");
-                if(stream) {
+                if (stream){
                     fprintf(stream,clBuildLog);
                     if ( fclose(stream) ) printf( "The file was not closed!\n" );
                 }
@@ -253,7 +252,7 @@ void            GPU::OpenCL_Check_Error(const cl_int CL_Error_code, const char *
     }
 }
 cl_uint         GPU::clGetDeviceInfoUint(cl_device_id device,cl_device_info inf){
-    size_t result; // cl_uint 
+    size_t result; // cl_uint
     OpenCL_Check_Error(clGetDeviceInfo(device,inf,sizeof(result), &result, NULL),(char*) "clGetDeviceInfo failed");
     return (cl_uint) result;
 }
@@ -287,7 +286,7 @@ double          GPU::convert_to_double(const unsigned int value_LOW, const unsig
 }
 unsigned int    GPU::convert_to_uint_HIGH(const double x){
     Int_to_Double test;
-        test.double_value= x;
+        test.double_value = x;
     return test.int_value[1];
 }
 unsigned int    GPU::convert_to_uint_LOW(const double x){
@@ -304,7 +303,7 @@ unsigned int    GPU::convert_to_uint(const float value){
 int             GPU::device_initialize(void){
     // initialize CPU timers by time of device initialization time
     int current_time = clock();
-    for (int i = 0; i < CPU_timers; i++) CPU_timer[i] = current_time;
+    for (int i = 0; i < CPU_timers; ++i) CPU_timer[i] = current_time;
 
     // setup current path for loading .cl files
     if (!GetCurrentDir(current_path, FNAME_MAX_LENGTH)) {
@@ -417,15 +416,14 @@ int             GPU::device_finalize(int error_code)
 
     return error_code;
 }
-bool            GPU::device_auto_select(int platform_vendor,int vendor)
-{
-    bool supported_platform = false;    // is there supported platform?
-    if (platform_vendor==GPU_vendor_any) supported_platform = true; // if vendor_any then do not filter platfroms
-    bool supported_device   = false;    // is there supported device?
-    cl_uint platforms_number;           // number of available platforms
-    cl_uint devices_number;             // number of available devices
-    cl_platform_id platform = NULL;     // supported platform
-    cl_device_id device = NULL;         // supported device
+bool            GPU::device_auto_select(int platform_vendor,int vendor){
+    bool supported_platform = (platform_vendor == GPU_vendor_any); // is there supported platform?
+    bool supported_device = (vendor == GPU_vendor_any); // is there supported device?
+    cl_uint platforms_number;        // number of available platforms
+    cl_uint devices_number;          // number of available devices
+    cl_platform_id platform = NULL;  // supported platform
+    cl_device_id device = NULL;      // supported device
+    char infobuf[4096];
 
     // platform initialization
     OpenCL_Check_Error(clGetPlatformIDs(0,NULL,&platforms_number),"clGetPlatformIDs failed");
@@ -435,21 +433,20 @@ bool            GPU::device_auto_select(int platform_vendor,int vendor)
     }
 
     // query available platforms
-    char infobuf[4096];
     cl_platform_id* platforms = (cl_platform_id*) calloc(platforms_number,sizeof(cl_platform_id));
+
     OpenCL_Check_Error(clGetPlatformIDs(platforms_number,platforms,NULL),"clGetPlatformIDs failed");
-    for(unsigned int i=0; i<platforms_number; i++)
-    {
+    for(unsigned int i=0; i < platforms_number; ++i){
         platform = platforms[i];
         OpenCL_Check_Error(clGetPlatformInfo(platforms[i],CL_PLATFORM_VENDOR,sizeof(infobuf),infobuf,NULL),"clGetPlatformInfo failed");
         if (platform_vendor==GPU_vendor_Apple)
-            supported_platform = (strstr(infobuf,"APPLE")==NULL) ? false : true;
+            supported_platform = (strstr(infobuf,"APPLE") != NULL);
         else if (platform_vendor==GPU_vendor_nVidia)
-            supported_platform = (strstr(infobuf,"NVIDIA")==NULL) ? false : true;
+            supported_platform = (strstr(infobuf,"NVIDIA") != NULL);
         else if (platform_vendor==GPU_vendor_AMD)
-            supported_platform = (strstr(infobuf,"Advanced Micro Devices")==NULL) ? false : true;
+            supported_platform = (strstr(infobuf,"Advanced Micro Devices") != NULL);
         else if (platform_vendor==GPU_vendor_Intel)
-            supported_platform = (strstr(infobuf,"Intel")==NULL) ? false : true;
+            supported_platform = (strstr(infobuf,"Intel") != NULL);
 
         if (supported_platform)
         {
@@ -467,13 +464,13 @@ bool            GPU::device_auto_select(int platform_vendor,int vendor)
                     device = devices[t];
                     OpenCL_Check_Error(clGetDeviceInfo(device,CL_DEVICE_VENDOR,sizeof(infobuf), &infobuf, NULL),"clGetDeviceInfo failed");
                     if (vendor==GPU_vendor_Apple)
-                        supported_device = (strstr(infobuf,"APPLE")==NULL) ? false : true;
+                        supported_device = (strstr(infobuf,"APPLE") != NULL);
                     if (vendor==GPU_vendor_nVidia)
-                        supported_device = (strstr(infobuf,"NVIDIA")==NULL) ? false : true;
+                        supported_device = (strstr(infobuf,"NVIDIA") != NULL);
                     if (vendor==GPU_vendor_AMD)
-                        supported_device = (strstr(infobuf,"Advanced Micro Devices")==NULL) ? false : true;
+                        supported_device = (strstr(infobuf,"Advanced Micro Devices") != NULL);
                     if (vendor==GPU_vendor_Intel)
-                        supported_device = (strstr(infobuf,"Intel")==NULL) ? false : true;
+                        supported_device = (strstr(infobuf,"Intel") != NULL);
                     if (vendor==GPU_vendor_any)
                         supported_device = true;
 

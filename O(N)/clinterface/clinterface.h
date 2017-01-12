@@ -176,6 +176,7 @@ class GPU {
 
             // ___________________________________________ debug section
                     void OpenCL_Check_Error(const cl_int CL_Error_code, const char * CL_Error_description);
+//                    void Check_Error(int error_code);
            static unsigned int convert_to_uint(float value);
            static unsigned int convert_to_uint_HIGH(double x);
            static unsigned int convert_to_uint_LOW(double x);
