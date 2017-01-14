@@ -86,4 +86,7 @@
 
 #define HGPU_CHAR_SPACE     ' ' ///< char: space
 
+#define HGPU_ERROR_CODE(error_code,error_msg)    {case error_code: error_message = error_msg; break;}
+
+
 #endif

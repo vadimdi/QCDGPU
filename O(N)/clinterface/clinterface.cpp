@@ -194,6 +194,82 @@ namespace GPU_CL{
       FREE(device);
       FREE(build_log);
 }
+void            GPU::Check_Error(const int error_code){
+    if (error_code) {
+        const char* error_message = HGPU_GPU_error_code_description(error_code);
+        printf("\n%s\n", error_message);
+        device_finalize(error_code);
+        exit(-1);
+    }
+}
+void            GPU::Check_Alloc(const void* ptr){
+    if (!ptr)
+        Check_Error((int)GPU_error_memory_allocation);
+}
+const char*     GPU::HGPU_GPU_error_code_description(int error_code){
+    const char* error_message;
+
+    switch (error_code) {
+        case GPU_error_memory_allocation: { error_message = "Memory allocation error"; break; }
+        HGPU_ERROR_CODE(CL_DEVICE_NOT_FOUND, "(-1): device not found");
+        HGPU_ERROR_CODE(CL_DEVICE_NOT_AVAILABLE, "(-2): device is not available");
+        HGPU_ERROR_CODE(CL_COMPILER_NOT_AVAILABLE, "(-3): compiler is not available");
+        HGPU_ERROR_CODE(CL_MEM_OBJECT_ALLOCATION_FAILURE, "(-4): buffer allocation failure");
+        HGPU_ERROR_CODE(CL_OUT_OF_RESOURCES, "(-5): out of resources");
+        HGPU_ERROR_CODE(CL_OUT_OF_HOST_MEMORY, "(-6): out of host memory");
+        HGPU_ERROR_CODE(CL_PROFILING_INFO_NOT_AVAILABLE, "(-7): profiling info is not available");
+        HGPU_ERROR_CODE(CL_BUILD_PROGRAM_FAILURE, "(-11): build program failure");
+        HGPU_ERROR_CODE(CL_MAP_FAILURE, "(-12): map failure");
+#ifdef  CL_COMPILE_PROGRAM_FAILURE
+        HGPU_ERROR_CODE(CL_COMPILE_PROGRAM_FAILURE, "(-15): compile program failure");
+#endif
+#ifdef  CL_LINKER_NOT_AVAILABLE
+        HGPU_ERROR_CODE(CL_LINKER_NOT_AVAILABLE, "(-16): linker is not available");
+#endif
+#ifdef  CL_LINK_PROGRAM_FAILURE
+        HGPU_ERROR_CODE(CL_LINK_PROGRAM_FAILURE, "(-17): link program failure");
+#endif
+#ifdef  CL_KERNEL_ARG_INFO_NOT_AVAILABLE
+        HGPU_ERROR_CODE(CL_KERNEL_ARG_INFO_NOT_AVAILABLE, "(-19): kernel argument info is not available");
+#endif
+        HGPU_ERROR_CODE(CL_INVALID_VALUE, "(-30): invalid value");
+        HGPU_ERROR_CODE(CL_INVALID_DEVICE_TYPE, "(-31): invalid device type");
+        HGPU_ERROR_CODE(CL_INVALID_PLATFORM, "(-32): invalid platform");
+        HGPU_ERROR_CODE(CL_INVALID_DEVICE, "(-33): invalid device");
+        HGPU_ERROR_CODE(CL_INVALID_CONTEXT, "(-34): invalid context");
+        HGPU_ERROR_CODE(CL_INVALID_QUEUE_PROPERTIES, "(-35): invalid queue properties");
+        HGPU_ERROR_CODE(CL_INVALID_COMMAND_QUEUE, "(-36): invalid command queue");
+        HGPU_ERROR_CODE(CL_INVALID_HOST_PTR, "(-37): invalid host ptr");
+        HGPU_ERROR_CODE(CL_INVALID_MEM_OBJECT, "(-38): invalid buffer");
+        HGPU_ERROR_CODE(CL_INVALID_BINARY, "(-42): invalid binary");
+        HGPU_ERROR_CODE(CL_INVALID_BUILD_OPTIONS, "(-43): invalid build option");
+        HGPU_ERROR_CODE(CL_INVALID_PROGRAM, "(-44): invalid program");
+        HGPU_ERROR_CODE(CL_INVALID_KERNEL_NAME, "(-46): invalid kernel name");
+        HGPU_ERROR_CODE(CL_INVALID_KERNEL_DEFINITION, "(-47): invalid kernel definition");
+        HGPU_ERROR_CODE(CL_INVALID_KERNEL, "(-48): invalid kernel");
+        HGPU_ERROR_CODE(CL_INVALID_ARG_INDEX, "(-49): invalid argument index");
+        HGPU_ERROR_CODE(CL_INVALID_ARG_VALUE, "(-50): invalid argument value");
+        HGPU_ERROR_CODE(CL_INVALID_ARG_SIZE, "(-51): invalid argument size");
+        HGPU_ERROR_CODE(CL_INVALID_KERNEL_ARGS, "(-52): invalid kernel arguments");
+        HGPU_ERROR_CODE(CL_INVALID_WORK_DIMENSION, "(-53): invalid kernel dimension");
+        HGPU_ERROR_CODE(CL_INVALID_WORK_GROUP_SIZE, "(-54): invalid work group size");
+        HGPU_ERROR_CODE(CL_INVALID_WORK_ITEM_SIZE, "(-55): invalid work item size");
+        HGPU_ERROR_CODE(CL_INVALID_GLOBAL_OFFSET, "(-56): invalid global offset");
+        HGPU_ERROR_CODE(CL_INVALID_EVENT_WAIT_LIST, "(-57): invalid event wait list");
+        HGPU_ERROR_CODE(CL_INVALID_EVENT, "(-58): invalid event");
+        HGPU_ERROR_CODE(CL_INVALID_BUFFER_SIZE, "(-61): invalid buffer size");
+        HGPU_ERROR_CODE(CL_INVALID_GLOBAL_WORK_SIZE, "(-63): invalid global work size");
+        HGPU_ERROR_CODE(CL_INVALID_PROPERTY, "(-64): invalid property");
+#ifdef  CL_INVALID_COMPILER_OPTIONS
+        HGPU_ERROR_CODE(CL_INVALID_COMPILER_OPTIONS, "(-66): invalid compiler options");
+#endif
+#ifdef  CL_INVALID_LINKER_OPTIONS
+        HGPU_ERROR_CODE(CL_INVALID_LINKER_OPTIONS, "(-67): invalid linker options");
+#endif
+        default: { error_message = "unknown error"; break; }
+    }
+    return error_message;
+}
 void            GPU::OpenCL_Check_Error(const cl_int CL_Error_code, const char * CL_Error_description){
     if (CL_Error_code != CL_SUCCESS){
         printf("ERROR %i: (%s)\n", CL_Error_code, CL_Error_description);
@@ -204,51 +280,59 @@ void            GPU::OpenCL_Check_Error(const cl_int CL_Error_code, const char *
             char buffer[250];
             int j;
 
+                j = sprintf_s(buffer, sizeof(buffer), "%s", PRG_SOURCE_DEBUG);
+                fopen_s(&stream, buffer, "w+");
+
                 clGetProgramInfo(GPU_programs[GPU_active_program].program,CL_PROGRAM_SOURCE,0,NULL,&clBuildLog_size);
                 clBuildLog = (char*) calloc(clBuildLog_size+1, sizeof(char));
-                clGetProgramInfo(GPU_programs[GPU_active_program].program,CL_PROGRAM_SOURCE,clBuildLog_size+1,clBuildLog,&clBuildLog_actual_size);
-
-                j = sprintf_s(buffer  ,sizeof(buffer),  "%s",PRG_SOURCE_DEBUG);
-                fopen_s(&stream,buffer,"w+");
-                if(stream) {
-                    fprintf(stream,clBuildLog);
-                    if ( fclose(stream) ) {printf( "The file was not closed!\n" ); }
+                if (clBuildLog) {
+                    clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_SOURCE, clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
+                    if (stream) {
+                        if (clBuildLog) fprintf(stream, clBuildLog);
+                        if (fclose(stream)) printf("The file was not closed!\n");
+                    }
+                    FREE(clBuildLog);
                 }
 
                 clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_STATUS, 
                                         0, NULL, &clBuildLog_size );
                 clBuildLog = (char*) calloc(clBuildLog_size+1, sizeof(char));
-                clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_STATUS, 
-                                        clBuildLog_size+1, clBuildLog, &clBuildLog_actual_size );
-                printf("\nBuild status:\n%s\n", clBuildLog);
-                FREE(clBuildLog);
+                if (clBuildLog) {
+                    clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_STATUS,
+                        clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
+                    printf("\nBuild status:\n%s\n", clBuildLog);
+                    FREE(clBuildLog);
+                }
 
                 clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_OPTIONS, 
                                         0, NULL, &clBuildLog_size );
                 clBuildLog = (char*) calloc(clBuildLog_size+1, sizeof(char));
-                clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_OPTIONS, 
-                                        clBuildLog_size+1, clBuildLog, &clBuildLog_actual_size );
-                printf("\nBuild options:\n%s\n", clBuildLog);
-                FREE(clBuildLog);
+                if (clBuildLog) {
+                    clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_OPTIONS,
+                        clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
+                    printf("\nBuild options:\n%s\n", clBuildLog);
+                    FREE(clBuildLog);
+                }
 
+                j = sprintf_s(buffer, sizeof(buffer), "%s", PRG_ERROR_DEBUG);
+                fopen_s(&stream, buffer, "w+");
 
-                clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, 
+                clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG,
                                     0, NULL, &clBuildLog_size );
                 clBuildLog = (char*) calloc(clBuildLog_size+1, sizeof(char));
-                clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, 
-                                    clBuildLog_size+1, clBuildLog, &clBuildLog_actual_size );
-                printf("\nLog:\n%s\n", clBuildLog);
+                if (clBuildLog) {
+                    clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG,
+                        clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
+                    printf("\nLog:\n%s\n", clBuildLog);
 
-                j  = sprintf_s(buffer  ,sizeof(buffer),  "%s",PRG_ERROR_DEBUG);
-                fopen_s(&stream,buffer,"w+");
-                if (stream){
-                    fprintf(stream,clBuildLog);
-                    if ( fclose(stream) ) printf( "The file was not closed!\n" );
+                    if (stream) {
+                        fprintf(stream, clBuildLog);
+                        if (fclose(stream)) printf("The file was not closed!\n");
+                    }
+                    FREE(clBuildLog);
                 }
-                FREE(clBuildLog);
         }
-        device_finalize(-1);
-        exit(-1);
+        Check_Error(CL_Error_code);
     }
 }
 cl_uint         GPU::clGetDeviceInfoUint(cl_device_id device,cl_device_info inf){

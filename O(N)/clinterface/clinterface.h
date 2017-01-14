@@ -41,16 +41,16 @@
 #include <CL/cl.h>
 #include "platform.h"
 
-
 namespace GPU_CL{
 class GPU {
     public:
             typedef enum enum_GPU_error_codes{
-                GPU_error_SUCCESS,                          // OK
+                GPU_error_SUCCESS = 0,                      // OK
                 GPU_error_no_platform,                      // no OpenCL platform
                 GPU_error_no_device,                        // no OpenCL device
                 GPU_error_device_initialization_failed,     // error of device initialization
                 GPU_error_no_buffer,                        // no buffer
+                GPU_error_memory_allocation                 // memory allocation error
             } GPU_error_codes;
 
             typedef enum enum_GPU_vendors{
@@ -175,8 +175,11 @@ class GPU {
 
 
             // ___________________________________________ debug section
-                    void OpenCL_Check_Error(const cl_int CL_Error_code, const char * CL_Error_description);
-//                    void Check_Error(int error_code);
+                    void  OpenCL_Check_Error(const cl_int CL_Error_code, const char * CL_Error_description);
+                    void  Check_Error(const int error_code);
+                    void  Check_Alloc(const void* ptr);
+              const char* HGPU_GPU_error_code_description(int error_code);
+
            static unsigned int convert_to_uint(float value);
            static unsigned int convert_to_uint_HIGH(double x);
            static unsigned int convert_to_uint_LOW(double x);
