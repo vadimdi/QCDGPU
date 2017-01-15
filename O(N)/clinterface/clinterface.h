@@ -50,7 +50,8 @@ class GPU {
                 GPU_error_no_device,                        // no OpenCL device
                 GPU_error_device_initialization_failed,     // error of device initialization
                 GPU_error_no_buffer,                        // no buffer
-                GPU_error_memory_allocation                 // memory allocation error
+                GPU_error_memory_allocation,                // memory allocation error
+                GPU_error_file_open                         // file open
             } GPU_error_codes;
 
             typedef enum enum_GPU_vendors{

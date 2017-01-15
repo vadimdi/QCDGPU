@@ -211,6 +211,7 @@ const char*     GPU::HGPU_GPU_error_code_description(int error_code){
 
     switch (error_code) {
         case GPU_error_memory_allocation: { error_message = "Memory allocation error"; break; }
+        case GPU_error_file_open:         { error_message = "File open error"; break; }
         HGPU_ERROR_CODE(CL_DEVICE_NOT_FOUND, "(-1): device not found");
         HGPU_ERROR_CODE(CL_DEVICE_NOT_AVAILABLE, "(-2): device is not available");
         HGPU_ERROR_CODE(CL_COMPILER_NOT_AVAILABLE, "(-3): compiler is not available");
@@ -397,22 +398,25 @@ int             GPU::device_initialize(void){
 
     // get .cl root path
     if (!cl_root_path){
-        int j = 0;
         cl_root_path = (char*) calloc(FNAME_MAX_LENGTH,sizeof(char));
-        char* j_prev = cl_root_path;
-        char* j_cur  = cl_root_path;
-        bool flag_found = false;
+        Check_Alloc(cl_root_path);
+        {
+            int j = 0;
+            char* j_prev = cl_root_path;
+            char* j_cur = cl_root_path;
+            bool flag_found = false;
 
-        while((!flag_found)&&(j_cur)){
-            j = sprintf_s(cl_root_path,FNAME_MAX_LENGTH,"%s%s",current_path,PATH_SEPARATOR);
-            j_cur = strstr(j_prev+1,PATH_SEPARATOR);
-            if((j_cur) && (j_cur>j_prev)) {
-                j_prev=j_cur;
-                j = sprintf_s(j_cur+1,FNAME_MAX_LENGTH-(j_cur+1-cl_root_path),"%s",MAIN_CPP_FILE);
+            while ((!flag_found) && (j_cur)) {
+                j = sprintf_s(cl_root_path, FNAME_MAX_LENGTH, "%s%s", current_path, PATH_SEPARATOR);
+                j_cur = strstr(j_prev + 1, PATH_SEPARATOR);
+                if ((j_cur) && (j_cur>j_prev)) {
+                    j_prev = j_cur;
+                    j = sprintf_s(j_cur + 1, FNAME_MAX_LENGTH - (j_cur + 1 - cl_root_path), "%s", MAIN_CPP_FILE);
 
-                if (is_file_exist(cl_root_path)) {
-                    sprintf_s(j_cur,FNAME_MAX_LENGTH-(j_cur+1-cl_root_path),"%s",PATH_SEPARATOR);
-                    flag_found = true;
+                    if (is_file_exist(cl_root_path)) {
+                        sprintf_s(j_cur, FNAME_MAX_LENGTH - (j_cur + 1 - cl_root_path), "%s", PATH_SEPARATOR);
+                        flag_found = true;
+                    }
                 }
             }
         }
@@ -421,18 +425,20 @@ int             GPU::device_initialize(void){
 #endif
     }
 
-
     // select desired device
     device_select(GPU_platform_id,GPU_device_id);
 
     // setup GPU_workgroupsize
-    cl_uint GPU_max_work_item_dimensions = clGetDeviceInfoUint(GPU_device,CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS);
-    GPU_max_work_item_sizes = (size_t*) calloc((GPU_max_work_item_dimensions + 1),sizeof(size_t));
-    OpenCL_Check_Error(clGetDeviceInfo(GPU_device,CL_DEVICE_MAX_WORK_ITEM_SIZES,sizeof(size_t)*GPU_max_work_item_dimensions, (void*) GPU_max_work_item_sizes, NULL),"clGetDeviceInfo failed");
+    {
+        cl_uint GPU_max_work_item_dimensions = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS);
+        GPU_max_work_item_sizes = (size_t*)calloc((GPU_max_work_item_dimensions + 1), sizeof(size_t));
+        Check_Alloc(GPU_max_work_item_sizes);
+        OpenCL_Check_Error(clGetDeviceInfo(GPU_device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t)*GPU_max_work_item_dimensions, (void*)GPU_max_work_item_sizes, NULL), "clGetDeviceInfo failed");
 
-    GPU_info.max_workgroup_size  = clGetDeviceInfoUint(GPU_device,CL_DEVICE_MAX_WORK_GROUP_SIZE);
-    GPU_info.memory_align_factor = clGetDeviceInfoUint(GPU_device,CL_DEVICE_MAX_WORK_GROUP_SIZE);
-    GPU_info.max_compute_units   = clGetDeviceInfoUint(GPU_device,CL_DEVICE_MAX_COMPUTE_UNITS);
+        GPU_info.max_workgroup_size = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_WORK_GROUP_SIZE);
+        GPU_info.memory_align_factor = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_WORK_GROUP_SIZE);
+        GPU_info.max_compute_units = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_COMPUTE_UNITS);
+    }
 
     // create context
     GPU_context = clCreateContext(NULL,1,&GPU_device,NULL, NULL, &GPU_error);
@@ -518,6 +524,7 @@ bool            GPU::device_auto_select(int platform_vendor,int vendor){
 
     // query available platforms
     cl_platform_id* platforms = (cl_platform_id*) calloc(platforms_number,sizeof(cl_platform_id));
+    Check_Alloc(platforms);
 
     OpenCL_Check_Error(clGetPlatformIDs(platforms_number,platforms,NULL),"clGetPlatformIDs failed");
     for(unsigned int i=0; i < platforms_number; ++i){
@@ -542,6 +549,7 @@ bool            GPU::device_auto_select(int platform_vendor,int vendor){
             {
                 // query available devices
                 cl_device_id* devices = (cl_device_id*) calloc(devices_number,sizeof(cl_device_id));
+                Check_Alloc(devices);
                 OpenCL_Check_Error(clGetDeviceIDs(platform,CL_DEVICE_TYPE_ALL,devices_number, devices, &devices_number),"clGetDeviceIDs failed");
                 for(unsigned int t=0; t<devices_number; t++)
                 {
@@ -575,6 +583,12 @@ bool            GPU::device_auto_select(int platform_vendor,int vendor){
 }
 bool            GPU::device_select(unsigned int platform_id,unsigned int device_id)
 {
+    char infobuf[4096];
+    cl_platform_id* GPU_platforms = NULL;
+    cl_device_id* GPU_devices = NULL;
+    cl_uint devices_on_platform = 0;
+    cl_int get_number_of_devices_result = 0;
+
     // platform initialization
     OpenCL_Check_Error(clGetPlatformIDs(0,NULL,&GPU_platforms_number),"clGetPlatformIDs failed");
         if(GPU_platforms_number==0){
@@ -585,8 +599,8 @@ bool            GPU::device_select(unsigned int platform_id,unsigned int device_
             printf("There is no OpenCL platform %u\n",platform_id);
             exit(GPU_error_no_platform);
         }
-    char infobuf[4096];
-    cl_platform_id* GPU_platforms = (cl_platform_id*) calloc(GPU_platforms_number,sizeof(cl_platform_id));
+    GPU_platforms = (cl_platform_id*) calloc(GPU_platforms_number,sizeof(cl_platform_id));
+    Check_Alloc(GPU_platforms);
     OpenCL_Check_Error(clGetPlatformIDs(GPU_platforms_number,GPU_platforms,NULL),"clGetPlatformIDs failed");
     GPU_platform=GPU_platforms[platform_id];
 
@@ -598,26 +612,30 @@ bool            GPU::device_select(unsigned int platform_id,unsigned int device_
 
     //check total number of devices
     GPU_total_devices_number = 0;
-    cl_uint devices_on_platform = 0; 
     for (unsigned int i=0; i<GPU_platforms_number; i++){
         devices_on_platform = 0;
-        cl_int get_number_of_devices_result = clGetDeviceIDs(GPU_platforms[i], CL_DEVICE_TYPE_ALL, 0, NULL, &devices_on_platform);
+        get_number_of_devices_result = clGetDeviceIDs(GPU_platforms[i], CL_DEVICE_TYPE_ALL, 0, NULL, &devices_on_platform);
         if (get_number_of_devices_result!=CL_DEVICE_NOT_FOUND) OpenCL_Check_Error(get_number_of_devices_result, "clGetDeviceIDs failed");
         GPU_total_devices_number += devices_on_platform;
     }
 
     // device initialization
-    cl_int get_number_of_devices_result = clGetDeviceIDs(GPU_platform,CL_DEVICE_TYPE_ALL, 0, NULL, &GPU_devices_number);
-    if (get_number_of_devices_result!=CL_DEVICE_NOT_FOUND) OpenCL_Check_Error(get_number_of_devices_result, "clGetDeviceIDs failed");
-        if(GPU_devices_number==0){
-            printf("There are no any available OpenCL GPU devices\n");
+    get_number_of_devices_result = clGetDeviceIDs(GPU_platform,CL_DEVICE_TYPE_ALL, 0, NULL, &GPU_devices_number);
+    if (get_number_of_devices_result != CL_DEVICE_NOT_FOUND)
+        OpenCL_Check_Error(get_number_of_devices_result, "clGetDeviceIDs failed");
+
+        if(!GPU_devices_number){
+            OpenCL_Check_Error(GPU_error_no_device, "There are no any available OpenCL GPU devices");
             exit(GPU_error_no_device);
         }
-        if (GPU_devices_number<(device_id+1)){
+        if (GPU_devices_number <= device_id){
             printf("There is no OpenCL device %u\n",device_id);
+            OpenCL_Check_Error(GPU_error_no_device, "There is no OpenCL device");
             exit(GPU_error_no_device);
         }
-    cl_device_id* GPU_devices = (cl_device_id*) calloc(GPU_devices_number,sizeof(cl_device_id));
+
+    GPU_devices = (cl_device_id*) calloc(GPU_devices_number,sizeof(cl_device_id));
+    Check_Alloc(GPU_devices);
     OpenCL_Check_Error(clGetDeviceIDs(GPU_platform,CL_DEVICE_TYPE_ALL,GPU_devices_number, GPU_devices, &GPU_devices_number),"clGetDeviceIDs failed");
     GPU_device = GPU_devices[device_id];
 
@@ -636,24 +654,26 @@ bool            GPU::device_select(unsigned int platform_id,unsigned int device_
     return true;
 }
 char*           GPU::device_get_name(cl_device_id device){
-    size_t result_length = 4096;
-    size_t result_actual_size;
+    size_t result_length = 0;
+    char* result = NULL;
 
-        char* result = (char*) calloc(result_length,sizeof(char));
-        OpenCL_Check_Error(clGetDeviceInfo(device,CL_DEVICE_NAME,result_length, (void*) result, &result_actual_size),"clGetDeviceInfo failed");
-        trim(result);
-        result = (char*) realloc(result,result_actual_size * sizeof(char));
+    OpenCL_Check_Error(clGetDeviceInfo(device, CL_DEVICE_NAME, 0, NULL, &result_length), "clGetDeviceInfo failed");
+    result = (char*)calloc(result_length, sizeof(char));
+    Check_Alloc(result);
+    OpenCL_Check_Error(clGetDeviceInfo(device,CL_DEVICE_NAME,result_length, (void*) result, &result_length),"clGetDeviceInfo failed");
+    trim(result);
 
     return result;
 }
 char*           GPU::platform_get_name(cl_platform_id platform){
-    size_t result_length = 4096;
-    size_t result_actual_size;
+    size_t result_length = 0;
+    char* result = NULL;
 
-        char* result = (char*) calloc(result_length,sizeof(char));
-        OpenCL_Check_Error(clGetPlatformInfo(platform,CL_PLATFORM_NAME,result_length, (void*) result, &result_actual_size),"clGetPlatformInfo failed");
-        trim(result);
-        result = (char*) realloc(result,result_actual_size * sizeof(char));
+    OpenCL_Check_Error(clGetPlatformInfo(platform, CL_PLATFORM_NAME, 0, NULL, &result_length), "clGetPlatformInfo failed");
+    result = (char*) calloc(result_length,sizeof(char));
+    Check_Alloc(result);
+    OpenCL_Check_Error(clGetPlatformInfo(platform,CL_PLATFORM_NAME,result_length, (void*) result, &result_length),"clGetPlatformInfo failed");
+    trim(result);
 
     return result;
 }
@@ -669,7 +689,7 @@ char*           GPU::source_read(const char* file_name)
     if(!cl_kernels_file)
     {
         printf("File: %s\n",buffer);
-        OpenCL_Check_Error(1,".cl-file not found");
+        OpenCL_Check_Error(GPU_error_memory_allocation, ".cl-file not found");
         return NULL;
     }
     fseek (cl_kernels_file , 0 , SEEK_END);
