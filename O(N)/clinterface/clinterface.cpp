@@ -433,11 +433,12 @@ int             GPU::device_initialize(void){
         cl_uint GPU_max_work_item_dimensions = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS);
         GPU_max_work_item_sizes = (size_t*)calloc((GPU_max_work_item_dimensions + 1), sizeof(size_t));
         Check_Alloc(GPU_max_work_item_sizes);
-        OpenCL_Check_Error(clGetDeviceInfo(GPU_device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t)*GPU_max_work_item_dimensions, (void*)GPU_max_work_item_sizes, NULL), "clGetDeviceInfo failed");
+        OpenCL_Check_Error(clGetDeviceInfo(GPU_device, CL_DEVICE_MAX_WORK_ITEM_SIZES,
+            sizeof(size_t)*GPU_max_work_item_dimensions, (void*)GPU_max_work_item_sizes, NULL), "clGetDeviceInfo failed");
 
-        GPU_info.max_workgroup_size = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_WORK_GROUP_SIZE);
+        GPU_info.max_workgroup_size  = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_WORK_GROUP_SIZE);
         GPU_info.memory_align_factor = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_WORK_GROUP_SIZE);
-        GPU_info.max_compute_units = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_COMPUTE_UNITS);
+        GPU_info.max_compute_units   = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_COMPUTE_UNITS);
     }
 
     // create context
@@ -511,7 +512,9 @@ bool            GPU::device_auto_select(int platform_vendor,int vendor){
     bool supported_device = (vendor == GPU_vendor_any); // is there supported device?
     cl_uint platforms_number;        // number of available platforms
     cl_uint devices_number;          // number of available devices
-    cl_platform_id platform = NULL;  // supported platform
+    cl_platform_id platform;         // supported platform
+    cl_platform_id* platforms = NULL;
+    cl_device_id*   devices   = NULL;
     cl_device_id device = NULL;      // supported device
     char infobuf[4096];
 
@@ -523,7 +526,7 @@ bool            GPU::device_auto_select(int platform_vendor,int vendor){
     }
 
     // query available platforms
-    cl_platform_id* platforms = (cl_platform_id*) calloc(platforms_number,sizeof(cl_platform_id));
+    platforms = (cl_platform_id*) calloc(platforms_number,sizeof(cl_platform_id));
     Check_Alloc(platforms);
 
     OpenCL_Check_Error(clGetPlatformIDs(platforms_number,platforms,NULL),"clGetPlatformIDs failed");
@@ -548,8 +551,9 @@ bool            GPU::device_auto_select(int platform_vendor,int vendor){
             if (devices_number>0)
             {
                 // query available devices
-                cl_device_id* devices = (cl_device_id*) calloc(devices_number,sizeof(cl_device_id));
+                devices = (cl_device_id*) calloc(devices_number,sizeof(cl_device_id));
                 Check_Alloc(devices);
+
                 OpenCL_Check_Error(clGetDeviceIDs(platform,CL_DEVICE_TYPE_ALL,devices_number, devices, &devices_number),"clGetDeviceIDs failed");
                 for(unsigned int t=0; t<devices_number; t++)
                 {
@@ -599,8 +603,10 @@ bool            GPU::device_select(unsigned int platform_id,unsigned int device_
             printf("There is no OpenCL platform %u\n",platform_id);
             exit(GPU_error_no_platform);
         }
+
     GPU_platforms = (cl_platform_id*) calloc(GPU_platforms_number,sizeof(cl_platform_id));
     Check_Alloc(GPU_platforms);
+
     OpenCL_Check_Error(clGetPlatformIDs(GPU_platforms_number,GPU_platforms,NULL),"clGetPlatformIDs failed");
     GPU_platform=GPU_platforms[platform_id];
 
@@ -636,6 +642,7 @@ bool            GPU::device_select(unsigned int platform_id,unsigned int device_
 
     GPU_devices = (cl_device_id*) calloc(GPU_devices_number,sizeof(cl_device_id));
     Check_Alloc(GPU_devices);
+
     OpenCL_Check_Error(clGetDeviceIDs(GPU_platform,CL_DEVICE_TYPE_ALL,GPU_devices_number, GPU_devices, &GPU_devices_number),"clGetDeviceIDs failed");
     GPU_device = GPU_devices[device_id];
 
@@ -678,44 +685,58 @@ char*           GPU::platform_get_name(cl_platform_id platform){
     return result;
 }
 // ___ source _____________________________________________________________________________________
-char*           GPU::source_read(const char* file_name)
-{	
+char*           GPU::source_read(const char* file_name){
    /* create a CL program using the kernel source */
     FILE * cl_kernels_file;
     char buffer[1024];
+    unsigned int flen = 0;
+    char* cl_kernels_source = NULL;
+    unsigned int freadlen = 0;
 
     sprintf_s(buffer,sizeof(buffer),"%s",file_name);
     fopen_s(&cl_kernels_file,buffer,"r");
     if(!cl_kernels_file)
     {
         printf("File: %s\n",buffer);
-        OpenCL_Check_Error(GPU_error_memory_allocation, ".cl-file not found");
+        OpenCL_Check_Error(GPU_error_file_open, ".cl-file not found");
         return NULL;
     }
-    fseek (cl_kernels_file , 0 , SEEK_END);
-    unsigned int flen = ftell(cl_kernels_file);
-    fseek (cl_kernels_file , 0 , SEEK_SET);
-    char* cl_kernels_source = (char*) calloc(flen + 2, sizeof(char));
-    unsigned int freadlen = (unsigned int) fread( cl_kernels_source, sizeof(char), flen, cl_kernels_file );
-    if (freadlen==0) return NULL;
+    fseek(cl_kernels_file , 0 , SEEK_END);
+    flen = ftell(cl_kernels_file);
+    fseek(cl_kernels_file , 0 , SEEK_SET);
+    cl_kernels_source = (char*) calloc(flen + 2, sizeof(char));
+    Check_Alloc(cl_kernels_source);
+    freadlen = (unsigned int) fread( cl_kernels_source, sizeof(char), flen, cl_kernels_file );
+    if (!freadlen) return NULL;
     if ( fclose(cl_kernels_file) ) printf( "The file was not closed!\n" );
     return cl_kernels_source;
 }
-char*           GPU::source_add(char* source, const char* file_name)
-{
+char*           GPU::source_add(char* source, const char* file_name){
     int error_code = 0;
-    char* temporary_source = source_read(file_name);
-    if (temporary_source==NULL) return source;
-
+    char* temporary_source = NULL;
     const char* source_separator = "\n\n\n";  // separator between two source codes
-    int temporary_source_length = (int) strlen(temporary_source) + 1;
-    int source_length = (int) strlen(source)+1;
-    int result_source_length = source_length + temporary_source_length + 10;
-    char* result_source  = (char*) calloc(result_source_length, sizeof(char));
-    char* result_source2 = (char*) calloc(result_source_length, sizeof(char));
+    int temporary_source_length = 0;
+    int source_length = 0;
+    int result_source_length = 0;
+    char* result_source = NULL;
+    char* result_source2 = NULL;
+
+    temporary_source = source_read(file_name);
+    if (!temporary_source) return source;
+
+    temporary_source_length = (int) strlen_s(temporary_source) + 1;
+    source_length = (int) strlen_s(source)+1;
+    result_source_length = source_length + temporary_source_length + 10;
+
+    result_source  = (char*) calloc(result_source_length, sizeof(char));
+    Check_Alloc(result_source);
+
+    result_source2 = (char*) calloc(result_source_length, sizeof(char));
+    Check_Alloc(result_source2);
+
     error_code  = strncpy_s(result_source, result_source_length * sizeof(char), source, source_length);
-    error_code += (int) (strlen(result_source) + strlen(source_separator) - _snprintf_s(result_source2, result_source_length * sizeof(char), _TRUNCATE, "%s%s", result_source, source_separator));
-    error_code += (int) (strlen(result_source2) + strlen(temporary_source) - _snprintf_s(result_source, result_source_length * sizeof(char), _TRUNCATE, "%s%s", result_source2, temporary_source));
+    error_code += (int) (strlen_s(result_source)  + strlen_s(source_separator) - _snprintf_s(result_source2, result_source_length * sizeof(char), _TRUNCATE, "%s%s", result_source,  source_separator));
+    error_code += (int) (strlen_s(result_source2) + strlen_s(temporary_source) - _snprintf_s(result_source,  result_source_length * sizeof(char), _TRUNCATE, "%s%s", result_source2, temporary_source));
     if (error_code) return source;
 
     FREE(temporary_source);
@@ -728,30 +749,35 @@ int             GPU::program_create(const char* source){
     return program_create(source,NULL);
 }
 int             GPU::program_create(const char* source,const char* options){
-    start_timer_CPU(10);
-
     FILE * cl_program_file = NULL;
+    char* temporary_source = NULL;
+    char* temporary_options = NULL;
     char buffer[FNAME_MAX_LENGTH];
     char buffer_inf[FNAME_MAX_LENGTH];
+    int GPU_active_file = 0;
+    int source_length = (int)strlen_s(source) + 1;
+
+    start_timer_CPU(10);
 
     GPU_current_program++;
     GPU_active_program = GPU_current_program;
 
-    int GPU_active_file = 0;
-
     // setup reserve kernel's source
-      int source_length = (int) strlen(source) + 1;
-    char* temporary_source = (char*) calloc(source_length + 1, sizeof(char));
+    temporary_source = (char*) calloc(source_length + 1, sizeof(char));
+    Check_Alloc(temporary_source);
+
           strncpy_s(temporary_source, source_length, source, source_length);
     GPU_programs[GPU_active_program].source_ptr     = temporary_source;
     GPU_programs[GPU_active_program].source_length  = source_length;
     if (options!=NULL){
         int options_length = (int) strlen(options) + 1;
-      char* temporary_options = (char*) calloc(options_length + 1, sizeof(char));
+        temporary_options = (char*) calloc(options_length + 1, sizeof(char));
+        Check_Alloc(temporary_options);
+
             strncpy_s(temporary_options, options_length, options, options_length);
-        GPU_programs[GPU_active_program].options        = temporary_options;
+        GPU_programs[GPU_active_program].options = temporary_options;
     } else {
-        GPU_programs[GPU_active_program].options        = NULL;
+        GPU_programs[GPU_active_program].options = NULL;
     }
 
     GPU_programs[GPU_active_program].md5      = MD5(source);
@@ -834,9 +860,9 @@ int             GPU::program_create(const char* source,const char* options){
     }
 
     if((GPU_active_file > GPU_inf_max_n)||(!cl_program_file)){
-        printf("\nprogram%u.bin is compiling (%u bytes)... \n",GPU_active_program,(unsigned int) strlen(GPU_programs[GPU_active_program].source_ptr));
+        printf("\nprogram%u.bin is compiling (%u bytes)... \n",GPU_active_program,(unsigned int) strlen_s(GPU_programs[GPU_active_program].source_ptr));
         if (GPU_debug->rebuild_binary) {
-            size_t srcbuflen = strlen(GPU_programs[GPU_active_program].source_ptr);
+            size_t srcbuflen = strlen_s(GPU_programs[GPU_active_program].source_ptr);
             size_t new_srcbuflen = srcbuflen + 100;
             char* srcbuf = (char*) calloc(new_srcbuflen,sizeof(char));
 
@@ -959,7 +985,7 @@ int             GPU::kernel_init(const char* kernel_name, unsigned int work_dime
     OpenCL_Check_Error(GPU_error,"clCreateKernel failed");
 
     // setup reserve kernel's name
-    unsigned int temporary_kernel_name_length = (unsigned int) strlen(kernel_name)+1;
+    unsigned int temporary_kernel_name_length = (unsigned int) strlen_s(kernel_name)+1;
         char* temporary_kernel_name = (char*) calloc(temporary_kernel_name_length, sizeof(char));
         strncpy_s(temporary_kernel_name, temporary_kernel_name_length * sizeof(char), kernel_name, temporary_kernel_name_length);
     GPU_kernels[GPU_current_kernel].kernel_name = temporary_kernel_name;
@@ -1688,7 +1714,7 @@ char*           GPU::MD5_getresult(void){
   return buf;
 }
 char*           GPU::MD5(const char* str) {
-    unsigned int len = (unsigned int) strlen(str);
+    unsigned int len = (unsigned int) strlen_s(str);
 
     MD5_init();
     MD5_update(str, len);
@@ -1750,7 +1776,7 @@ GPU::GPU_init_parameters*    GPU::get_init_file(char finitf[])
 
         unsigned int istart2 = (unsigned int) strcspn(line,"=");
         unsigned int istart3 = istart2;
-        if (istart2<strlen(line)){
+        if (istart2 < strlen_s(line)){
             ch=line[--istart2];
             while((ch==' ')||(ch=='\t')) ch=line[--istart2];
 
@@ -1934,14 +1960,11 @@ void            GPU::copy_debug_flags(GPU_debug_flags* GPU_debug_source,GPU_debu
     GPU_debug_destination->show_stage        = (GPU_debug_source->show_stage)        ? true : false;
     GPU_debug_destination->wait_for_keypress = (GPU_debug_source->wait_for_keypress) ? true : false;
 }
-
 char*           GPU::str_parameter_init(char* str_source){
-       char* str_destination = (char*) calloc((strlen(str_source) + 1),sizeof(char));
-       strcpy_s(str_destination,(strlen(str_source) + 1),str_source);
+       char* str_destination = (char*) calloc((strlen_s(str_source) + 1),sizeof(char));
+       strcpy_s(str_destination,(strlen_s(str_source) + 1),str_source);
        return str_destination;
 }
-
-
 void            GPU::trim(char* str){
     int start_str = 0;
     int str_len = (int)strlen_s(str);
