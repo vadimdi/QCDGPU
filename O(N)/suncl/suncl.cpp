@@ -402,8 +402,8 @@ void        model::lattice_init(void){
 unsigned int model::convert_str_uint(const char* str,unsigned int offset){
     unsigned int result = 0;
     unsigned int pointer = offset;
-    for (unsigned int i = 0; i<4; i++){
-        if (pointer<strlen(str)) result += (str[pointer++]<<(i*8));
+    for (unsigned int i = 0; i < 4; ++i){
+        if (pointer < strlen_s(str)) result += (str[pointer++]<<(i*8));
     }
     return result;
 }
@@ -432,8 +432,10 @@ model::model_precision model::convert_uint_to_precision(unsigned int precision){
     return model::model_precision_single; // return single precision otherwise
 }
 char*        model::str_parameter_init(char* str_source){
-       char* str_destination = (char*) calloc((strlen(str_source) + 1),sizeof(char));
-       strcpy_s(str_destination,(strlen(str_source) + 1),str_source);
+       char* str_destination = (char*) calloc((strlen_s(str_source) + 1),sizeof(char));
+       if (str_destination) {
+           strcpy_s(str_destination, (strlen_s(str_source) + 1), str_source);
+       }
        return str_destination;
 }
 
@@ -1098,8 +1100,8 @@ unsigned int*   model::lattice_make_bin_header(void){
     // 4 - ...
     unsigned int* result = (unsigned int*) calloc(BIN_HEADER_SIZE,sizeof(unsigned int));
     const char* bin_prefix = "QCDGPU";
-    k =  0; for(int i=0; i<ceil((double) strlen(bin_prefix)/4); i++)   result[k++] = convert_str_uint(bin_prefix,i*4);
-    k =  2; for(int i=0; i<ceil((double) strlen(run->version)/4); i++) result[k++] = convert_str_uint(run->version,i*4);
+    k =  0; for(int i=0; i<ceil((double) strlen_s(bin_prefix)/4); i++)   result[k++] = convert_str_uint(bin_prefix,i*4);
+    k =  2; for(int i=0; i<ceil((double) strlen_s(run->version)/4); i++) result[k++] = convert_str_uint(run->version,i*4);
     k =  4;
     result[k++] = run->INIT;                        // 0x10
     result[k++] = convert_start_to_uint(run->ints); // 0x14
@@ -1151,8 +1153,8 @@ bool        model::lattice_load_bin_header(unsigned int* head){
     // 2 - 3 - version
     // 4 - ...
     const char* bin_prefix = "QCDGPU";
-    k =  0; for(int i=0; i<ceil((double) strlen(bin_prefix)/4); i++)   result &= (head[k++] == convert_str_uint(bin_prefix,i*4));
-    k =  2; for(int i=0; i<ceil((double) strlen(run->version)/4); i++) result &= (head[k++] == convert_str_uint(run->version,i*4));
+    k =  0; for(int i=0; i<ceil((double) strlen_s(bin_prefix)/4); i++)   result &= (head[k++] == convert_str_uint(bin_prefix,i*4));
+    k =  2; for(int i=0; i<ceil((double) strlen_s(run->version)/4); i++) result &= (head[k++] == convert_str_uint(run->version,i*4));
     if (!result) return result;
     k =  4;
       k++;

@@ -666,9 +666,10 @@ char*           GPU::device_get_name(cl_device_id device){
 
     OpenCL_Check_Error(clGetDeviceInfo(device, CL_DEVICE_NAME, 0, NULL, &result_length), "clGetDeviceInfo failed");
     result = (char*)calloc(result_length, sizeof(char));
-    Check_Alloc(result);
-    OpenCL_Check_Error(clGetDeviceInfo(device,CL_DEVICE_NAME,result_length, (void*) result, &result_length),"clGetDeviceInfo failed");
-    trim(result);
+    if (result) {
+        OpenCL_Check_Error(clGetDeviceInfo(device, CL_DEVICE_NAME, result_length, (void*)result, &result_length), "clGetDeviceInfo failed");
+        trim(result);
+    }
 
     return result;
 }
@@ -678,9 +679,10 @@ char*           GPU::platform_get_name(cl_platform_id platform){
 
     OpenCL_Check_Error(clGetPlatformInfo(platform, CL_PLATFORM_NAME, 0, NULL, &result_length), "clGetPlatformInfo failed");
     result = (char*) calloc(result_length,sizeof(char));
-    Check_Alloc(result);
-    OpenCL_Check_Error(clGetPlatformInfo(platform,CL_PLATFORM_NAME,result_length, (void*) result, &result_length),"clGetPlatformInfo failed");
-    trim(result);
+    if (result) {
+        OpenCL_Check_Error(clGetPlatformInfo(platform, CL_PLATFORM_NAME, result_length, (void*)result, &result_length), "clGetPlatformInfo failed");
+        trim(result);
+    }
 
     return result;
 }
@@ -752,6 +754,8 @@ int             GPU::program_create(const char* source,const char* options){
     FILE * cl_program_file = NULL;
     char* temporary_source = NULL;
     char* temporary_options = NULL;
+    cl_device_id* devices = NULL;
+    size_t* binary_sizes = NULL;
     char buffer[FNAME_MAX_LENGTH];
     char buffer_inf[FNAME_MAX_LENGTH];
     int GPU_active_file = 0;
@@ -770,7 +774,7 @@ int             GPU::program_create(const char* source,const char* options){
     GPU_programs[GPU_active_program].source_ptr     = temporary_source;
     GPU_programs[GPU_active_program].source_length  = source_length;
     if (options!=NULL){
-        int options_length = (int) strlen(options) + 1;
+        int options_length = (int) strlen_s(options) + 1;
         temporary_options = (char*) calloc(options_length + 1, sizeof(char));
         Check_Alloc(temporary_options);
 
@@ -865,10 +869,12 @@ int             GPU::program_create(const char* source,const char* options){
             size_t srcbuflen = strlen_s(GPU_programs[GPU_active_program].source_ptr);
             size_t new_srcbuflen = srcbuflen + 100;
             char* srcbuf = (char*) calloc(new_srcbuflen,sizeof(char));
-
-            sprintf_s(srcbuf,new_srcbuflen,"%s\n// Build: %s",GPU_programs[GPU_active_program].source_ptr,get_current_datetime());
-            GPU_programs[GPU_active_program].program = clCreateProgramWithSource(GPU_context, 1,(const char**) &srcbuf, NULL, &GPU_error);
-            FREE(srcbuf);
+            if (srcbuf)
+            {
+                sprintf_s(srcbuf, new_srcbuflen, "%s\n// Build: %s", GPU_programs[GPU_active_program].source_ptr, get_current_datetime());
+                GPU_programs[GPU_active_program].program = clCreateProgramWithSource(GPU_context, 1, (const char**)&srcbuf, NULL, &GPU_error);
+                FREE(srcbuf);
+            }
         } else {
             GPU_programs[GPU_active_program].program = clCreateProgramWithSource(GPU_context, 1,&GPU_programs[GPU_active_program].source_ptr, NULL, &GPU_error);
         }
@@ -878,10 +884,10 @@ int             GPU::program_create(const char* source,const char* options){
         cl_uint num_devices;
         OpenCL_Check_Error(clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_NUM_DEVICES, sizeof(cl_uint), &num_devices, NULL),"clGetProgramInfo1 failed");
 
-        cl_device_id* devices = (cl_device_id*) calloc(num_devices, sizeof(cl_device_id));
+        devices = (cl_device_id*) calloc(num_devices, sizeof(cl_device_id));
         OpenCL_Check_Error(clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_DEVICES, num_devices * sizeof(cl_device_id), devices, 0),"clGetProgramInfo2 failed");
 
-        size_t* binary_sizes = (size_t*) calloc(num_devices, sizeof(size_t));    
+        binary_sizes = (size_t*) calloc(num_devices, sizeof(size_t));    
         OpenCL_Check_Error(clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_BINARY_SIZES, num_devices * sizeof(size_t), binary_sizes, NULL),"clGetProgramInfo3 failed");
 
         char** binary = (char**) calloc(num_devices, sizeof(char*));
@@ -977,8 +983,8 @@ int             GPU::kernel_init(const char* kernel_name, unsigned int work_dime
     GPU_current_kernel++;
 
     // setup program
-    GPU_kernels[GPU_current_kernel].program_id  = GPU_active_program;
-    GPU_kernels[GPU_current_kernel].program     = GPU_programs[GPU_active_program].program;
+    GPU_kernels[GPU_current_kernel].program_id = GPU_active_program;
+    GPU_kernels[GPU_current_kernel].program    = GPU_programs[GPU_active_program].program;
 
     // setup kernel
     GPU_kernels[GPU_current_kernel].kernel = clCreateKernel( GPU_kernels[GPU_current_kernel].program, kernel_name, &GPU_error );

@@ -88,8 +88,10 @@ using SUN_CPU::SU;
 }
 
 char*           BL::str_parameter_init(char* str_source){
-       char* str_destination = (char*) calloc((strlen(str_source) + 1),sizeof(char));
-       strcpy_s(str_destination,(strlen(str_source) + 1),str_source);
+       char* str_destination = (char*) calloc((strlen_s(str_source) + 1),sizeof(char));
+       if (str_destination) {
+           strcpy_s(str_destination, (strlen_s(str_source) + 1), str_source);
+       }
        return str_destination;
 }
 void            BL::prepare(void){

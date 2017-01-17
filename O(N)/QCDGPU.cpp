@@ -55,8 +55,10 @@ char fload[]   = "su3-13-Oct-08-00-00-00.qcg"; // file to be load
 #endif
 
 char*           str_parameter_init(char* str_source){
-       char* str_destination = (char*) calloc((strlen(str_source) + 1),sizeof(char));
-       strcpy_s(str_destination,(strlen(str_source) + 1),str_source);
+       char* str_destination = (char*) calloc((strlen_s(str_source) + 1),sizeof(char));
+       if (str_destination) {
+           strcpy_s(str_destination, (strlen_s(str_source) + 1), str_source);
+       }
        return str_destination;
 }
 
@@ -182,8 +184,8 @@ lattice->global_run->check_prngs         = true;   // check PRNG production
             else {
                 // get parameter
                 unsigned int param_name_end = (unsigned int) strcspn(argv[i],"=");
-                unsigned int param_len = (unsigned int) strlen(argv[i]);
-                if (param_name_end<strlen(argv[i])){
+                unsigned int param_len = (unsigned int) strlen_s(argv[i]);
+                if (param_name_end < strlen_s(argv[i])){
                     char* param_name = (char*) calloc(param_name_end,sizeof(char));
                     char* param_text = (char*) calloc(param_len-param_name_end+1,sizeof(char));
                     int iVarVal;

@@ -53,15 +53,15 @@ SU::SU(void)
 {
         SU::directions = (char**) calloc(4,sizeof(char*));        // setup path to output files
     
-    SU::directions[0] = (char*) calloc(strlen(direction_X) + 1,sizeof(char));        // setup path to output files
-    SU::directions[1] = (char*) calloc(strlen(direction_Y) + 1,sizeof(char));
-    SU::directions[2] = (char*) calloc(strlen(direction_Z) + 1,sizeof(char));
-    SU::directions[3] = (char*) calloc(strlen(direction_T) + 1,sizeof(char));
+    SU::directions[0] = (char*) calloc(strlen_s(direction_X) + 1,sizeof(char));        // setup path to output files
+    SU::directions[1] = (char*) calloc(strlen_s(direction_Y) + 1,sizeof(char));
+    SU::directions[2] = (char*) calloc(strlen_s(direction_Z) + 1,sizeof(char));
+    SU::directions[3] = (char*) calloc(strlen_s(direction_T) + 1,sizeof(char));
     
-        strcpy_s(SU::directions[0],(strlen(direction_X) + 1),direction_X);
-        strcpy_s(SU::directions[1],(strlen(direction_Y) + 1),direction_Y);
-        strcpy_s(SU::directions[2],(strlen(direction_Z) + 1),direction_Z);
-        strcpy_s(SU::directions[3],(strlen(direction_T) + 1),direction_T);
+        strcpy_s(SU::directions[0],(strlen_s(direction_X) + 1),direction_X);
+        strcpy_s(SU::directions[1],(strlen_s(direction_Y) + 1),direction_Y);
+        strcpy_s(SU::directions[2],(strlen_s(direction_Z) + 1),direction_Z);
+        strcpy_s(SU::directions[3],(strlen_s(direction_T) + 1),direction_T);
 
     lattice_data = NULL;    // lattice data for CPU simulation
 }
