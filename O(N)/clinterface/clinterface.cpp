@@ -419,10 +419,10 @@ int             GPU::device_initialize(void){
                     }
                 }
             }
-        }
 #ifdef _WIN32
-        str_char_replace(cl_root_path,92,47);   // replace "\\" symbols with "/" in root cl path
+            str_char_replace(cl_root_path, 92, 47);   // replace "\\" symbols with "/" in root cl path
 #endif
+        }
     }
 
     // select desired device
@@ -706,6 +706,7 @@ char*           GPU::source_read(const char* file_name){
     fseek(cl_kernels_file , 0 , SEEK_END);
     flen = ftell(cl_kernels_file);
     fseek(cl_kernels_file , 0 , SEEK_SET);
+
     cl_kernels_source = (char*) calloc(flen + 2, sizeof(char));
     Check_Alloc(cl_kernels_source);
     freadlen = (unsigned int) fread( cl_kernels_source, sizeof(char), flen, cl_kernels_file );
@@ -755,10 +756,12 @@ int             GPU::program_create(const char* source,const char* options){
     char* temporary_source = NULL;
     char* temporary_options = NULL;
     cl_device_id* devices = NULL;
+    char** binary = NULL;
     size_t* binary_sizes = NULL;
     char buffer[FNAME_MAX_LENGTH];
     char buffer_inf[FNAME_MAX_LENGTH];
     int GPU_active_file = 0;
+    size_t sizeZ = 0;
     int source_length = (int)strlen_s(source) + 1;
 
     start_timer_CPU(10);
@@ -770,15 +773,15 @@ int             GPU::program_create(const char* source,const char* options){
     temporary_source = (char*) calloc(source_length + 1, sizeof(char));
     Check_Alloc(temporary_source);
 
-          strncpy_s(temporary_source, source_length, source, source_length);
+    strncpy_s(temporary_source, source_length, source, source_length);
     GPU_programs[GPU_active_program].source_ptr     = temporary_source;
     GPU_programs[GPU_active_program].source_length  = source_length;
-    if (options!=NULL){
+    if (options){
         int options_length = (int) strlen_s(options) + 1;
         temporary_options = (char*) calloc(options_length + 1, sizeof(char));
         Check_Alloc(temporary_options);
 
-            strncpy_s(temporary_options, options_length, options, options_length);
+        strncpy_s(temporary_options, options_length, options, options_length);
         GPU_programs[GPU_active_program].options = temporary_options;
     } else {
         GPU_programs[GPU_active_program].options = NULL;
@@ -847,8 +850,8 @@ int             GPU::program_create(const char* source,const char* options){
                 // kill current .inf-file and rename last .inf-file into current
                 inf_file_delete(i);
                 if (i < GPU_inf_max_n) inf_file_rename(GPU_inf_max_n,i);    // check if file is last
-                GPU_inf_max_n--;
-                i--;
+                --GPU_inf_max_n;
+                --i;
             }            
         }
     }
@@ -890,21 +893,22 @@ int             GPU::program_create(const char* source,const char* options){
         binary_sizes = (size_t*) calloc(num_devices, sizeof(size_t));    
         OpenCL_Check_Error(clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_BINARY_SIZES, num_devices * sizeof(size_t), binary_sizes, NULL),"clGetProgramInfo3 failed");
 
-        char** binary = (char**) calloc(num_devices, sizeof(char*));
-        for( unsigned int i=0; i<num_devices; ++i) binary[i]= (char*) malloc(binary_sizes[i]);
+        binary = (char**) calloc(num_devices, sizeof(char*));
+        Check_Alloc(binary);
+        for (unsigned int i = 0; i < num_devices; ++i)
+            binary[i] = (char*)malloc(binary_sizes[i]);
 
         OpenCL_Check_Error(clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_BINARIES, num_devices * sizeof(size_t), binary, NULL),"clGetProgramInfo4 failed");
 
-        size_t size;
-        OpenCL_Check_Error(clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, 0, NULL, &size),"clGetProgramBuildInfo failed");
-        if (size>4) {
-            GPU_programs[GPU_active_program].build_log = (char*) calloc(size,sizeof(char));
-            OpenCL_Check_Error(clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, size, GPU_programs[GPU_active_program].build_log, NULL),"clGetProgramBuildInfo failed");
+        OpenCL_Check_Error(clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, 0, NULL, &sizeZ),"clGetProgramBuildInfo failed");
+        if ( sizeZ > 4 ) {
+            GPU_programs[GPU_active_program].build_log = (char*) calloc(sizeZ,sizeof(char));
+            OpenCL_Check_Error(clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG, sizeZ, GPU_programs[GPU_active_program].build_log, NULL),"clGetProgramBuildInfo failed");
             if (GPU_debug->brief_report) printf("Program buid log: [%s]\n", GPU_programs[GPU_active_program].build_log);
         }
 
         unsigned int idx = 0;
-        while( idx<num_devices && devices[idx] != GPU_device ) ++idx;
+        while( ( idx < num_devices ) && ( devices[idx] != GPU_device ) ) ++idx;
 
         // save inf file
         fopen_s(&cl_program_file,buffer_inf,"wb");

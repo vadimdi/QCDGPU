@@ -55,7 +55,7 @@ class GPU {
             } GPU_error_codes;
 
             typedef enum enum_GPU_vendors{
-                GPU_vendor_any,             // any vendor
+                GPU_vendor_any = 0,         // any vendor
                 GPU_vendor_AMD,             // Advanced Micro Devices, Inc.
                 GPU_vendor_Apple,           // Apple
                 GPU_vendor_nVidia,          // NVIDIA Corporation
@@ -64,7 +64,7 @@ class GPU {
             } GPU_vendors;
 
             typedef enum enum_GPU_buffer_types{
-                buffer_type_None,           // NULL buffer type
+                buffer_type_None = 0,       // NULL buffer type
                 buffer_type_Global,         // Global buffer type
                 buffer_type_Input,          // Input buffer type
                 buffer_type_IO,             // Like Global buffer, but with initialization
@@ -76,7 +76,7 @@ class GPU {
 
 
             typedef enum enum_GPU_storage_type{
-                GPU_storage_none,           // default unknown storage type
+                GPU_storage_none = 0,       // default unknown storage type
                 GPU_storage_joint,          // joint data based on two other data arrays
                 GPU_storage_double2high,    // high dword in double2
                 GPU_storage_double2low,     // low  dword in double2
