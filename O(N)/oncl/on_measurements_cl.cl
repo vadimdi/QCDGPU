@@ -35,7 +35,7 @@
  * 
  *****************************************************************************/
 
-#ifndef ONMEASURUMENTSCL_CL
+#ifndef ONMEASUREMENTSCL_CL
 #define ONMEASUREMENTSCL_CL
 
 #include "complex.h"
