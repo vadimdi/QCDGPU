@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *****************************************************************************/
-#ifndef SUNMEASURUMENTSCL_CL
+#ifndef SUNMEASUREMENTSCL_CL
 #define SUNMEASUREMENTSCL_CL
 
 #include "complex.h"

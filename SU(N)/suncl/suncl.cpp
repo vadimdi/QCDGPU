@@ -184,23 +184,23 @@ void        SubLattice::sublattice_analysis_SpatTemp(int data_size, model::enum_
         model_create(); // tune particular model
 
         Analysis = (analysis_CL::analysis::data_analysis*) calloc(DATA_MEASUREMENTS,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_X_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_Y_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_Z_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
-	
-	Analysis_S_X_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_S_X_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_S_Y_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_S_Y_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_S_Z_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_S_Z_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_X_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_Y_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_Z_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+    
+    Analysis_S_X_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_S_X_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_S_Y_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_S_Y_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_S_Z_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_S_Z_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
 
-	Analysis_S_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_S_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_S_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_S_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_S_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_S_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
 
 #ifdef BIGLAT
     if((get_Fmunu)||(get_F0mu))
@@ -219,9 +219,9 @@ void        SubLattice::sublattice_analysis_SpatTemp(int data_size, model::enum_
         for (int k = 0; k < lattice_Nparts; k++)
             SubLat[k].~SubLattice();
         free(SubLat);
-		free(devParts);
+        free(devParts);
 #ifdef USE_OPENMP
-		free(devLeftParts);
+        free(devLeftParts);
 #endif
 
         if((get_Fmunu)||(get_F0mu))
@@ -242,22 +242,22 @@ void        SubLattice::sublattice_analysis_SpatTemp(int data_size, model::enum_
         delete D_A;
            D_A = 0;
         free(Analysis);
-	
-	free(Analysis_PL_X);
+    
+    free(Analysis_PL_X);
         free(Analysis_PL_X_im);
-	free(Analysis_PL_Y);
+    free(Analysis_PL_Y);
         free(Analysis_PL_Y_im);
-	free(Analysis_PL_Z);
+    free(Analysis_PL_Z);
         free(Analysis_PL_Z_im);
-	free(Analysis_S_X_s);
+    free(Analysis_S_X_s);
         free(Analysis_S_X_t);
-	free(Analysis_S_Y_s);
+    free(Analysis_S_Y_s);
         free(Analysis_S_Y_t);
-	free(Analysis_S_Z_s);
+    free(Analysis_S_Z_s);
         free(Analysis_S_Z_t);
-	free(Analysis_S_X);
-	free(Analysis_S_Y);
-	free(Analysis_S_Z);
+    free(Analysis_S_X);
+    free(Analysis_S_Y);
+    free(Analysis_S_Z);
 
 #ifndef CPU_RUN
         free(lattice_group_elements);
@@ -620,39 +620,39 @@ void        model::lattice_init(void)
     if (!SubLat[0].GPU0->GPU_debug.local_run) SubLat[0].GPU0->make_start_file(finishpath);
     bool supported_devices = false;
 
-	for (int k = 0; k < lattice_Nparts; k++)
-	{
-		supported_devices = false;
-		if (!SubLat[k].device_select) {
-			// auto-select
-			supported_devices = SubLat[k].GPU0->device_auto_select(GPU_CL::GPU::GPU_vendor_any, GPU_CL::GPU::GPU_vendor_any);
-		}
-		else {
-			// manual selection of platform and device
-			supported_devices = SubLat[k].GPU0->device_select(SubLat[k].desired_platform, SubLat[k].desired_device);
-		}
-		if (!supported_devices){
-			printf("There are no any available OpenCL devices\n");
-			exit(0);
-		}
+    for (int k = 0; k < lattice_Nparts; k++)
+    {
+        supported_devices = false;
+        if (!SubLat[k].device_select) {
+            // auto-select
+            supported_devices = SubLat[k].GPU0->device_auto_select(GPU_CL::GPU::GPU_vendor_any, GPU_CL::GPU::GPU_vendor_any);
+        }
+        else {
+            // manual selection of platform and device
+            supported_devices = SubLat[k].GPU0->device_select(SubLat[k].desired_platform, SubLat[k].desired_device);
+        }
+        if (!supported_devices){
+            printf("There are no any available OpenCL devices\n");
+            exit(0);
+        }
 
 #ifdef USE_OPENMP
-	}
+    }
 
-	devLeftParts = (unsigned int*)calloc(Ndevices, sizeof(unsigned int));
-	devLeftParts[0] = 0;
-	for (int f = 1; f < Ndevices; f++)
-		devLeftParts[f] = devLeftParts[f - 1] + devParts[f - 1];
+    devLeftParts = (unsigned int*)calloc(Ndevices, sizeof(unsigned int));
+    devLeftParts[0] = 0;
+    for (int f = 1; f < Ndevices; f++)
+        devLeftParts[f] = devLeftParts[f - 1] + devParts[f - 1];
 
-	int nthreads, tid;
-	int kk;
+    int nthreads, tid;
+    int kk;
 
 #pragma omp parallel for private(kk)//slows down?
-	for (int f = 0; f < Ndevices; f++)
-		for (kk = devLeftParts[f]; kk < devLeftParts[f] + devParts[f]; kk++)
-			SubLat[kk].GPU0->device_initialize(kk);
+    for (int f = 0; f < Ndevices; f++)
+        for (kk = devLeftParts[f]; kk < devLeftParts[f] + devParts[f]; kk++)
+            SubLat[kk].GPU0->device_initialize(kk);
 
-	for(int k = 0; k < lattice_Nparts; k++){
+    for(int k = 0; k < lattice_Nparts; k++){
 #else
     SubLat[k].GPU0->device_initialize(k);
 #endif
@@ -1119,17 +1119,17 @@ void        model::lattice_analysis_PL_diff(void)
     int offset, denominator;
 
     Analysis_PL_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[0] + 1, sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_X_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[0] + 1, sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[1] + 1, sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_Y_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[1] + 1, sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[2] + 1, sizeof(analysis_CL::analysis::data_analysis));
-	Analysis_PL_Z_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[2] + 1, sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_X_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[0] + 1, sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[1] + 1, sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_Y_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[1] + 1, sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[2] + 1, sizeof(analysis_CL::analysis::data_analysis));
+    Analysis_PL_Z_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[2] + 1, sizeof(analysis_CL::analysis::data_analysis));
 
     for(k = 0; k < lattice_Nparts; k++){
         SubLat[k].Analysis_PL_Y = (analysis_CL::analysis::data_analysis*) calloc(SubLat[k].Ny + 1, sizeof(analysis_CL::analysis::data_analysis));
-	    SubLat[k].Analysis_PL_Y_im = (analysis_CL::analysis::data_analysis*) calloc(SubLat[k].Ny + 1, sizeof(analysis_CL::analysis::data_analysis));
-	    SubLat[k].Analysis_PL_Z = (analysis_CL::analysis::data_analysis*) calloc(SubLat[k].Nz + 1, sizeof(analysis_CL::analysis::data_analysis));
-	    SubLat[k].Analysis_PL_Z_im = (analysis_CL::analysis::data_analysis*) calloc(SubLat[k].Nz + 1, sizeof(analysis_CL::analysis::data_analysis));
+        SubLat[k].Analysis_PL_Y_im = (analysis_CL::analysis::data_analysis*) calloc(SubLat[k].Ny + 1, sizeof(analysis_CL::analysis::data_analysis));
+        SubLat[k].Analysis_PL_Z = (analysis_CL::analysis::data_analysis*) calloc(SubLat[k].Nz + 1, sizeof(analysis_CL::analysis::data_analysis));
+        SubLat[k].Analysis_PL_Z_im = (analysis_CL::analysis::data_analysis*) calloc(SubLat[k].Nz + 1, sizeof(analysis_CL::analysis::data_analysis));
     }
 
     int k0 = 0;
@@ -1192,19 +1192,19 @@ void        model::lattice_analysis_Action_diff(void){
 
       Analysis_S_X_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[0]+1,sizeof(analysis_CL::analysis::data_analysis));
      Analysis_S_X_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[0]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  
-	  Analysis_S_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[0]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_S_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_S_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+      
+      Analysis_S_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[0]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_S_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_S_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_full_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
 
       for(k = 0; k < lattice_Nparts; k++){
           SubLat[k].Analysis_S_Y_s = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Ny+1, sizeof(analysis_CL::analysis::data_analysis));
-	      SubLat[k].Analysis_S_Y_t = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Ny+1, sizeof(analysis_CL::analysis::data_analysis));
-	      SubLat[k].Analysis_S_Z_s = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Nz+1, sizeof(analysis_CL::analysis::data_analysis));
-	      SubLat[k].Analysis_S_Z_t = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Nz+1, sizeof(analysis_CL::analysis::data_analysis));
-	  
-	      SubLat[k].Analysis_S_Y = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Ny+1, sizeof(analysis_CL::analysis::data_analysis));
-	      SubLat[k].Analysis_S_Z = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Nz+1, sizeof(analysis_CL::analysis::data_analysis));
+          SubLat[k].Analysis_S_Y_t = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Ny+1, sizeof(analysis_CL::analysis::data_analysis));
+          SubLat[k].Analysis_S_Z_s = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Nz+1, sizeof(analysis_CL::analysis::data_analysis));
+          SubLat[k].Analysis_S_Z_t = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Nz+1, sizeof(analysis_CL::analysis::data_analysis));
+      
+          SubLat[k].Analysis_S_Y = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Ny+1, sizeof(analysis_CL::analysis::data_analysis));
+          SubLat[k].Analysis_S_Z = (analysis_CL::analysis::data_analysis*)calloc(SubLat[k].Nz+1, sizeof(analysis_CL::analysis::data_analysis));
       }
 
     int k0 = 0;
@@ -1222,7 +1222,7 @@ void        model::lattice_analysis_Action_diff(void){
         lattice_analysis_PLx(&Analysis_S_X_t[x],  &SubLattice::sublattice_action_diff_x, 0, k, offset, denominator);
 
         Analysis_S_X[x].data_name      = "S_total_diff";
-	    D_A->lattice_data_analysis_joint(&Analysis_S_X[x], &Analysis_S_X_s[x], &Analysis_S_X_t[x]);
+        D_A->lattice_data_analysis_joint(&Analysis_S_X[x], &Analysis_S_X_s[x], &Analysis_S_X_t[x]);
 
         k0 = k;
     }
@@ -1376,107 +1376,107 @@ void        model::lattice_analysis(void){
     if(get_actions_diff)
     {
           Analysis_S_X_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_S_X_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_S_Y_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_S_Y_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_S_Z_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_S_Z_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  
-	  Analysis_S_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_S_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_S_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_S_X_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_S_Y_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_S_Y_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_S_Z_s = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_S_Z_t = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+      
+      Analysis_S_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_S_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_S_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
 
       for(int i = 0; i < lattice_domain_n1; i++)
-	  {
-	    Analysis_S_X_s[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_S_X_s[i].precision_single = false;
+      {
+        Analysis_S_X_s[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_S_X_s[i].precision_single = false;
             else                                   Analysis_S_X_s[i].precision_single = true;
-	    Analysis_S_X_s[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
-	    
-	    Analysis_S_X_s[i].pointer         = GPU0->buffer_map(lattice_action_diff_x);
+        Analysis_S_X_s[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+        
+        Analysis_S_X_s[i].pointer         = GPU0->buffer_map(lattice_action_diff_x);
             Analysis_S_X_s[i].pointer_offset  = lattice_energies_size * i;
             Analysis_S_X_s[i].denominator     = ((double) (lattice_full_n2n3n4 * 3));
             Analysis_S_X_s[i].data_name       = "S_diff_s";
             D_A->lattice_data_analysis(&Analysis_S_X_s[i]);
 
-	    Analysis_S_X_t[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_S_X_t[i].precision_single = false;
+        Analysis_S_X_t[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_S_X_t[i].precision_single = false;
             else                                   Analysis_S_X_t[i].precision_single = true;
-	    Analysis_S_X_t[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
-	    
-	    Analysis_S_X_t[i].pointer         = Analysis_S_X_s[i].pointer;
+        Analysis_S_X_t[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+        
+        Analysis_S_X_t[i].pointer         = Analysis_S_X_s[i].pointer;
             Analysis_S_X_t[i].pointer_offset  = lattice_energies_size * i;
             Analysis_S_X_t[i].denominator     = ((double) (lattice_full_n2n3n4 * 3));
             Analysis_S_X_t[i].data_name       = "S_diff_t";
             D_A->lattice_data_analysis(&Analysis_S_X_t[i]);
-	    
-	    Analysis_S_X[i].data_name      = "S_total_diff";
-	    D_A->lattice_data_analysis_joint(&Analysis_S_X[i],&Analysis_S_X_s[i],&Analysis_S_X_t[i]);
-	  }
-	  
-	  int lattice_full_n1n3n4 = lattice_full_size[0] * lattice_full_size[2] * lattice_full_size[3];
-	  for(int i = 0; i < lattice_domain_size[1]; i++)
-	  {
-	    Analysis_S_Y_s[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_S_Y_s[i].precision_single = false;
+        
+        Analysis_S_X[i].data_name      = "S_total_diff";
+        D_A->lattice_data_analysis_joint(&Analysis_S_X[i],&Analysis_S_X_s[i],&Analysis_S_X_t[i]);
+      }
+      
+      int lattice_full_n1n3n4 = lattice_full_size[0] * lattice_full_size[2] * lattice_full_size[3];
+      for(int i = 0; i < lattice_domain_size[1]; i++)
+      {
+        Analysis_S_Y_s[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_S_Y_s[i].precision_single = false;
             else                                   Analysis_S_Y_s[i].precision_single = true;
-	    Analysis_S_Y_s[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
-	    
-	    Analysis_S_Y_s[i].pointer         = GPU0->buffer_map(lattice_action_diff_y);
+        Analysis_S_Y_s[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+        
+        Analysis_S_Y_s[i].pointer         = GPU0->buffer_map(lattice_action_diff_y);
             Analysis_S_Y_s[i].pointer_offset  = lattice_energies_size * i;
             Analysis_S_Y_s[i].denominator     = ((double) (lattice_full_n1n3n4 * 3));
             Analysis_S_Y_s[i].data_name       = "S_diff_s";
             D_A->lattice_data_analysis(&Analysis_S_Y_s[i]);
 
-	    Analysis_S_Y_t[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_S_Y_t[i].precision_single = false;
+        Analysis_S_Y_t[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_S_Y_t[i].precision_single = false;
             else                                   Analysis_S_Y_t[i].precision_single = true;
-	    Analysis_S_Y_t[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
-	    
-	    Analysis_S_Y_t[i].pointer         = Analysis_S_Y_s[i].pointer;
+        Analysis_S_Y_t[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+        
+        Analysis_S_Y_t[i].pointer         = Analysis_S_Y_s[i].pointer;
             Analysis_S_Y_t[i].pointer_offset  = lattice_energies_size * i;
             Analysis_S_Y_t[i].denominator     = ((double) (lattice_full_n1n3n4 * 3));
             Analysis_S_Y_t[i].data_name       = "S_diff_t";
             D_A->lattice_data_analysis(&Analysis_S_Y_t[i]);
-	    
-	    Analysis_S_Y[i].data_name      = "S_total_diff";
-	    D_A->lattice_data_analysis_joint(&Analysis_S_Y[i],&Analysis_S_Y_s[i],&Analysis_S_Y_t[i]);
-	  }
-	  
-	  int lattice_full_n1n2n4 = lattice_full_size[0] * lattice_full_size[1] * lattice_full_size[3];
-	  for(int i = 0; i < lattice_domain_size[2]; i++)
-	  {
-	    Analysis_S_Z_s[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_S_Z_s[i].precision_single = false;
+        
+        Analysis_S_Y[i].data_name      = "S_total_diff";
+        D_A->lattice_data_analysis_joint(&Analysis_S_Y[i],&Analysis_S_Y_s[i],&Analysis_S_Y_t[i]);
+      }
+      
+      int lattice_full_n1n2n4 = lattice_full_size[0] * lattice_full_size[1] * lattice_full_size[3];
+      for(int i = 0; i < lattice_domain_size[2]; i++)
+      {
+        Analysis_S_Z_s[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_S_Z_s[i].precision_single = false;
             else                                   Analysis_S_Z_s[i].precision_single = true;
-	    Analysis_S_Z_s[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
-	    
-	    Analysis_S_Z_s[i].pointer         = GPU0->buffer_map(lattice_action_diff_z);
+        Analysis_S_Z_s[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+        
+        Analysis_S_Z_s[i].pointer         = GPU0->buffer_map(lattice_action_diff_z);
             Analysis_S_Z_s[i].pointer_offset  = lattice_energies_size * i;
             Analysis_S_Z_s[i].denominator     = ((double) (lattice_full_n1n2n4 * 3));
             Analysis_S_Z_s[i].data_name       = "S_diff_s";
             D_A->lattice_data_analysis(&Analysis_S_Z_s[i]);
 
-	    Analysis_S_Z_t[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_S_Z_t[i].precision_single = false;
+        Analysis_S_Z_t[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_S_Z_t[i].precision_single = false;
             else                                   Analysis_S_Z_t[i].precision_single = true;
-	    Analysis_S_Z_t[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
-	    
-	    Analysis_S_Z_t[i].pointer         = Analysis_S_Z_s[i].pointer;
+        Analysis_S_Z_t[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+        
+        Analysis_S_Z_t[i].pointer         = Analysis_S_Z_s[i].pointer;
             Analysis_S_Z_t[i].pointer_offset  = lattice_energies_size * i;
             Analysis_S_Z_t[i].denominator     = ((double) (lattice_full_n1n2n4 * 3));
             Analysis_S_Z_t[i].data_name       = "S_diff_t";
             D_A->lattice_data_analysis(&Analysis_S_Z_t[i]);
-	    
-	    Analysis_S_Z[i].data_name      = "S_total_diff";
-	    D_A->lattice_data_analysis_joint(&Analysis_S_Z[i],&Analysis_S_Z_s[i],&Analysis_S_Z_t[i]);
-	  }
+        
+        Analysis_S_Z[i].data_name      = "S_total_diff";
+        D_A->lattice_data_analysis_joint(&Analysis_S_Z[i],&Analysis_S_Z_s[i],&Analysis_S_Z_t[i]);
+      }
     }
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
@@ -1492,99 +1492,99 @@ void        model::lattice_analysis(void){
         Analysis[DM_Polyakov_loop_im].denominator     = ((double) (lattice_full_n1n2n3 * lattice_group));
         Analysis[DM_Polyakov_loop_im].data_name       = "Polyakov_loop_im";
         D_A->lattice_data_analysis(&Analysis[DM_Polyakov_loop_im]);
-	
+    
 //*************************************************************************************
-	if(PL_level > 2)
-	{
-	  Analysis_PL_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_PL_X_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_PL_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_PL_Y_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_PL_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  Analysis_PL_Z_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
-	  
-	  for(int i = 0; i < lattice_domain_n1; i++)
-	  {
-	    Analysis_PL_X[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_PL_X[i].precision_single = false;
+    if(PL_level > 2)
+    {
+      Analysis_PL_X = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_PL_X_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_n1+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_PL_Y = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_PL_Y_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[1]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_PL_Z = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+      Analysis_PL_Z_im = (analysis_CL::analysis::data_analysis*) calloc(lattice_domain_size[2]+1,sizeof(analysis_CL::analysis::data_analysis));
+      
+      for(int i = 0; i < lattice_domain_n1; i++)
+      {
+        Analysis_PL_X[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_PL_X[i].precision_single = false;
             else                                   Analysis_PL_X[i].precision_single = true;
-	    Analysis_PL_X[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
-	    
-	    Analysis_PL_X[i].pointer         = GPU0->buffer_map(lattice_polyakov_loop_diff_x);
+        Analysis_PL_X[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+        
+        Analysis_PL_X[i].pointer         = GPU0->buffer_map(lattice_polyakov_loop_diff_x);
             Analysis_PL_X[i].pointer_offset  = lattice_polyakov_loop_size * i;
             Analysis_PL_X[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
             Analysis_PL_X[i].data_name       = "Polyakov_loop_diff";
             D_A->lattice_data_analysis(&Analysis_PL_X[i]);
 
-	    Analysis_PL_X_im[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_PL_X_im[i].precision_single = false;
+        Analysis_PL_X_im[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_PL_X_im[i].precision_single = false;
             else                                   Analysis_PL_X_im[i].precision_single = true;
-	    Analysis_PL_X_im[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
-	    
-	    Analysis_PL_X_im[i].pointer         = Analysis_PL_X[i].pointer;
+        Analysis_PL_X_im[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+        
+        Analysis_PL_X_im[i].pointer         = Analysis_PL_X[i].pointer;
             Analysis_PL_X_im[i].pointer_offset  = lattice_polyakov_loop_size * i;
             Analysis_PL_X_im[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
             Analysis_PL_X_im[i].data_name       = "Polyakov_loop_im_diff";
             D_A->lattice_data_analysis(&Analysis_PL_X_im[i]);
-	  }
-	  
-	  for(int i = 0; i < lattice_domain_size[1]; i++)
-	  {
-	    Analysis_PL_Y[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_PL_Y[i].precision_single = false;
+      }
+      
+      for(int i = 0; i < lattice_domain_size[1]; i++)
+      {
+        Analysis_PL_Y[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_PL_Y[i].precision_single = false;
             else                                   Analysis_PL_Y[i].precision_single = true;
-	    Analysis_PL_Y[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
-	    
-	    Analysis_PL_Y[i].pointer         = GPU0->buffer_map(lattice_polyakov_loop_diff_y);
+        Analysis_PL_Y[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+        
+        Analysis_PL_Y[i].pointer         = GPU0->buffer_map(lattice_polyakov_loop_diff_y);
             Analysis_PL_Y[i].pointer_offset  = lattice_polyakov_loop_size * i;
             Analysis_PL_Y[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
             Analysis_PL_Y[i].data_name       = "Polyakov_loop_diff";
             D_A->lattice_data_analysis(&Analysis_PL_Y[i]);
 
-	    Analysis_PL_Y_im[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_PL_Y_im[i].precision_single = false;
+        Analysis_PL_Y_im[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_PL_Y_im[i].precision_single = false;
             else                                   Analysis_PL_Y_im[i].precision_single = true;
-	    Analysis_PL_Y_im[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
-	    
-	    Analysis_PL_Y_im[i].pointer         = Analysis_PL_Y[i].pointer;
+        Analysis_PL_Y_im[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+        
+        Analysis_PL_Y_im[i].pointer         = Analysis_PL_Y[i].pointer;
             Analysis_PL_Y_im[i].pointer_offset  = lattice_polyakov_loop_size * i;
             Analysis_PL_Y_im[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
             Analysis_PL_Y_im[i].data_name       = "Polyakov_loop_im_diff";
             D_A->lattice_data_analysis(&Analysis_PL_Y_im[i]);
-	  }
-	  
-	  for(int i = 0; i < lattice_domain_size[2]; i++)
-	  {
-	    Analysis_PL_Z[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_PL_Z[i].precision_single = false;
+      }
+      
+      for(int i = 0; i < lattice_domain_size[2]; i++)
+      {
+        Analysis_PL_Z[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_PL_Z[i].precision_single = false;
             else                                   Analysis_PL_Z[i].precision_single = true;
-	    Analysis_PL_Z[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
-	    
-	    Analysis_PL_Z[i].pointer         = GPU0->buffer_map(lattice_polyakov_loop_diff_z);
+        Analysis_PL_Z[i].storage_type = GPU_CL::GPU::GPU_storage_double2high;
+        
+        Analysis_PL_Z[i].pointer         = GPU0->buffer_map(lattice_polyakov_loop_diff_z);
             Analysis_PL_Z[i].pointer_offset  = lattice_polyakov_loop_size * i;
             Analysis_PL_Z[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
             Analysis_PL_Z[i].data_name       = "Polyakov_loop_diff";
             D_A->lattice_data_analysis(&Analysis_PL_Z[i]);
 
-	    Analysis_PL_Z_im[i].data_size = ITER;
-	    
-	    if (precision==model_precision_double) Analysis_PL_Z_im[i].precision_single = false;
+        Analysis_PL_Z_im[i].data_size = ITER;
+        
+        if (precision==model_precision_double) Analysis_PL_Z_im[i].precision_single = false;
             else                                   Analysis_PL_Z_im[i].precision_single = true;
-	    Analysis_PL_Z_im[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
-	    
-	    Analysis_PL_Z_im[i].pointer         = Analysis_PL_Z[i].pointer;
+        Analysis_PL_Z_im[i].storage_type = GPU_CL::GPU::GPU_storage_double2low;
+        
+        Analysis_PL_Z_im[i].pointer         = Analysis_PL_Z[i].pointer;
             Analysis_PL_Z_im[i].pointer_offset  = lattice_polyakov_loop_size * i;
             Analysis_PL_Z_im[i].denominator     = ((double) (lattice_full_n2n3 * lattice_group));
             Analysis_PL_Z_im[i].data_name       = "Polyakov_loop_im_diff";
             D_A->lattice_data_analysis(&Analysis_PL_Z_im[i]);
-	  }
-	  
-	}
+      }
+      
+    }
 //*************************************************************************************
 
     }
@@ -1690,105 +1690,105 @@ void        model::lattice_write_results(void) {
     
     fopen_s(&stream,buffer,"w+");
     if(stream)
-	{
+    {
         fprintf(stream,header);
-	
-	if (PL_level>2) {
-	  fprintf(stream, " ***************************************************\n");
-	  fprintf(stream,"Differentiated Polyakov loop data (#, PL, PL_im, PL_variance, PL_im_variance):");
+    
+    if (PL_level>2) {
+      fprintf(stream, " ***************************************************\n");
+      fprintf(stream,"Differentiated Polyakov loop data (#, PL, PL_im, PL_variance, PL_im_variance):");
 
-	  fprintf(stream, "\n"); 
-	  fprintf(stream,"\nX              ");  
-	  for (int i=0; i<lattice_full_size[0];i++)
+      fprintf(stream, "\n"); 
+      fprintf(stream,"\nX              ");  
+      for (int i=0; i<lattice_full_size[0];i++)
             fprintf(stream, "%2u                   ",i);
-	  fprintf(stream,"\nPL             ");
-	  for (int i=0; i<lattice_full_size[0];i++)
+      fprintf(stream,"\nPL             ");
+      for (int i=0; i<lattice_full_size[0];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_X[i].mean_value);
-	  fprintf(stream,"\nPL_im          ");
-	  for (int i=0; i<lattice_full_size[0];i++)
+      fprintf(stream,"\nPL_im          ");
+      for (int i=0; i<lattice_full_size[0];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_X_im[i].mean_value);
-	  fprintf(stream,"\nPL_variance    ");
-	  for (int i=0; i<lattice_full_size[0];i++)
+      fprintf(stream,"\nPL_variance    ");
+      for (int i=0; i<lattice_full_size[0];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_X[i].variance);
-	  fprintf(stream,"\nPL_im_variance ");
-	  for (int i=0; i<lattice_full_size[0];i++)
+      fprintf(stream,"\nPL_im_variance ");
+      for (int i=0; i<lattice_full_size[0];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_X_im[i].variance);
-	  fprintf(stream,"\n");
-	   
-	  fprintf(stream,"\nY              ");  
-	  for (int i=0; i<lattice_full_size[1];i++)
+      fprintf(stream,"\n");
+       
+      fprintf(stream,"\nY              ");  
+      for (int i=0; i<lattice_full_size[1];i++)
             fprintf(stream, "%2u                   ",i);
-	  fprintf(stream,"\nPL             ");
-	  for (int i=0; i<lattice_full_size[1];i++)
+      fprintf(stream,"\nPL             ");
+      for (int i=0; i<lattice_full_size[1];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_Y[i].mean_value);
-	  fprintf(stream,"\nPL_im          ");
-	  for (int i=0; i<lattice_full_size[1];i++)
+      fprintf(stream,"\nPL_im          ");
+      for (int i=0; i<lattice_full_size[1];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_Y_im[i].mean_value);
-	  fprintf(stream,"\nPL_variance    ");
-	  for (int i=0; i<lattice_full_size[1];i++)
+      fprintf(stream,"\nPL_variance    ");
+      for (int i=0; i<lattice_full_size[1];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_Y[i].variance);
-	  fprintf(stream,"\nPL_im_variance ");
-	  for (int i=0; i<lattice_full_size[1];i++)
+      fprintf(stream,"\nPL_im_variance ");
+      for (int i=0; i<lattice_full_size[1];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_Y_im[i].variance);
-	  fprintf(stream,"\n");
-	  
-	  fprintf(stream,"\nZ              ");  
-	  for (int i=0; i<lattice_full_size[2];i++)
+      fprintf(stream,"\n");
+      
+      fprintf(stream,"\nZ              ");  
+      for (int i=0; i<lattice_full_size[2];i++)
             fprintf(stream, "%2u                   ",i);
-	  fprintf(stream,"\nPL             ");
-	  for (int i=0; i<lattice_full_size[2];i++)
+      fprintf(stream,"\nPL             ");
+      for (int i=0; i<lattice_full_size[2];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_Z[i].mean_value);
-	  fprintf(stream,"\nPL_im          ");
-	  for (int i=0; i<lattice_full_size[2];i++)
+      fprintf(stream,"\nPL_im          ");
+      for (int i=0; i<lattice_full_size[2];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_Z_im[i].mean_value);
-	  fprintf(stream,"\nPL_variance    ");
-	  for (int i=0; i<lattice_full_size[2];i++)
+      fprintf(stream,"\nPL_variance    ");
+      for (int i=0; i<lattice_full_size[2];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_Z[i].variance);
-	  fprintf(stream,"\nPL_im_variance ");
-	  for (int i=0; i<lattice_full_size[2];i++)
+      fprintf(stream,"\nPL_im_variance ");
+      for (int i=0; i<lattice_full_size[2];i++)
             fprintf(stream, "% 16.13e ",Analysis_PL_Z_im[i].variance);
-	  fprintf(stream,"\n");
-	}
-	
-	if(get_actions_diff)
-	{
-	  fprintf(stream, " ***************************************************\n");
-	  fprintf(stream,"Differentiated S data (#, S_total, S_variance):");
+      fprintf(stream,"\n");
+    }
+    
+    if(get_actions_diff)
+    {
+      fprintf(stream, " ***************************************************\n");
+      fprintf(stream,"Differentiated S data (#, S_total, S_variance):");
 
-	  fprintf(stream, "\n"); 
-	  fprintf(stream,"\nX              ");  
-	  for (int i=0; i<lattice_full_size[0];i++)
+      fprintf(stream, "\n"); 
+      fprintf(stream,"\nX              ");  
+      for (int i=0; i<lattice_full_size[0];i++)
             fprintf(stream, "%2u                   ",i);
-	  fprintf(stream,"\nS             ");
-	  for (int i=0; i<lattice_full_size[0];i++)
+      fprintf(stream,"\nS             ");
+      for (int i=0; i<lattice_full_size[0];i++)
             fprintf(stream, "% 16.13e ",Analysis_S_X[i].mean_value);
-	  fprintf(stream,"\nS_variance    ");
-	  for (int i=0; i<lattice_full_size[0];i++)
+      fprintf(stream,"\nS_variance    ");
+      for (int i=0; i<lattice_full_size[0];i++)
             fprintf(stream, "% 16.13e ",Analysis_S_X[i].variance);
-	  fprintf(stream,"\n");
-	   
-	  fprintf(stream,"\nY              ");  
-	  for (int i=0; i<lattice_full_size[1];i++)
+      fprintf(stream,"\n");
+       
+      fprintf(stream,"\nY              ");  
+      for (int i=0; i<lattice_full_size[1];i++)
             fprintf(stream, "%2u                   ",i);
-	  fprintf(stream,"\nS             ");
-	  for (int i=0; i<lattice_full_size[1];i++)
+      fprintf(stream,"\nS             ");
+      for (int i=0; i<lattice_full_size[1];i++)
             fprintf(stream, "% 16.13e ",Analysis_S_Y[i].mean_value);
-	  fprintf(stream,"\nS_variance    ");
-	  for (int i=0; i<lattice_full_size[1];i++)
+      fprintf(stream,"\nS_variance    ");
+      for (int i=0; i<lattice_full_size[1];i++)
             fprintf(stream, "% 16.13e ",Analysis_S_Y[i].variance);
-	  fprintf(stream,"\n");
-	  
-	  fprintf(stream,"\nZ              ");  
-	  for (int i=0; i<lattice_full_size[2];i++)
+      fprintf(stream,"\n");
+      
+      fprintf(stream,"\nZ              ");  
+      for (int i=0; i<lattice_full_size[2];i++)
             fprintf(stream, "%2u                   ",i);
-	  fprintf(stream,"\nS             ");
-	  for (int i=0; i<lattice_full_size[2];i++)
+      fprintf(stream,"\nS             ");
+      for (int i=0; i<lattice_full_size[2];i++)
             fprintf(stream, "% 16.13e ",Analysis_S_Z[i].mean_value);
-	  fprintf(stream,"\nS_variance    ");
-	  for (int i=0; i<lattice_full_size[2];i++)
+      fprintf(stream,"\nS_variance    ");
+      for (int i=0; i<lattice_full_size[2];i++)
             fprintf(stream, "% 16.13e ",Analysis_S_Z[i].variance);
-	  fprintf(stream,"\n");
-	}
+      fprintf(stream,"\n");
+    }
 
         fprintf(stream, " ***************************************************\n");
         fprintf(stream, " Data fields:\n");
@@ -1849,8 +1849,8 @@ void        model::lattice_write_results(void) {
             fprintf(stream, "\n");
         }
 
-		if ( fclose(stream) ) {printf( "The file was not closed!\n" ); }
-	}
+        if ( fclose(stream) ) {printf( "The file was not closed!\n" ); }
+    }
 }
 
 #ifndef CPU_RUN
@@ -2121,8 +2121,8 @@ void        model::model_lattice_init(void){
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for(int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -2134,7 +2134,7 @@ void        model::model_lattice_init(void){
         SubLat[k].sublattice_table_row_size = SubLat[k].GPU0->buffer_size_align(SubLat[k].sublattice_sites);
         SubLat[k].sublattice_table_row_size_half = SubLat[k].GPU0->buffer_size_align(SubLat[k].sublattice_sites / 2);
 
-		SubLat[k].sublattice_table_row_size1 = SubLat[k].GPU0->buffer_size_align(SubLat[k].Nx * SubLat[k].Ny * SubLat[k].Nz * SubLat[k].Nt);
+        SubLat[k].sublattice_table_row_size1 = SubLat[k].GPU0->buffer_size_align(SubLat[k].Nx * SubLat[k].Ny * SubLat[k].Nz * SubLat[k].Nt);
 
         SubLat[k].sublattice_table_row_Size = SubLat[k].GPU0->buffer_size_align(SubLat[k].sublattice_Sites);
         SubLat[k].sublattice_table_row_Size_half = SubLat[k].GPU0->buffer_size_align(SubLat[k].sublattice_Sites / 2);
@@ -2145,7 +2145,7 @@ void        model::model_lattice_init(void){
         }
 
         SubLat[k].sublattice_table_Size = SubLat[k].GPU0->buffer_size_align(SubLat[k].sublattice_table_row_Size * lattice_nd * lattice_group_elements[lattice_group-1] / 4);
-		SubLat[k].sublattice_table_size = SubLat[k].GPU0->buffer_size_align(SubLat[k].sublattice_table_row_size1 * lattice_nd * lattice_group_elements[lattice_group - 1] / 4);
+        SubLat[k].sublattice_table_size = SubLat[k].GPU0->buffer_size_align(SubLat[k].sublattice_table_row_size1 * lattice_nd * lattice_group_elements[lattice_group - 1] / 4);
 
         if(get_wilson_loop){
             SubLat[k].sublattice_Lt_size = SubLat[k].GPU0->buffer_size_align(SubLat[k].sublattice_Lt_rowsize * lattice_group_elements[lattice_group-1] / 4);
@@ -2199,10 +2199,10 @@ void        model::model_lattice_init(void){
         SubLat[k].prngstep = SubLat[k].sublattice_table_row_size_half;
     }
         //_____________________________________________ PRNG initialization
-	for (int k = 0; k < lattice_Nparts; k++){
-		SubLat[k].PRNG0->initialize();
-		SubLat[k].GPU0->print_stage("PRNGs initialized");
-	}
+    for (int k = 0; k < lattice_Nparts; k++){
+        SubLat[k].PRNG0->initialize();
+        SubLat[k].GPU0->print_stage("PRNGs initialized");
+    }
         //-----------------------------------------------------------------
 
     char* header = lattice_make_header();
@@ -2339,7 +2339,7 @@ void        model::model_lattice_init(void){
         printf("lattice_polyakov_loop_size  = %u\n",lattice_polyakov_loop_size);
         printf("polykov_loop_offset         = %u\n",lattice_polyakov_loop_offset);
         printf("lattice_energies_offset     = %u\n",lattice_energies_offset);
-        printf("local_size_intel            = %u\n",local_size_intel);
+        printf("local_size_intel            = %u\n",(unsigned int)local_size_intel);
         printf("kernels: ----------------------------\n");
         printf("lattice_init                = %u\n",lattice_table_group);
         printf("lattice_GramSchmidt         = %u\n",lattice_table_group);
@@ -2402,48 +2402,48 @@ void    model::lattice_mp_Sim(void)
 
 #ifdef USE_OPENMP
 #pragma omp parallel for private (options_common, options_length_common, options, options_length, left_sites, buffer_update_cl, update_source, j)
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-	for (int k = 0; k < lattice_Nparts; k++){
+    for (int k = 0; k < lattice_Nparts; k++){
 #endif
-		options_length_common = sprintf_s(options_common, sizeof(options_common), "-Werror");
-		if (ints == model_start_gid)
-			options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D GID_UPD");
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D SUN=%u", lattice_group);
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D ND=%u", lattice_nd);
-		if (!((PHI == 0.0) && (OMEGA == 0.0))) options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D TBC");     // turn on TBC
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D PRECISION=%u", precision);
-		
+        options_length_common = sprintf_s(options_common, sizeof(options_common), "-Werror");
+        if (ints == model_start_gid)
+            options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D GID_UPD");
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D SUN=%u", lattice_group);
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D ND=%u", lattice_nd);
+        if (!((PHI == 0.0) && (OMEGA == 0.0))) options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D TBC");     // turn on TBC
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D PRECISION=%u", precision);
+        
 #ifndef IGNORE_INTEL
-		if (SubLat[k].GPU0->GPU_info.device_vendor == GPU_CL::GPU::GPU_vendor_Intel)
-			options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D INTEL_ON");
+        if (SubLat[k].GPU0->GPU_info.device_vendor == GPU_CL::GPU::GPU_vendor_Intel)
+            options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D INTEL_ON");
 #endif
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D N1=%u", SubLat[k].Nx + 2);
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D N2=%u", SubLat[k].Ny);
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D N3=%u", SubLat[k].Nz);
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D N4=%u", SubLat[k].Nt);
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -I %s%s", SubLat[k].GPU0->cl_root_path, path_suncl);
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -I %s%s", SubLat[k].GPU0->cl_root_path, path_kernel);
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D ROWSIZE=%u", SubLat[k].sublattice_table_row_Size);
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D N1=%u", SubLat[k].Nx + 2);
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D N2=%u", SubLat[k].Ny);
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D N3=%u", SubLat[k].Nz);
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D N4=%u", SubLat[k].Nt);
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -I %s%s", SubLat[k].GPU0->cl_root_path, path_suncl);
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -I %s%s", SubLat[k].GPU0->cl_root_path, path_kernel);
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D ROWSIZE=%u", SubLat[k].sublattice_table_row_Size);
 
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D BIGLAT");
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D BIGLAT");
 
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D FULL_SITES=%u", lattice_full_size[0] * lattice_full_size[1] * lattice_full_size[2] * lattice_full_size[3]);
-		left_sites = 0;
-		if (k)
-		{
-			left_sites = SubLat[0].Nx;
-			for (int jj = 1; jj < k; jj++)
-				left_sites += SubLat[jj].Nx;
-			left_sites *= SubLat[k].Ny * SubLat[k].Nz * SubLat[k].Nt;
-		}
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D LEFT_SITES=%u", left_sites);
-		
-		options_length = sprintf_s(options, sizeof(options), "%s", options_common);
-		options_length += sprintf_s(options + options_length, sizeof(options) - options_length, " -D NHIT=%u", NHIT);
-		options_length += sprintf_s(options + options_length, sizeof(options) - options_length, " -D NHITPar=%u", NHITPar);
-		options_length += sprintf_s(options + options_length, sizeof(options) - options_length, " -D PRNGSTEP=%u", SubLat[k].sublattice_table_row_size_half);
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D FULL_SITES=%u", lattice_full_size[0] * lattice_full_size[1] * lattice_full_size[2] * lattice_full_size[3]);
+        left_sites = 0;
+        if (k)
+        {
+            left_sites = SubLat[0].Nx;
+            for (int jj = 1; jj < k; jj++)
+                left_sites += SubLat[jj].Nx;
+            left_sites *= SubLat[k].Ny * SubLat[k].Nz * SubLat[k].Nt;
+        }
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D LEFT_SITES=%u", left_sites);
+        
+        options_length = sprintf_s(options, sizeof(options), "%s", options_common);
+        options_length += sprintf_s(options + options_length, sizeof(options) - options_length, " -D NHIT=%u", NHIT);
+        options_length += sprintf_s(options + options_length, sizeof(options) - options_length, " -D NHITPar=%u", NHITPar);
+        options_length += sprintf_s(options + options_length, sizeof(options) - options_length, " -D PRNGSTEP=%u", SubLat[k].sublattice_table_row_size_half);
 
         j = sprintf_s(buffer_update_cl  ,FNAME_MAX_LENGTH,  "%s",SubLat[k].GPU0->cl_root_path);
         j+= sprintf_s(buffer_update_cl+j,FNAME_MAX_LENGTH-j,"%s",SOURCE_UPDATE);
@@ -2460,8 +2460,8 @@ void    model::lattice_kern_init_Sim(void)
 
 #ifdef USE_OPENMP
 #pragma omp parallel for private (init_global_size, argument_id)
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -2505,8 +2505,8 @@ void    model::lattice_kern_update_Sim(void)
 
 #ifdef USE_OPENMP
 #pragma omp parallel for private (monte_global_size, monte_local_size, argument_id)
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -2577,8 +2577,8 @@ void    model::lattice_mp_Meas(void)
 
 #ifdef USE_OPENMP
 #pragma omp parallel for private (options_common, options_length_common, options_measurements, options_measurement_length, left_sites, buffer_measurements_cl, measurements_source, j)
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -2601,20 +2601,20 @@ void    model::lattice_mp_Meas(void)
         options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -I %s%s", SubLat[k].GPU0->cl_root_path,path_suncl);
         options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -I %s%s", SubLat[k].GPU0->cl_root_path,path_kernel);
 #ifdef BIGTOSMALL
-		options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D ROWSIZE=%u", SubLat[k].sublattice_table_row_size1);
+        options_length_common += sprintf_s(options_common + options_length_common, sizeof(options_common) - options_length_common, " -D ROWSIZE=%u", SubLat[k].sublattice_table_row_size1);
 #else
         options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D ROWSIZE=%u", SubLat[k].sublattice_table_row_Size);
 #endif
-	if(get_actions_diff){
+    if(get_actions_diff){
         options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D PLK=%u",   getK(SubLat[k].Ny, SubLat[k].Nz, SubLat[k].GPU0->GPU_limit_max_workgroup_size));
         options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D PLKx=%u",   getK(SubLat[k].Ny, SubLat[k].Nz, SubLat[k].GPU0->GPU_limit_max_workgroup_size));
         options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D PLKy=%u",   getK(SubLat[k].Nx, SubLat[k].Nz, SubLat[k].GPU0->GPU_limit_max_workgroup_size));
         options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D PLKz=%u",   getK(SubLat[k].Nx, SubLat[k].Ny, SubLat[k].GPU0->GPU_limit_max_workgroup_size));
-	}
+    }
 
         options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D BIGLAT");
         options_length_common += sprintf_s(options_common + options_length_common,sizeof(options_common)-options_length_common," -D FULL_SITES=%u", lattice_full_size[0] * lattice_full_size[1] * lattice_full_size[2] * lattice_full_size[3]);
-		left_sites = 0;
+        left_sites = 0;
         if (k)
         {
             left_sites = SubLat[0].Nx;
@@ -2734,7 +2734,7 @@ void    model::lattice_kern_init_Action(void)
         measurement3_global_size[2] = 1;
 
         mwgs = SubLat[k].GPU0->GPU_info.max_workgroup_size;
-		printf("mwgs = %i\n", mwgs);
+        printf("mwgs = %i\n", mwgs);
 
         local_size_lattice_measurement[0] = mwgs;
         local_size_lattice_measurement[1] = 1;
@@ -2798,7 +2798,7 @@ void    model::lattice_kern_init_Action_diff(void){
         measurement3_global_size[1] = 1;
         measurement3_global_size[2] = 1;
 
-	SubLat[k].sun_action_diff_x_id = SubLat[k].GPU0->kernel_init("lattice_action_diff_x", 1, measurement3_global_size, local_size_lattice_measurement);
+    SubLat[k].sun_action_diff_x_id = SubLat[k].GPU0->kernel_init("lattice_action_diff_x", 1, measurement3_global_size, local_size_lattice_measurement);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_x_id, SubLat[k].sublattice_table);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_x_id, SubLat[k].sublattice_measurement_diff);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_x_id, SubLat[k].sublattice_parameters);	
@@ -2806,9 +2806,9 @@ void    model::lattice_kern_init_Action_diff(void){
         size_reduce_action_diff_double2 = (int) ceil((double) SubLat[k].sublattice_action_x_size / SubLat[k].GPU0->kernel_get_worksize(SubLat[k].sun_action_diff_x_id));
 
         Sparam.s[0] = (int) ceil((double) SubLat[k].sublattice_action_x_size / SubLat[k].GPU0->kernel_get_worksize(SubLat[k].sun_action_diff_x_id));
-	    Sparam.s[1] = SubLat[k].sublattice_energies_size;
-	    Sparam.s[2] = 0;
-	    Sparam.s[3] = 0;
+        Sparam.s[1] = SubLat[k].sublattice_energies_size;
+        Sparam.s[2] = 0;
+        Sparam.s[3] = 0;
     
         SubLat[k].sun_action_diff_x_reduce_id = SubLat[k].GPU0->kernel_init("reduce_action_diff_x_double2", 1, reduce_measurement_global_size, reduce_local_size);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_x_reduce_id, SubLat[k].sublattice_measurement_diff);
@@ -2820,7 +2820,7 @@ void    model::lattice_kern_init_Action_diff(void){
         measurement3_global_size[1] = 1;
         measurement3_global_size[2] = 1;
 
-	    SubLat[k].sun_action_diff_y_id = SubLat[k].GPU0->kernel_init("lattice_action_diff_y", 1, measurement3_global_size, local_size_lattice_measurement);
+        SubLat[k].sun_action_diff_y_id = SubLat[k].GPU0->kernel_init("lattice_action_diff_y", 1, measurement3_global_size, local_size_lattice_measurement);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_y_id, SubLat[k].sublattice_table);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_y_id, SubLat[k].sublattice_measurement_diff);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_y_id, SubLat[k].sublattice_parameters);	
@@ -2828,9 +2828,9 @@ void    model::lattice_kern_init_Action_diff(void){
         size_reduce_action_diff_double2 = (int) ceil((double) SubLat[k].sublattice_action_y_size / SubLat[k].GPU0->kernel_get_worksize(SubLat[k].sun_action_diff_y_id));
 
             Sparam.s[0] = size_reduce_action_diff_double2;
-	    Sparam.s[1] = SubLat[k].sublattice_energies_size;
-	    Sparam.s[2] = 0;
-	    Sparam.s[3] = 0;
+        Sparam.s[1] = SubLat[k].sublattice_energies_size;
+        Sparam.s[2] = 0;
+        Sparam.s[3] = 0;
     
         SubLat[k].sun_action_diff_y_reduce_id = SubLat[k].GPU0->kernel_init("reduce_action_diff_y_double2", 1, reduce_measurement_global_size, reduce_local_size);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_y_reduce_id, SubLat[k].sublattice_measurement_diff);
@@ -2842,7 +2842,7 @@ void    model::lattice_kern_init_Action_diff(void){
         measurement3_global_size[1] = 1;
         measurement3_global_size[2] = 1;
 
-	    SubLat[k].sun_action_diff_z_id = SubLat[k].GPU0->kernel_init("lattice_action_diff_z", 1, measurement3_global_size, local_size_lattice_measurement);
+        SubLat[k].sun_action_diff_z_id = SubLat[k].GPU0->kernel_init("lattice_action_diff_z", 1, measurement3_global_size, local_size_lattice_measurement);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_z_id, SubLat[k].sublattice_table);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_z_id, SubLat[k].sublattice_measurement_diff);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_z_id, SubLat[k].sublattice_parameters);	
@@ -2850,9 +2850,9 @@ void    model::lattice_kern_init_Action_diff(void){
         size_reduce_action_diff_double2 = (int) ceil((double) SubLat[k].sublattice_action_z_size / SubLat[k].GPU0->kernel_get_worksize(SubLat[k].sun_action_diff_z_id));
 
         Sparam.s[0] = (int) ceil((double) SubLat[k].sublattice_action_z_size / SubLat[k].GPU0->kernel_get_worksize(SubLat[k].sun_action_diff_z_id));
-	    Sparam.s[1] = SubLat[k].sublattice_energies_size;
-	    Sparam.s[2] = 0;
-	    Sparam.s[3] = 0;
+        Sparam.s[1] = SubLat[k].sublattice_energies_size;
+        Sparam.s[2] = 0;
+        Sparam.s[3] = 0;
     
         SubLat[k].sun_action_diff_z_reduce_id = SubLat[k].GPU0->kernel_init("reduce_action_diff_z_double2", 1, reduce_measurement_global_size, reduce_local_size);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_z_reduce_id, SubLat[k].sublattice_measurement_diff);
@@ -2999,19 +2999,19 @@ void    model::lattice_kern_init_PL(void)
             SubLat[k].sun_polyakov_diff_x_reduce_id = SubLat[k].GPU0->kernel_init("reduce_polyakov_diff_x_double2", 1, reduce_polyakov_global_size, reduce_local_size); 
 
             argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_x_reduce_id, SubLat[k].sublattice_measurement_diff);
-	        argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_x_reduce_id, SubLat[k].sublattice_polyakov_loop_diff_x);
+            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_x_reduce_id, SubLat[k].sublattice_polyakov_loop_diff_x);
             argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_x_reduce_id, SubLat[k].sublattice_lds);
             polyakov_param.s[0] = size_reduce_polyakov_diff_double2;
             polyakov_param.s[1] = offset_reduce_polyakov_diff_double2;
             polyakov_param.s[2] = SubLat[k].sublattice_polyakov_loop_size;
             polyakov_param.s[3] = 0;
             SubLat[k].argument_polyakov_diff_x_index = SubLat[k].GPU0->kernel_init_constant(SubLat[k].sun_polyakov_diff_x_reduce_id, &polyakov_param);
-	
+    
             polyakov3_global_size[0] = SubLat[k].sublattice_polyakov_y_size;
             polyakov3_global_size[1] = 1;
             polyakov3_global_size[2] = 1;
 
-	    SubLat[k].sun_polyakov_diff_y_id = SubLat[k].GPU0->kernel_init("lattice_polyakov_diff_y", 1, polyakov3_global_size, local_size_lattice_polyakov);
+        SubLat[k].sun_polyakov_diff_y_id = SubLat[k].GPU0->kernel_init("lattice_polyakov_diff_y", 1, polyakov3_global_size, local_size_lattice_polyakov);
         offset_reduce_polyakov_diff_double2 = 0;
             argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_y_id, SubLat[k].sublattice_table);
             argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_y_id, SubLat[k].sublattice_measurement_diff);
@@ -3022,20 +3022,20 @@ void    model::lattice_kern_init_PL(void)
 
             SubLat[k].sun_polyakov_diff_y_reduce_id = SubLat[k].GPU0->kernel_init("reduce_polyakov_diff_y_double2", 1, reduce_polyakov_global_size, reduce_local_size); 
             argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_y_reduce_id, SubLat[k].sublattice_measurement_diff);
-	        argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_y_reduce_id, SubLat[k].sublattice_polyakov_loop_diff_y);
+            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_y_reduce_id, SubLat[k].sublattice_polyakov_loop_diff_y);
             argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_y_reduce_id, SubLat[k].sublattice_lds);
             polyakov_param.s[0] = size_reduce_polyakov_diff_double2;
             polyakov_param.s[1] = offset_reduce_polyakov_diff_double2;
             polyakov_param.s[2] = SubLat[k].sublattice_polyakov_loop_size;
             polyakov_param.s[3] = 0;
             SubLat[k].argument_polyakov_diff_y_index = SubLat[k].GPU0->kernel_init_constant(SubLat[k].sun_polyakov_diff_y_reduce_id, &polyakov_param);
-	    
-	
+        
+    
             polyakov3_global_size[0] = SubLat[k].sublattice_polyakov_z_size;
             polyakov3_global_size[1] = 1;
             polyakov3_global_size[2] = 1;
 
-	        SubLat[k].sun_polyakov_diff_z_id = SubLat[k].GPU0->kernel_init("lattice_polyakov_diff_z", 1, polyakov3_global_size, local_size_lattice_polyakov);
+            SubLat[k].sun_polyakov_diff_z_id = SubLat[k].GPU0->kernel_init("lattice_polyakov_diff_z", 1, polyakov3_global_size, local_size_lattice_polyakov);
             offset_reduce_polyakov_diff_double2 = SubLat[k].GPU0->buffer_size_align((unsigned int) ceil((double) SubLat[k].sublattice_polyakov_z_size / SubLat[k].GPU0->kernel_get_worksize(SubLat[k].sun_polyakov_diff_z_id)), SubLat[k].GPU0->kernel_get_worksize(SubLat[k].sun_polyakov_diff_z_id));
             argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_z_id, SubLat[k].sublattice_table);
             argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_z_id, SubLat[k].sublattice_measurement_diff);
@@ -3046,7 +3046,7 @@ void    model::lattice_kern_init_PL(void)
 
             SubLat[k].sun_polyakov_diff_z_reduce_id = SubLat[k].GPU0->kernel_init("reduce_polyakov_diff_z_double2", 1, reduce_polyakov_global_size, reduce_local_size); 
             argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_z_reduce_id, SubLat[k].sublattice_measurement_diff);
-	        argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_z_reduce_id, SubLat[k].sublattice_polyakov_loop_diff_z);
+            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_z_reduce_id, SubLat[k].sublattice_polyakov_loop_diff_z);
             argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_polyakov_diff_z_reduce_id, SubLat[k].sublattice_lds);
             polyakov_param.s[0] = size_reduce_polyakov_diff_double2;
             polyakov_param.s[1] = offset_reduce_polyakov_diff_double2;
@@ -3241,11 +3241,11 @@ void        model::lattice_make_programs(void)
     lattice_mp_Sim();
     lattice_kern_init_Sim();
     lattice_kern_update_Sim();
-	
+    
     lattice_mp_Meas();
     lattice_kern_init_Plq();
     lattice_kern_init_Action();
-	
+    
     if(get_actions_diff){
         lattice_kern_init_Action_diff();
     }
@@ -3436,16 +3436,16 @@ void        model::lattice_make_programs(void)
                   argument_id = GPU0->kernel_init_buffer(sun_measurement_reduce_id,lattice_energies);
                   argument_id = GPU0->kernel_init_buffer(sun_measurement_reduce_id,lattice_lds);
                   argument_measurement_index = GPU0->kernel_init_constant(sun_measurement_reduce_id,&size_reduce_measurement_double2);
-		  
+          
     if(get_actions_diff)
     {
       cl_uint4 Sparam;
-	Sparam.s[0] = (int) ceil((double) lattice_action_size / GPU0->kernel_get_worksize(sun_measurement_id));
-	Sparam.s[1] = lattice_energies_size;
-	Sparam.s[2] = 0;
-	Sparam.s[3] = 0;
+    Sparam.s[0] = (int) ceil((double) lattice_action_size / GPU0->kernel_get_worksize(sun_measurement_id));
+    Sparam.s[1] = lattice_energies_size;
+    Sparam.s[2] = 0;
+    Sparam.s[3] = 0;
       
-	sun_action_diff_x_id = GPU0->kernel_init("lattice_action_diff_x",1,measurement3_global_size,local_size_lattice_measurement);
+    sun_action_diff_x_id = GPU0->kernel_init("lattice_action_diff_x",1,measurement3_global_size,local_size_lattice_measurement);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_table);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_measurement);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_parameters);	
@@ -3457,8 +3457,8 @@ void        model::lattice_make_programs(void)
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_reduce_id,lattice_action_diff_x);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_reduce_id,lattice_lds);
            argument_action_diff_x_index = GPU0->kernel_init_constant(sun_action_diff_x_reduce_id,&Sparam);
-	   
-	sun_action_diff_y_id = GPU0->kernel_init("lattice_action_diff_y",1,measurement3_global_size,local_size_lattice_measurement);
+       
+    sun_action_diff_y_id = GPU0->kernel_init("lattice_action_diff_y",1,measurement3_global_size,local_size_lattice_measurement);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_table);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_measurement);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_parameters);	
@@ -3470,8 +3470,8 @@ void        model::lattice_make_programs(void)
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_reduce_id,lattice_action_diff_y);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_reduce_id,lattice_lds);
            argument_action_diff_y_index = GPU0->kernel_init_constant(sun_action_diff_y_reduce_id,&Sparam);
-	   
-	sun_action_diff_z_id = GPU0->kernel_init("lattice_action_diff_z",1,measurement3_global_size,local_size_lattice_measurement);
+       
+    sun_action_diff_z_id = GPU0->kernel_init("lattice_action_diff_z",1,measurement3_global_size,local_size_lattice_measurement);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_table);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_measurement);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_parameters);	
@@ -3587,7 +3587,7 @@ void        model::lattice_make_programs(void)
             polyakov_param.s[3] = 0;
             argument_polyakov_index = GPU0->kernel_init_constant(sun_polyakov_reduce_id,&polyakov_param);
     }
-	if (PL_level > 2) {
+    if (PL_level > 2) {
         sun_polyakov_diff_x_id = GPU0->kernel_init("lattice_polyakov_diff_x",1,polyakov3_global_size,local_size_lattice_polyakov);
         offset_reduce_polyakov_diff_double2 = GPU0->buffer_size_align((unsigned int) ceil((double) lattice_polyakov_size / GPU0->kernel_get_worksize(sun_polyakov_diff_x_id)),GPU0->kernel_get_worksize(sun_polyakov_diff_x_id));
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_id,lattice_table);
@@ -3599,15 +3599,15 @@ void        model::lattice_make_programs(void)
 
         sun_polyakov_diff_x_reduce_id = GPU0->kernel_init("reduce_polyakov_diff_x_double2",1,reduce_polyakov_global_size,reduce_local_size); 
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_reduce_id,lattice_measurement);
-	    argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_reduce_id,lattice_polyakov_loop_diff_x);
+        argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_reduce_id,lattice_polyakov_loop_diff_x);
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_x_reduce_id,lattice_lds);
             polyakov_param.s[0] = size_reduce_polyakov_diff_double2;
             polyakov_param.s[1] = offset_reduce_polyakov_diff_double2;
             polyakov_param.s[2] = lattice_polyakov_loop_size;
             polyakov_param.s[3] = 0;
             argument_polyakov_diff_x_index = GPU0->kernel_init_constant(sun_polyakov_diff_x_reduce_id,&polyakov_param);
-	    	
-	    sun_polyakov_diff_y_id = GPU0->kernel_init("lattice_polyakov_diff_y",1,polyakov3_global_size,local_size_lattice_polyakov);
+            
+        sun_polyakov_diff_y_id = GPU0->kernel_init("lattice_polyakov_diff_y",1,polyakov3_global_size,local_size_lattice_polyakov);
         offset_reduce_polyakov_diff_double2 = GPU0->buffer_size_align((unsigned int) ceil((double) lattice_polyakov_size / GPU0->kernel_get_worksize(sun_polyakov_diff_y_id)),GPU0->kernel_get_worksize(sun_polyakov_diff_y_id));
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_id,lattice_table);
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_id,lattice_measurement);
@@ -3618,15 +3618,15 @@ void        model::lattice_make_programs(void)
 
         sun_polyakov_diff_y_reduce_id = GPU0->kernel_init("reduce_polyakov_diff_y_double2",1,reduce_polyakov_global_size,reduce_local_size); 
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_reduce_id,lattice_measurement);
-	    argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_reduce_id,lattice_polyakov_loop_diff_y);
+        argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_reduce_id,lattice_polyakov_loop_diff_y);
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_y_reduce_id,lattice_lds);
             polyakov_param.s[0] = size_reduce_polyakov_diff_double2;
             polyakov_param.s[1] = offset_reduce_polyakov_diff_double2;
             polyakov_param.s[2] = lattice_polyakov_loop_size;
             polyakov_param.s[3] = 0;
             argument_polyakov_diff_y_index = GPU0->kernel_init_constant(sun_polyakov_diff_y_reduce_id,&polyakov_param);
-	    
-	sun_polyakov_diff_z_id = GPU0->kernel_init("lattice_polyakov_diff_z",1,polyakov3_global_size,local_size_lattice_polyakov);
+        
+    sun_polyakov_diff_z_id = GPU0->kernel_init("lattice_polyakov_diff_z",1,polyakov3_global_size,local_size_lattice_polyakov);
         offset_reduce_polyakov_diff_double2 = GPU0->buffer_size_align((unsigned int) ceil((double) lattice_polyakov_size / GPU0->kernel_get_worksize(sun_polyakov_diff_z_id)),GPU0->kernel_get_worksize(sun_polyakov_diff_z_id));
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_id,lattice_table);
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_id,lattice_measurement);
@@ -3637,7 +3637,7 @@ void        model::lattice_make_programs(void)
 
         sun_polyakov_diff_z_reduce_id = GPU0->kernel_init("reduce_polyakov_diff_z_double2",1,reduce_polyakov_global_size,reduce_local_size); 
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_reduce_id,lattice_measurement);
-	    argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_reduce_id,lattice_polyakov_loop_diff_z);
+        argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_reduce_id,lattice_polyakov_loop_diff_z);
             argument_id = GPU0->kernel_init_buffer(sun_polyakov_diff_z_reduce_id,lattice_lds);
             polyakov_param.s[0] = size_reduce_polyakov_diff_double2;
             polyakov_param.s[1] = offset_reduce_polyakov_diff_double2;
@@ -3659,13 +3659,13 @@ void        model::lattice_create_buffers(void)
     int a, kk, x, dNx;
 #ifdef USE_OPENMP
 #pragma omp parallel for
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for(int k = 0; k < lattice_Nparts; k++){
 #endif
         SubLat[k].size_sublattice_table = fc * SubLat[k].sublattice_table_Size;
-		SubLat[k].size_sublattice_table_small = fc * SubLat[k].sublattice_table_size;
+        SubLat[k].size_sublattice_table_small = fc * SubLat[k].sublattice_table_size;
         SubLat[k].size_sublattice_measurement   = fc * SubLat[k].sublattice_measurement_size;
         if(PL_level >= 2)
             SubLat[k].size_sublattice_measurement = 2 * fc * SubLat[k].sublattice_measurement_size;
@@ -3720,8 +3720,8 @@ void        model::lattice_create_buffers(void)
     
 #ifdef USE_OPENMP
 #pragma omp parallel for
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for(int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -3729,12 +3729,12 @@ void        model::lattice_create_buffers(void)
         if (precision == model_precision_single) {
             SubLat[k].psublattice_table_float = (cl_float4*) calloc(SubLat[k].size_sublattice_table, sizeof(cl_float4));
 #ifdef BIGTOSMALL
-			SubLat[k].psublattice_table_small_float = (cl_float4*)calloc(SubLat[k].size_sublattice_table_small, sizeof(cl_float4));
+            SubLat[k].psublattice_table_small_float = (cl_float4*)calloc(SubLat[k].size_sublattice_table_small, sizeof(cl_float4));
 #endif
         } else {
             SubLat[k].psublattice_table_double = (cl_double4*) calloc(SubLat[k].size_sublattice_table, sizeof(cl_double4));
 #ifdef BIGTOSMALL
-			SubLat[k].psublattice_table_small_double = (cl_double4*)calloc(SubLat[k].size_sublattice_table_small, sizeof(cl_double4));
+            SubLat[k].psublattice_table_small_double = (cl_double4*)calloc(SubLat[k].size_sublattice_table_small, sizeof(cl_double4));
 #endif
         }
 
@@ -3800,8 +3800,8 @@ void        model::lattice_create_buffers(void)
             SubLat[k].psublattice_action_diff_z      = (cl_double2*) calloc(SubLat[k].Nz * SubLat[k].size_sublattice_energies,     sizeof(cl_double2)); 
 
             SubLat[k].sublattice_action_diff_x      = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].Nx*SubLat[k].size_sublattice_energies, SubLat[k].psublattice_action_diff_x, sizeof(cl_double2));
-	        SubLat[k].sublattice_action_diff_y      = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].Ny*SubLat[k].size_sublattice_energies, SubLat[k].psublattice_action_diff_y, sizeof(cl_double2));
-	        SubLat[k].sublattice_action_diff_z      = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].Nz*SubLat[k].size_sublattice_energies, SubLat[k].psublattice_action_diff_z, sizeof(cl_double2));
+            SubLat[k].sublattice_action_diff_y      = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].Ny*SubLat[k].size_sublattice_energies, SubLat[k].psublattice_action_diff_y, sizeof(cl_double2));
+            SubLat[k].sublattice_action_diff_z      = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].Nz*SubLat[k].size_sublattice_energies, SubLat[k].psublattice_action_diff_z, sizeof(cl_double2));
         }
 
         SubLat[k].psublattice_polyakov_loop  = NULL;
@@ -3811,19 +3811,19 @@ void        model::lattice_create_buffers(void)
         SubLat[k].psublattice_polyakov_loop_diff_y  = NULL;
         SubLat[k].psublattice_polyakov_loop_diff_z  = NULL;
         if (PL_level > 2) 
-	    {
+        {
             SubLat[k].psublattice_polyakov_loop_diff_x = (cl_double2*) calloc(SubLat[k].Nx*SubLat[k].sublattice_polyakov_loop_size,sizeof(cl_double2));
-	        SubLat[k].psublattice_polyakov_loop_diff_y = (cl_double2*) calloc(SubLat[k].Ny*SubLat[k].sublattice_polyakov_loop_size,sizeof(cl_double2));
-	        SubLat[k].psublattice_polyakov_loop_diff_z = (cl_double2*) calloc(SubLat[k].Nz*SubLat[k].sublattice_polyakov_loop_size,sizeof(cl_double2));
-	    }
+            SubLat[k].psublattice_polyakov_loop_diff_y = (cl_double2*) calloc(SubLat[k].Ny*SubLat[k].sublattice_polyakov_loop_size,sizeof(cl_double2));
+            SubLat[k].psublattice_polyakov_loop_diff_z = (cl_double2*) calloc(SubLat[k].Nz*SubLat[k].sublattice_polyakov_loop_size,sizeof(cl_double2));
+        }
         
         if (PL_level > 0)
             SubLat[k].sublattice_polyakov_loop   = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].size_sublattice_polyakov_loop, SubLat[k].psublattice_polyakov_loop, sizeof(cl_double2)); // Polyakov loops
         if (PL_level > 2)
         {
             SubLat[k].sublattice_polyakov_loop_diff_x   = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].Nx*SubLat[k].sublattice_polyakov_loop_size,    SubLat[k].psublattice_polyakov_loop_diff_x, sizeof(cl_double2));
-	        SubLat[k].sublattice_polyakov_loop_diff_y   = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].Ny*SubLat[k].sublattice_polyakov_loop_size,    SubLat[k].psublattice_polyakov_loop_diff_y, sizeof(cl_double2));
-	        SubLat[k].sublattice_polyakov_loop_diff_z   = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].Nz*SubLat[k].sublattice_polyakov_loop_size,    SubLat[k].psublattice_polyakov_loop_diff_z, sizeof(cl_double2));
+            SubLat[k].sublattice_polyakov_loop_diff_y   = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].Ny*SubLat[k].sublattice_polyakov_loop_size,    SubLat[k].psublattice_polyakov_loop_diff_y, sizeof(cl_double2));
+            SubLat[k].sublattice_polyakov_loop_diff_z   = SubLat[k].GPU0->buffer_init(SubLat[k].GPU0->buffer_type_IO, SubLat[k].Nz*SubLat[k].sublattice_polyakov_loop_size,    SubLat[k].psublattice_polyakov_loop_diff_z, sizeof(cl_double2));
         }
 
         if(get_wilson_loop){
@@ -3927,11 +3927,11 @@ int fc2 = 1;
     plattice_polyakov_loop_diff_y  = NULL;
     plattice_polyakov_loop_diff_z  = NULL;
         if (PL_level > 2) 
-	{
-	  plattice_polyakov_loop_diff_x = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
-	  plattice_polyakov_loop_diff_y = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
-	  plattice_polyakov_loop_diff_z = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
-	}
+    {
+      plattice_polyakov_loop_diff_x = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
+      plattice_polyakov_loop_diff_y = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
+      plattice_polyakov_loop_diff_z = (cl_double2*) calloc(size_lattice_polyakov_loop,sizeof(cl_double2));
+    }
 
     if (precision == model_precision_single) {
         plattice_table_float            = (cl_float4*)  calloc(size_lattice_table,     sizeof(cl_float4));
@@ -3973,8 +3973,8 @@ int fc2 = 1;
     if(get_actions_diff)
     {
          lattice_action_diff_x      = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies,         plattice_action_diff_x,          sizeof(cl_double2));
-	 lattice_action_diff_y      = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies,         plattice_action_diff_y,          sizeof(cl_double2));
-	 lattice_action_diff_z      = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies,         plattice_action_diff_z,          sizeof(cl_double2));
+     lattice_action_diff_y      = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies,         plattice_action_diff_y,          sizeof(cl_double2));
+     lattice_action_diff_z      = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies,         plattice_action_diff_z,          sizeof(cl_double2));
     }
     if ((get_plaquettes_avr) || (get_Fmunu) || (get_F0mu))
         lattice_energies_plq    = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_energies_plq,     plattice_energies_plq,      sizeof(cl_double2)); // Lattice energies (plaquettes)
@@ -3984,9 +3984,9 @@ int fc2 = 1;
         lattice_polyakov_loop   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop, sizeof(cl_double2)); // Polyakov loops
     if (PL_level > 2)
     {
-	    lattice_polyakov_loop_diff_x   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop_diff_x, sizeof(cl_double2));
-	    lattice_polyakov_loop_diff_y   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop_diff_y, sizeof(cl_double2));
-	    lattice_polyakov_loop_diff_z   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop_diff_z, sizeof(cl_double2));
+        lattice_polyakov_loop_diff_x   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop_diff_x, sizeof(cl_double2));
+        lattice_polyakov_loop_diff_y   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop_diff_y, sizeof(cl_double2));
+        lattice_polyakov_loop_diff_z   = GPU0->buffer_init(GPU0->buffer_type_IO, size_lattice_polyakov_loop,    plattice_polyakov_loop_diff_z, sizeof(cl_double2));
     }
 }
 #endif
@@ -3998,139 +3998,139 @@ int fc2 = 1;
 #ifdef VER5
 void        model::UpdateEdges(int dir)
 {
-	
+    
 }
 #endif
 #ifdef VER8
 void        model::UpdateEdges(int dir)
 {
-	int k, k_next;
+    int k, k_next;
 
-	float *ptr_rf, *ptr_lf;
-	double *ptr_rd, *ptr_ld;
+    float *ptr_rf, *ptr_lf;
+    double *ptr_rd, *ptr_ld;
 
-	int n1n2n3 = lattice_full_size[1] * lattice_full_size[2] * lattice_full_size[3];
-	int el_nn = (lattice_group_elements[lattice_group - 1] / 4);// number of 4-vectors
+    int n1n2n3 = lattice_full_size[1] * lattice_full_size[2] * lattice_full_size[3];
+    int el_nn = (lattice_group_elements[lattice_group - 1] / 4);// number of 4-vectors
 
-	size_t offset_k, offset_k_next;
-	size_t size = 4 * 2 * n1n2n3 * ((precision == model_precision_single) ? sizeof(float) : sizeof(double));
+    size_t offset_k, offset_k_next;
+    size_t size = 4 * 2 * n1n2n3 * ((precision == model_precision_single) ? sizeof(float) : sizeof(double));
 
 #ifdef USE_OPENMP
-	omp_set_num_threads(Ndevices);
+    omp_set_num_threads(Ndevices);
 #pragma omp parallel private(ptr_rf, ptr_lf, ptr_rd, ptr_ld, k, k_next, offset_k, offset_k_next)
-	{
-		int f = omp_get_thread_num();
+    {
+        int f = omp_get_thread_num();
                 for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-	for (k = 0; k < lattice_Nparts; k++){
+    for (k = 0; k < lattice_Nparts; k++){
 #endif
-		k_next = (k + 1) % lattice_Nparts;
-		for (int i = 0; i < el_nn; i++){
-			if (precision == model_precision_single){
-				offset_k = (SubLat[k].Nx * n1n2n3 + (i * lattice_nd + dir) * SubLat[k].sublattice_table_row_Size) * 4 * sizeof(float);
-				offset_k_next = ((i * lattice_nd + dir) * SubLat[k_next].sublattice_table_row_Size) * 4 * sizeof(float);
-				ptr_rf = (float*)SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table, offset_k, size);
-				ptr_lf = (float*)SubLat[k_next].GPU0->buffer_map(SubLat[k_next].sublattice_table, offset_k_next, size);
+        k_next = (k + 1) % lattice_Nparts;
+        for (int i = 0; i < el_nn; i++){
+            if (precision == model_precision_single){
+                offset_k = (SubLat[k].Nx * n1n2n3 + (i * lattice_nd + dir) * SubLat[k].sublattice_table_row_Size) * 4 * sizeof(float);
+                offset_k_next = ((i * lattice_nd + dir) * SubLat[k_next].sublattice_table_row_Size) * 4 * sizeof(float);
+                ptr_rf = (float*)SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table, offset_k, size);
+                ptr_lf = (float*)SubLat[k_next].GPU0->buffer_map(SubLat[k_next].sublattice_table, offset_k_next, size);
 
-				memcpy(ptr_rf + 4 * n1n2n3, ptr_lf + 4 * n1n2n3, 4 * n1n2n3 * sizeof(float));
-				memcpy(ptr_lf, ptr_rf, 4 * n1n2n3 * sizeof(float));
+                memcpy(ptr_rf + 4 * n1n2n3, ptr_lf + 4 * n1n2n3, 4 * n1n2n3 * sizeof(float));
+                memcpy(ptr_lf, ptr_rf, 4 * n1n2n3 * sizeof(float));
 
-				SubLat[k].GPU0->buffer_unmap(SubLat[k].sublattice_table, (void*)ptr_rf);
-				SubLat[k_next].GPU0->buffer_unmap(SubLat[k_next].sublattice_table, (void*)ptr_lf);
-			}
-			else{
-				offset_k = (SubLat[k].Nx * n1n2n3 + (i * lattice_nd + dir) * SubLat[k].sublattice_table_row_Size) * 4 * sizeof(double);
-				offset_k_next = ((i * lattice_nd + dir) * SubLat[k_next].sublattice_table_row_Size) * 4 * sizeof(double);
-				ptr_rd = (double*)SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table, offset_k, size);
+                SubLat[k].GPU0->buffer_unmap(SubLat[k].sublattice_table, (void*)ptr_rf);
+                SubLat[k_next].GPU0->buffer_unmap(SubLat[k_next].sublattice_table, (void*)ptr_lf);
+            }
+            else{
+                offset_k = (SubLat[k].Nx * n1n2n3 + (i * lattice_nd + dir) * SubLat[k].sublattice_table_row_Size) * 4 * sizeof(double);
+                offset_k_next = ((i * lattice_nd + dir) * SubLat[k_next].sublattice_table_row_Size) * 4 * sizeof(double);
+                ptr_rd = (double*)SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table, offset_k, size);
 #pragma omp barrier
-				ptr_ld = (double*)SubLat[k_next].GPU0->buffer_map(SubLat[k_next].sublattice_table, offset_k_next, size);
+                ptr_ld = (double*)SubLat[k_next].GPU0->buffer_map(SubLat[k_next].sublattice_table, offset_k_next, size);
 #pragma omp barrier
 
-				memcpy(ptr_rd + 4 * n1n2n3, ptr_ld + 4 * n1n2n3, 4 * n1n2n3 * sizeof(double));
-				memcpy(ptr_ld, ptr_rd, 4 * n1n2n3 * sizeof(double));
+                memcpy(ptr_rd + 4 * n1n2n3, ptr_ld + 4 * n1n2n3, 4 * n1n2n3 * sizeof(double));
+                memcpy(ptr_ld, ptr_rd, 4 * n1n2n3 * sizeof(double));
 #pragma omp barrier
-				SubLat[k].GPU0->buffer_unmap(SubLat[k].sublattice_table, (void*)ptr_rd);
+                SubLat[k].GPU0->buffer_unmap(SubLat[k].sublattice_table, (void*)ptr_rd);
 #pragma omp barrier
-				SubLat[k_next].GPU0->buffer_unmap(SubLat[k_next].sublattice_table, (void*)ptr_ld);
-			}
-		}
-	}
+                SubLat[k_next].GPU0->buffer_unmap(SubLat[k_next].sublattice_table, (void*)ptr_ld);
+            }
+        }
+    }
 #ifdef USE_OPENMP
                 }
 #endif
-		}
+        }
 #endif
 #ifdef VER9
 void        model::UpdateEdges(int dir)
 {
-	int k, k_next;
+    int k, k_next;
 
-	float *ptr_rf, *ptr_lf;
-	double *ptr_rd, *ptr_ld;
+    float *ptr_rf, *ptr_lf;
+    double *ptr_rd, *ptr_ld;
 
-	int n1n2n3 = lattice_full_size[1] * lattice_full_size[2] * lattice_full_size[3];
-	int el_nn = /*lattice_nd * */(lattice_group_elements[lattice_group - 1] / 4);// number of 4-vectors
+    int n1n2n3 = lattice_full_size[1] * lattice_full_size[2] * lattice_full_size[3];
+    int el_nn = /*lattice_nd * */(lattice_group_elements[lattice_group - 1] / 4);// number of 4-vectors
 
-	size_t offset_k, offset_k_next;
-	size_t size = 4 * 2 * n1n2n3 * ((precision == model_precision_single) ? sizeof(float) : sizeof(double));
-	
-	int tid;
+    size_t offset_k, offset_k_next;
+    size_t size = 4 * 2 * n1n2n3 * ((precision == model_precision_single) ? sizeof(float) : sizeof(double));
+    
+    int tid;
 
-	for (k = 0; k < lattice_Nparts; k++){
-		k_next = (k + 1) % lattice_Nparts;
+    for (k = 0; k < lattice_Nparts; k++){
+        k_next = (k + 1) % lattice_Nparts;
 #ifdef USE_OPENMP
-		omp_set_num_threads(2);
+        omp_set_num_threads(2);
 #pragma omp parallel private(tid)
-		{ 
-			tid = omp_get_thread_num();
+        { 
+            tid = omp_get_thread_num();
 #endif
-			for (int i = 0; i < el_nn; i++){
-				if (precision == model_precision_single){
-					offset_k = (SubLat[k].Nx * n1n2n3 + (i * lattice_nd + dir) * SubLat[k].sublattice_table_row_Size) * 4 * sizeof(float);
-					offset_k_next = ((i * lattice_nd + dir) * SubLat[k_next].sublattice_table_row_Size) * 4 * sizeof(float);
-					if(!tid){
-						ptr_rf = (float*)SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table, offset_k, size);
-					} else {
-						ptr_lf = (float*)SubLat[k_next].GPU0->buffer_map(SubLat[k_next].sublattice_table, offset_k_next, size);
-					}
+            for (int i = 0; i < el_nn; i++){
+                if (precision == model_precision_single){
+                    offset_k = (SubLat[k].Nx * n1n2n3 + (i * lattice_nd + dir) * SubLat[k].sublattice_table_row_Size) * 4 * sizeof(float);
+                    offset_k_next = ((i * lattice_nd + dir) * SubLat[k_next].sublattice_table_row_Size) * 4 * sizeof(float);
+                    if(!tid){
+                        ptr_rf = (float*)SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table, offset_k, size);
+                    } else {
+                        ptr_lf = (float*)SubLat[k_next].GPU0->buffer_map(SubLat[k_next].sublattice_table, offset_k_next, size);
+                    }
 #pragma omp barrier
-					if(!tid){
-						memcpy(ptr_rf + 4 * n1n2n3, ptr_lf + 4 * n1n2n3, 4 * n1n2n3 * sizeof(float));
-					} else {
-						memcpy(ptr_lf, ptr_rf, 4 * n1n2n3 * sizeof(float));
-					}
-					
-					if(!tid){
-						SubLat[k].GPU0->buffer_unmap(SubLat[k].sublattice_table, (void*)ptr_rf);
-					} else {
-						SubLat[k_next].GPU0->buffer_unmap(SubLat[k_next].sublattice_table, (void*)ptr_lf);
-					}
-				} else {
-					offset_k = (SubLat[k].Nx * n1n2n3 + (i * lattice_nd + dir) * SubLat[k].sublattice_table_row_Size) * 4 * sizeof(double);
-					offset_k_next = ((i * lattice_nd + dir) * SubLat[k_next].sublattice_table_row_Size) * 4 * sizeof(double);
-					if(!tid){
-						ptr_rd = (double*)SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table, offset_k, size);
-					} else {
-						ptr_ld = (double*)SubLat[k_next].GPU0->buffer_map(SubLat[k_next].sublattice_table, offset_k_next, size);
-					}
+                    if(!tid){
+                        memcpy(ptr_rf + 4 * n1n2n3, ptr_lf + 4 * n1n2n3, 4 * n1n2n3 * sizeof(float));
+                    } else {
+                        memcpy(ptr_lf, ptr_rf, 4 * n1n2n3 * sizeof(float));
+                    }
+                    
+                    if(!tid){
+                        SubLat[k].GPU0->buffer_unmap(SubLat[k].sublattice_table, (void*)ptr_rf);
+                    } else {
+                        SubLat[k_next].GPU0->buffer_unmap(SubLat[k_next].sublattice_table, (void*)ptr_lf);
+                    }
+                } else {
+                    offset_k = (SubLat[k].Nx * n1n2n3 + (i * lattice_nd + dir) * SubLat[k].sublattice_table_row_Size) * 4 * sizeof(double);
+                    offset_k_next = ((i * lattice_nd + dir) * SubLat[k_next].sublattice_table_row_Size) * 4 * sizeof(double);
+                    if(!tid){
+                        ptr_rd = (double*)SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table, offset_k, size);
+                    } else {
+                        ptr_ld = (double*)SubLat[k_next].GPU0->buffer_map(SubLat[k_next].sublattice_table, offset_k_next, size);
+                    }
 #pragma omp barrier
-					if(!tid){
-						memcpy(ptr_rd + 4 * n1n2n3, ptr_ld + 4 * n1n2n3, 4 * n1n2n3 * sizeof(double));
-					} else {
-						memcpy(ptr_ld, ptr_rd, 4 * n1n2n3 * sizeof(double));
-					}
-					
-					if(!tid){
-						SubLat[k].GPU0->buffer_unmap(SubLat[k].sublattice_table, (void*)ptr_rd);
-					} else {
-						SubLat[k_next].GPU0->buffer_unmap(SubLat[k_next].sublattice_table, (void*)ptr_ld);
-					}
-				}
-			}
+                    if(!tid){
+                        memcpy(ptr_rd + 4 * n1n2n3, ptr_ld + 4 * n1n2n3, 4 * n1n2n3 * sizeof(double));
+                    } else {
+                        memcpy(ptr_ld, ptr_rd, 4 * n1n2n3 * sizeof(double));
+                    }
+                    
+                    if(!tid){
+                        SubLat[k].GPU0->buffer_unmap(SubLat[k].sublattice_table, (void*)ptr_rd);
+                    } else {
+                        SubLat[k_next].GPU0->buffer_unmap(SubLat[k_next].sublattice_table, (void*)ptr_ld);
+                    }
+                }
+            }
 #ifdef USE_OPENMP
-		}
+        }
 #endif
-	}
+    }
 }
 #endif
 
@@ -4156,21 +4156,21 @@ void        SubLattice::sublattice_Measure_Action(unsigned int counter)
 
 void        SubLattice::sublattice_Measure_Action_diff(unsigned int counter){
     GPU0->kernel_run(sun_action_diff_x_id);
-	GPU0->print_stage("measurement S diff done");
+    GPU0->print_stage("measurement S diff done");
         action_diff_index = counter;
         GPU0->kernel_init_constant_reset(sun_action_diff_x_reduce_id, &(action_diff_index), argument_action_diff_x_index);
     GPU0->kernel_run(sun_action_diff_x_reduce_id);
     GPU0->print_stage("measurement action diff reduce done");
-	    
-	    GPU0->kernel_run(sun_action_diff_y_id);
-	    GPU0->print_stage("measurement S diff done");
+        
+        GPU0->kernel_run(sun_action_diff_y_id);
+        GPU0->print_stage("measurement S diff done");
                 action_diff_index = counter;
                 GPU0->kernel_init_constant_reset(sun_action_diff_y_reduce_id,&action_diff_index,argument_action_diff_y_index);
             GPU0->kernel_run(sun_action_diff_y_reduce_id);
             GPU0->print_stage("measurement action diff reduce done");
-	    
-	    GPU0->kernel_run(sun_action_diff_z_id);
-	    GPU0->print_stage("measurement S diff done");
+        
+        GPU0->kernel_run(sun_action_diff_z_id);
+        GPU0->print_stage("measurement S diff done");
                 action_diff_index = counter;
                 GPU0->kernel_init_constant_reset(sun_action_diff_z_reduce_id,&action_diff_index,argument_action_diff_z_index);
             GPU0->kernel_run(sun_action_diff_z_reduce_id);
@@ -4202,8 +4202,8 @@ void        SubLattice::sublattice_Measure_PL_diff(unsigned int counter)
           GPU0->kernel_init_constant_reset(sun_polyakov_diff_y_reduce_id,&polyakov_diff_index,argument_polyakov_diff_y_index);
     GPU0->kernel_run(sun_polyakov_diff_y_reduce_id);              // Lattice Polyakov loop measurement reduction
     GPU0->print_stage("Polyakov loop diff reduce done");
-	    
-	GPU0->kernel_run(sun_polyakov_diff_z_id);                     // Lattice Polyakov loop measurement
+        
+    GPU0->kernel_run(sun_polyakov_diff_z_id);                     // Lattice Polyakov loop measurement
     GPU0->print_stage("Polyakov loop diff measurement done");
           polyakov_diff_index = counter;
           GPU0->kernel_init_constant_reset(sun_polyakov_diff_z_reduce_id,&polyakov_diff_index,argument_polyakov_diff_z_index);
@@ -4247,8 +4247,8 @@ void    model::lattice_make_WLx(void){
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++)
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++)
 #else
     for(k = 0; k < lattice_Nparts; k++)
 #endif
@@ -4256,8 +4256,8 @@ void    model::lattice_make_WLx(void){
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for(k = 0; k < lattice_Nparts; k++){
 #endif
@@ -4267,8 +4267,8 @@ void    model::lattice_make_WLx(void){
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for(k = 0; k < lattice_Nparts; k++){
 #endif
@@ -4283,7 +4283,7 @@ void    model::lattice_make_WLx(void){
 #ifdef USE_OPENMP
 omp_set_num_threads(Ndevices);
 #pragma omp parallel private(M, Nxx, kkk, buff_id, buff_size, argument_id, ptr, copy_size)
-		{ 
+        { 
                     int f = omp_get_thread_num();
                     for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
@@ -4329,7 +4329,7 @@ if(kkk != k){
 
             memcpy(SubLat[k].psublattice_aux, ptr, copy_size);
             SubLat[k].GPU0->buffer_unmap(SubLat[k].sublattice_aux, SubLat[k].psublattice_aux);
-	    SubLat[kkk].GPU0->buffer_unmap(SubLat[kkk].sublattice_Lr2, ptr);
+        SubLat[kkk].GPU0->buffer_unmap(SubLat[kkk].sublattice_Lr2, ptr);
 }
 
             SubLat[k].GPU0->GPU_kernels[SubLat[k].sun_measurement_WLx2_id].argument_id = 0;
@@ -4374,7 +4374,7 @@ if(kkk != k){
             SubLat[k].psublattice_aux = (cl_double4*)SubLat[k].GPU0->buffer_map_void(SubLat[k].sublattice_aux);
             memcpy(SubLat[k].psublattice_aux, ptr, copy_size);
             SubLat[k].GPU0->buffer_unmap(SubLat[k].sublattice_aux, SubLat[k].psublattice_aux);
-	    SubLat[kkk].GPU0->buffer_unmap(SubLat[kkk].sublattice_Lt, ptr);
+        SubLat[kkk].GPU0->buffer_unmap(SubLat[kkk].sublattice_Lt, ptr);
 }
 
             SubLat[k].GPU0->GPU_kernels[SubLat[k].sun_measurement_WLx3_id].argument_id = 0;
@@ -4400,8 +4400,8 @@ else
     
 #ifdef USE_OPENMP
 #pragma omp parallel for
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for(k = 0; k < lattice_Nparts; k++){
 #endif
@@ -4412,8 +4412,8 @@ else
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for(k = 0; k < lattice_Nparts; k++){
 #endif
@@ -4443,363 +4443,363 @@ else
 #ifdef CHB2
 void        model::lattice_simulate(void)
 {
-			lattice_create_buffers();
-			lattice_make_programs();
+            lattice_create_buffers();
+            lattice_make_programs();
 
-			int NAV_start  = 0;
-			int ITER_start = 0;
+            int NAV_start  = 0;
+            int ITER_start = 0;
 
-			int kk;
-			int n1n2n3;
+            int kk;
+            int n1n2n3;
 
-			time_t timer1, timer2;
-			time(&timer1);
-
-#ifdef USE_OPENMP
-#pragma omp parallel for
-			for (int f = 0; f < Ndevices; f++)
-				for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
-#else
-			for (int k = 0; k < lattice_Nparts; k++){
-#endif
-				printf("\n");
-				SubLat[k].GPU0->print_memory_utilized();
-
-				SubLat[k].timestart = SubLat[k].GPU0->get_current_datetime();
-				time(&(SubLat[k].ltimestart));
-
-				printf("\nrun kernels on GPU %i (%f seconds)\n", f, SubLat[k].GPU0->get_timer_CPU(TIMER_FOR_ELAPSED));
-				SubLat[k].GPU0->start_timer_CPU(TIMER_FOR_SIMULATIONS); // start GPU execution timer
-				SubLat[k].GPU0->start_timer_CPU(TIMER_FOR_SAVE);        // start timer for lattice_state save
-
-				for(int g = 0; g < 2; g++)//skip 3 first numbers
-					for(int k = 0; k < lattice_Nparts; k++)
-						if (!turnoff_prns) SubLat[k].PRNG0->produce();
-				if (ints==model_start_hot) 
-					for(int k = 0; k < lattice_Nparts; k++)
-						if (!turnoff_prns) SubLat[k].PRNG0->produce();
-			}
-
-			if (INIT!=0) {
-#ifdef USE_OPENMP
-#pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
-#else
-				for (int k = 0; k < lattice_Nparts; k++){
-#endif
-					if (ints==model_start_hot) {
-						if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						SubLat[k].GPU0->kernel_run(SubLat[k].sun_init_X_id);        // Lattice initialization
-						if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						SubLat[k].GPU0->kernel_run(SubLat[k].sun_init_Y_id);        // Lattice initialization
-						if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						SubLat[k].GPU0->kernel_run(SubLat[k].sun_init_Z_id);        // Lattice initialization
-						if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						SubLat[k].GPU0->kernel_run(SubLat[k].sun_init_T_id);        // Lattice initialization
-					} else
-						SubLat[k].GPU0->kernel_run(SubLat[k].sun_init_id);          // Lattice initialization
-				}
-				if (ints==model_start_hot){
-					UpdateEdges(X);
-					UpdateEdges(Y);
-					UpdateEdges(Z);
-					UpdateEdges(T);
-				}
-
-				//if (!turnoff_gramschmidt)
-				//        for(int k = 0; k < lattice_Nparts; k++)
-				//            SubLat[k].GPU0->kernel_run(SubLat[k].sun_GramSchmidt_id);
+            time_t timer1, timer2;
+            time(&timer1);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+            for (int f = 0; f < Ndevices; f++)
+                for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-				for (int k = 0; k < lattice_Nparts; k++){
+            for (int k = 0; k < lattice_Nparts; k++){
 #endif
-					if (!turnoff_gramschmidt)
-						SubLat[k].GPU0->kernel_run(SubLat[k].sun_GramSchmidt_id);
+                printf("\n");
+                SubLat[k].GPU0->print_memory_utilized();
 
-					SubLat[k].GPU0->print_stage("lattice initialized");
+                SubLat[k].timestart = SubLat[k].GPU0->get_current_datetime();
+                time(&(SubLat[k].ltimestart));
+
+                printf("\nrun kernels on GPU %i (%f seconds)\n", f, SubLat[k].GPU0->get_timer_CPU(TIMER_FOR_ELAPSED));
+                SubLat[k].GPU0->start_timer_CPU(TIMER_FOR_SIMULATIONS); // start GPU execution timer
+                SubLat[k].GPU0->start_timer_CPU(TIMER_FOR_SAVE);        // start timer for lattice_state save
+
+                for(int g = 0; g < 2; g++)//skip 3 first numbers
+                    for(int k = 0; k < lattice_Nparts; k++)
+                        if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                if (ints==model_start_hot) 
+                    for(int k = 0; k < lattice_Nparts; k++)
+                        if (!turnoff_prns) SubLat[k].PRNG0->produce();
+            }
+
+            if (INIT!=0) {
+#ifdef USE_OPENMP
+#pragma omp parallel for
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+#else
+                for (int k = 0; k < lattice_Nparts; k++){
+#endif
+                    if (ints==model_start_hot) {
+                        if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                        SubLat[k].GPU0->kernel_run(SubLat[k].sun_init_X_id);        // Lattice initialization
+                        if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                        SubLat[k].GPU0->kernel_run(SubLat[k].sun_init_Y_id);        // Lattice initialization
+                        if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                        SubLat[k].GPU0->kernel_run(SubLat[k].sun_init_Z_id);        // Lattice initialization
+                        if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                        SubLat[k].GPU0->kernel_run(SubLat[k].sun_init_T_id);        // Lattice initialization
+                    } else
+                        SubLat[k].GPU0->kernel_run(SubLat[k].sun_init_id);          // Lattice initialization
+                }
+                if (ints==model_start_hot){
+                    UpdateEdges(X);
+                    UpdateEdges(Y);
+                    UpdateEdges(Z);
+                    UpdateEdges(T);
+                }
+
+                //if (!turnoff_gramschmidt)
+                //        for(int k = 0; k < lattice_Nparts; k++)
+                //            SubLat[k].GPU0->kernel_run(SubLat[k].sun_GramSchmidt_id);
+
+#ifdef USE_OPENMP
+#pragma omp parallel for
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+#else
+                for (int k = 0; k < lattice_Nparts; k++){
+#endif
+                    if (!turnoff_gramschmidt)
+                        SubLat[k].GPU0->kernel_run(SubLat[k].sun_GramSchmidt_id);
+
+                    SubLat[k].GPU0->print_stage("lattice initialized");
 
 #ifdef BIGTOSMALL
-					SubLat[k].GPU0->kernel_run(SubLat[k].sun_tables_id);
+                    SubLat[k].GPU0->kernel_run(SubLat[k].sun_tables_id);
 #endif
 
-					if ((get_plaquettes_avr)||(get_Fmunu)||(get_F0mu)) 
-						SubLat[k].sublattice_Measure_Plq(ITER_counter);
-					if (get_actions_avr) 
-						SubLat[k].sublattice_Measure_Action(ITER_counter);
-					if (get_actions_diff) 
-						SubLat[k].sublattice_Measure_Action_diff(ITER_counter);
-					if (PL_level > 0)
-						SubLat[k].sublattice_Measure_PL(ITER_counter);
-					if (PL_level > 2) {
-						SubLat[k].sublattice_Measure_PL_diff(ITER_counter);
-					}
+                    if ((get_plaquettes_avr)||(get_Fmunu)||(get_F0mu)) 
+                        SubLat[k].sublattice_Measure_Plq(ITER_counter);
+                    if (get_actions_avr) 
+                        SubLat[k].sublattice_Measure_Action(ITER_counter);
+                    if (get_actions_diff) 
+                        SubLat[k].sublattice_Measure_Action_diff(ITER_counter);
+                    if (PL_level > 0)
+                        SubLat[k].sublattice_Measure_PL(ITER_counter);
+                    if (PL_level > 2) {
+                        SubLat[k].sublattice_Measure_PL_diff(ITER_counter);
+                    }
 
-					//if (!turnoff_config_save) lattice_save_state();
+                    //if (!turnoff_config_save) lattice_save_state();
 
-					SubLat[k].sublattice_pointer_initial = SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table);
-				}
-				if (get_wilson_loop){
-					wilson_index = ITER_counter;
-					lattice_make_WLx();
-				}
-				ITER_counter++;
-					}
+                    SubLat[k].sublattice_pointer_initial = SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table);
+                }
+                if (get_wilson_loop){
+                    wilson_index = ITER_counter;
+                    lattice_make_WLx();
+                }
+                ITER_counter++;
+                    }
 
-			//--- Simulate ----------------------------
-			NAV_start  = NAV_counter;
-			ITER_start = ITER_counter;
+            //--- Simulate ----------------------------
+            NAV_start  = NAV_counter;
+            ITER_start = ITER_counter;
 
-			//if (INIT==0) {
-			//    while (PRNG_counter>PRNG0->PRNG_counter) PRNG0->produce();    // adjust PRNG
-			//    if (GPU0->GPU_debug.brief_report) printf("NAV_start=%u, ITER_start=%u\n",NAV_start,ITER_start);
+            //if (INIT==0) {
+            //    while (PRNG_counter>PRNG0->PRNG_counter) PRNG0->produce();    // adjust PRNG
+            //    if (GPU0->GPU_debug.brief_report) printf("NAV_start=%u, ITER_start=%u\n",NAV_start,ITER_start);
 
-			//    wilson_index = ITER_start + 1;
-			//}
+            //    wilson_index = ITER_start + 1;
+            //}
 
-			// perform thermalization
-			for (int i=NAV_start; i<NAV; i++){
+            // perform thermalization
+            for (int i=NAV_start; i<NAV; i++){
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-				for (int k = 0; k < lattice_Nparts; k++){
+                for (int k = 0; k < lattice_Nparts; k++){
 #endif
-					if (!turnoff_prns) SubLat[k].PRNG0->produce();
-					if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_X_id);     // Update odd X links
-				}
-				if (!turnoff_updates)
-					UpdateEdges(X);
-
-#ifdef USE_OPENMP
-#pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
-#else
-				for (int k = 0; k < lattice_Nparts; k++){
-#endif
-					if (!turnoff_prns) SubLat[k].PRNG0->produce();
-					if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Y_id);     // Update odd Y links
-				}
-				if (!turnoff_updates)
-					UpdateEdges(Y);
+                    if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                    if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_X_id);     // Update odd X links
+                }
+                if (!turnoff_updates)
+                    UpdateEdges(X);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-				for (int k = 0; k < lattice_Nparts; k++){
+                for (int k = 0; k < lattice_Nparts; k++){
 #endif
-					if (!turnoff_prns) SubLat[k].PRNG0->produce();
-					if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Z_id);     // Update odd Z links
-				}
-				if (!turnoff_updates)
-					UpdateEdges(Z);
+                    if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                    if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Y_id);     // Update odd Y links
+                }
+                if (!turnoff_updates)
+                    UpdateEdges(Y);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-				for (int k = 0; k < lattice_Nparts; k++){
+                for (int k = 0; k < lattice_Nparts; k++){
 #endif
-					if (!turnoff_prns) SubLat[k].PRNG0->produce();
-					if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_T_id);     // Update odd T links
-				}
-				if (!turnoff_updates)
-					UpdateEdges(T);
+                    if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                    if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Z_id);     // Update odd Z links
+                }
+                if (!turnoff_updates)
+                    UpdateEdges(Z);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-				for (int k = 0; k < lattice_Nparts; k++){
+                for (int k = 0; k < lattice_Nparts; k++){
 #endif
-					if (!turnoff_prns) SubLat[k].PRNG0->produce();
-					if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_X_id);    // Update even X links
-				}
-				if (!turnoff_updates)
-					UpdateEdges(X);
+                    if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                    if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_T_id);     // Update odd T links
+                }
+                if (!turnoff_updates)
+                    UpdateEdges(T);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-				for (int k = 0; k < lattice_Nparts; k++){
+                for (int k = 0; k < lattice_Nparts; k++){
 #endif
-					if (!turnoff_prns) SubLat[k].PRNG0->produce();
-					if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Y_id);    // Update even Y links
-				}
-				if (!turnoff_updates)
-					UpdateEdges(Y);
+                    if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                    if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_X_id);    // Update even X links
+                }
+                if (!turnoff_updates)
+                    UpdateEdges(X);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-				for (int k = 0; k < lattice_Nparts; k++){
+                for (int k = 0; k < lattice_Nparts; k++){
 #endif
-					if (!turnoff_prns) SubLat[k].PRNG0->produce();
-					if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Z_id);    // Update even Z links
-				}
-				if (!turnoff_updates)
-					UpdateEdges(Z);
+                    if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                    if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Y_id);    // Update even Y links
+                }
+                if (!turnoff_updates)
+                    UpdateEdges(Y);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-				for (int k = 0; k < lattice_Nparts; k++){
+                for (int k = 0; k < lattice_Nparts; k++){
 #endif
-					if (!turnoff_prns) SubLat[k].PRNG0->produce();
-					if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_T_id);    // Update even T links
-				}
-				if (!turnoff_updates)
-					UpdateEdges(T);
+                    if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                    if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Z_id);    // Update even Z links
+                }
+                if (!turnoff_updates)
+                    UpdateEdges(Z);
 
-				if (!turnoff_gramschmidt)
-					for (int k = 0; k < lattice_Nparts; k++)
-						SubLat[k].GPU0->kernel_run(SubLat[k].sun_GramSchmidt_id);          // Lattice reunitarization
+#ifdef USE_OPENMP
+#pragma omp parallel for
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+#else
+                for (int k = 0; k < lattice_Nparts; k++){
+#endif
+                    if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                    if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_T_id);    // Update even T links
+                }
+                if (!turnoff_updates)
+                    UpdateEdges(T);
 
-				if (i % 10 == 0) printf("\rGPU thermalization [%i]",i);
-				NAV_counter++;
-					}
+                if (!turnoff_gramschmidt)
+                    for (int k = 0; k < lattice_Nparts; k++)
+                        SubLat[k].GPU0->kernel_run(SubLat[k].sun_GramSchmidt_id);          // Lattice reunitarization
 
-			// perform working cycles
-			int q;
-			for (int i=ITER_start; i<ITER; i++){ // zero measurement - on initial configuration!
-				for (int j=0; j<NITER; j++){
+                if (i % 10 == 0) printf("\rGPU thermalization [%i]",i);
+                NAV_counter++;
+                    }
+
+            // perform working cycles
+            int q;
+            for (int i=ITER_start; i<ITER; i++){ // zero measurement - on initial configuration!
+                for (int j=0; j<NITER; j++){
 //#ifdef USE_OPENMP
-					for (int kk = 0; kk < devParts[0]; kk++){
+                    for (int kk = 0; kk < devParts[0]; kk++){
 #pragma omp parallel for
-						for (int f = 0; f < Ndevices; f++){
-							int k = kk + devLeftParts[f];
+                        for (int f = 0; f < Ndevices; f++){
+                            int k = kk + devLeftParts[f];
 //#else
 //					for (int k = 0; k < lattice_Nparts; k++){
 //#endif
-						if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						if (!turnoff_updates)
-							SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_X_id);
+                        if (!turnoff_prns) SubLat[k].PRNG0->produce();
+                        if (!turnoff_updates)
+                            SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_X_id);
 
                                                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						if (!turnoff_updates)
-							SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Y_id);
+                        if (!turnoff_updates)
+                            SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Y_id);
 
                                                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						if (!turnoff_updates)
-							SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Z_id);
+                        if (!turnoff_updates)
+                            SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Z_id);
 
                                                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						if (!turnoff_updates)
-							SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_T_id);
+                        if (!turnoff_updates)
+                            SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_T_id);
 
                                                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						if (!turnoff_updates)
-							SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_X_id);
+                        if (!turnoff_updates)
+                            SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_X_id);
 
                                                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						if (!turnoff_updates)
-							SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Y_id);
+                        if (!turnoff_updates)
+                            SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Y_id);
 
                                                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						if (!turnoff_updates)
-							SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Z_id);
+                        if (!turnoff_updates)
+                            SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Z_id);
 
                                                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
-						if (!turnoff_updates)
-							SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_T_id);
-						}
+                        if (!turnoff_updates)
+                            SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_T_id);
+                        }
 #pragma omp barrier
-						if (!turnoff_updates){
-							UpdateEdges(X);
-							UpdateEdges(Y);
-							UpdateEdges(Z);
-							UpdateEdges(T);
-						}
-					}
-						}
+                        if (!turnoff_updates){
+                            UpdateEdges(X);
+                            UpdateEdges(Y);
+                            UpdateEdges(Z);
+                            UpdateEdges(T);
+                        }
+                    }
+                        }
 
-				if (!turnoff_gramschmidt)
+                if (!turnoff_gramschmidt)
 #ifdef USE_OPENMP
 #pragma omp parallel for
-					for (int f = 0; f < Ndevices; f++)
-						for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++)
+                    for (int f = 0; f < Ndevices; f++)
+                        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++)
 #else
-					for(int k = 0; k < lattice_Nparts; k++)
+                    for(int k = 0; k < lattice_Nparts; k++)
 #endif
-						SubLat[k].GPU0->kernel_run(SubLat[k].sun_GramSchmidt_id);
+                        SubLat[k].GPU0->kernel_run(SubLat[k].sun_GramSchmidt_id);
 
-				if (i % 10 == 0) printf("\rGPU working iteration [%u]",i);
+                if (i % 10 == 0) printf("\rGPU working iteration [%u]",i);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
-				for (int k = 0; k < lattice_Nparts; k++){
+                for (int k = 0; k < lattice_Nparts; k++){
 #endif
 #ifdef BIGTOSMALL
-					SubLat[k].GPU0->kernel_run(SubLat[k].sun_tables_id);
+                    SubLat[k].GPU0->kernel_run(SubLat[k].sun_tables_id);
 #endif
-					if ((get_plaquettes_avr)||(get_Fmunu)||(get_F0mu)) 
-						SubLat[k].sublattice_Measure_Plq(ITER_counter);
-					if (get_actions_avr) 
-						SubLat[k].sublattice_Measure_Action(ITER_counter);
-					if (get_actions_diff) 
-						SubLat[k].sublattice_Measure_Action_diff(ITER_counter);
-					if (PL_level > 0)
-						SubLat[k].sublattice_Measure_PL(ITER_counter);
-					if (PL_level > 2) 
-						SubLat[k].sublattice_Measure_PL_diff(ITER_counter);
-				}
-				if (get_wilson_loop){
-					wilson_index = ITER_counter;
-					lattice_make_WLx();
-				}
+                    if ((get_plaquettes_avr)||(get_Fmunu)||(get_F0mu)) 
+                        SubLat[k].sublattice_Measure_Plq(ITER_counter);
+                    if (get_actions_avr) 
+                        SubLat[k].sublattice_Measure_Action(ITER_counter);
+                    if (get_actions_diff) 
+                        SubLat[k].sublattice_Measure_Action_diff(ITER_counter);
+                    if (PL_level > 0)
+                        SubLat[k].sublattice_Measure_PL(ITER_counter);
+                    if (PL_level > 2) 
+                        SubLat[k].sublattice_Measure_PL_diff(ITER_counter);
+                }
+                if (get_wilson_loop){
+                    wilson_index = ITER_counter;
+                    lattice_make_WLx();
+                }
 
-				ITER_counter++;
-					}
+                ITER_counter++;
+                    }
 
-			//-----------------------------------------
-			time(&timer2);
-			printf("\nSIMULATION TIME: %f sec\n", difftime(timer2, timer1));
+            //-----------------------------------------
+            time(&timer2);
+            printf("\nSIMULATION TIME: %f sec\n", difftime(timer2, timer1));
 
-			for (int k = 0; k < lattice_Nparts; k++)
-			{
-				printf("\rGPU simulations are done (%f seconds)\n",SubLat[k].GPU0->get_timer_CPU(1));
-				time(&(SubLat[k].ltimeend));
-				SubLat[k].timeend   = SubLat[k].GPU0->get_current_datetime();
+            for (int k = 0; k < lattice_Nparts; k++)
+            {
+                printf("\rGPU simulations are done (%f seconds)\n",SubLat[k].GPU0->get_timer_CPU(1));
+                time(&(SubLat[k].ltimeend));
+                SubLat[k].timeend   = SubLat[k].GPU0->get_current_datetime();
 
-				if (!turnoff_config_save) {
-					//lattice_save_state();
-					//lattice_pointer_last = lattice_pointer_save;
-				} else {
-					SubLat[k].sublattice_pointer_last = SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table);
-				}
-				//prng_pointer = GPU0->buffer_map_float4(PRNG0->PRNG_randoms_id);
-			}
+                if (!turnoff_config_save) {
+                    //lattice_save_state();
+                    //lattice_pointer_last = lattice_pointer_save;
+                } else {
+                    SubLat[k].sublattice_pointer_last = SubLat[k].GPU0->buffer_map(SubLat[k].sublattice_table);
+                }
+                //prng_pointer = GPU0->buffer_map_float4(PRNG0->PRNG_randoms_id);
+            }
 
-			timestart = SubLat[0].timestart;
-			timeend = SubLat[0].timeend;
-			ltimestart = SubLat[0].ltimestart;
-			ltimeend = SubLat[0].ltimeend;
-			for(int k = 1; k < lattice_Nparts; k++){
-				if(SubLat[k].timestart < timestart) timestart = SubLat[k].timestart;
-				if(SubLat[k].timeend > timeend) timeend = SubLat[k].timeend;
-				if(SubLat[k].ltimestart< ltimestart) ltimestart = SubLat[k].ltimestart;
-				if(SubLat[k].ltimeend > ltimeend) ltimeend = SubLat[k].ltimeend;
-			}
-						}
+            timestart = SubLat[0].timestart;
+            timeend = SubLat[0].timeend;
+            ltimestart = SubLat[0].ltimestart;
+            ltimeend = SubLat[0].ltimeend;
+            for(int k = 1; k < lattice_Nparts; k++){
+                if(SubLat[k].timestart < timestart) timestart = SubLat[k].timestart;
+                if(SubLat[k].timeend > timeend) timeend = SubLat[k].timeend;
+                if(SubLat[k].ltimestart< ltimestart) ltimestart = SubLat[k].ltimestart;
+                if(SubLat[k].ltimeend > ltimeend) ltimeend = SubLat[k].ltimeend;
+            }
+                        }
 #else
 void        model::lattice_simulate(void)
 {
@@ -4812,13 +4812,13 @@ void        model::lattice_simulate(void)
     int kk;
     int n1n2n3;
 
-	time_t timer1, timer2;
-	time(&timer1);
+    time_t timer1, timer2;
+    time(&timer1);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-	for (int f = 0; f < Ndevices; f++)
-		for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+    for (int f = 0; f < Ndevices; f++)
+        for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
     for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -4843,8 +4843,8 @@ void        model::lattice_simulate(void)
     if (INIT!=0) {
 #ifdef USE_OPENMP
 #pragma omp parallel for
-		for (int f = 0; f < Ndevices; f++)
-			for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+        for (int f = 0; f < Ndevices; f++)
+            for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
         for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -4869,18 +4869,18 @@ void        model::lattice_simulate(void)
         
 #ifdef USE_OPENMP
 #pragma omp parallel for
-		for (int f = 0; f < Ndevices; f++)
-			for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+        for (int f = 0; f < Ndevices; f++)
+            for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
         for (int k = 0; k < lattice_Nparts; k++){
 #endif
-			if (!turnoff_gramschmidt)
-				SubLat[k].GPU0->kernel_run(SubLat[k].sun_GramSchmidt_id);
+            if (!turnoff_gramschmidt)
+                SubLat[k].GPU0->kernel_run(SubLat[k].sun_GramSchmidt_id);
 
             SubLat[k].GPU0->print_stage("lattice initialized");
 
 #ifdef BIGTOSMALL
-			SubLat[k].GPU0->kernel_run(SubLat[k].sun_tables_id);
+            SubLat[k].GPU0->kernel_run(SubLat[k].sun_tables_id);
 #endif
 
             if ((get_plaquettes_avr)||(get_Fmunu)||(get_F0mu)) 
@@ -4910,107 +4910,107 @@ void        model::lattice_simulate(void)
         for (int i=NAV_start; i<NAV; i++){
 #ifdef USE_OPENMP
 #pragma omp parallel for
-			for (int f = 0; f < Ndevices; f++)
-				for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+            for (int f = 0; f < Ndevices; f++)
+                for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
             for (int k = 0; k < lattice_Nparts; k++){
 #endif
                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
                 if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_X_id);     // Update odd X links
             }
-			if (!turnoff_updates)
-				UpdateEdges(X);
+            if (!turnoff_updates)
+                UpdateEdges(X);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-			for (int f = 0; f < Ndevices; f++)
-				for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+            for (int f = 0; f < Ndevices; f++)
+                for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
             for (int k = 0; k < lattice_Nparts; k++){
 #endif
                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
                 if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Y_id);     // Update odd Y links
             }
-			if (!turnoff_updates)
-				UpdateEdges(Y);
+            if (!turnoff_updates)
+                UpdateEdges(Y);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-			for (int f = 0; f < Ndevices; f++)
-				for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+            for (int f = 0; f < Ndevices; f++)
+                for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
             for (int k = 0; k < lattice_Nparts; k++){
 #endif
                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
                 if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Z_id);     // Update odd Z links
             }
-			if (!turnoff_updates)
-				UpdateEdges(Z);
+            if (!turnoff_updates)
+                UpdateEdges(Z);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-			for (int f = 0; f < Ndevices; f++)
-				for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+            for (int f = 0; f < Ndevices; f++)
+                for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
             for (int k = 0; k < lattice_Nparts; k++){
 #endif
                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
                 if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_T_id);     // Update odd T links
             }
-			if (!turnoff_updates)
-				UpdateEdges(T);
+            if (!turnoff_updates)
+                UpdateEdges(T);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-			for (int f = 0; f < Ndevices; f++)
-				for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+            for (int f = 0; f < Ndevices; f++)
+                for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
             for (int k = 0; k < lattice_Nparts; k++){
 #endif
                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
                 if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_X_id);    // Update even X links
             }
-			if (!turnoff_updates)
-				UpdateEdges(X);
+            if (!turnoff_updates)
+                UpdateEdges(X);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-			for (int f = 0; f < Ndevices; f++)
-				for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+            for (int f = 0; f < Ndevices; f++)
+                for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
             for (int k = 0; k < lattice_Nparts; k++){
 #endif
                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
                 if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Y_id);    // Update even Y links
             }
-			if (!turnoff_updates)
-				UpdateEdges(Y);
+            if (!turnoff_updates)
+                UpdateEdges(Y);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-			for (int f = 0; f < Ndevices; f++)
-				for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+            for (int f = 0; f < Ndevices; f++)
+                for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
             for (int k = 0; k < lattice_Nparts; k++){
 #endif
                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
                 if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Z_id);    // Update even Z links
             }
-			if (!turnoff_updates)
-				UpdateEdges(Z);
+            if (!turnoff_updates)
+                UpdateEdges(Z);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-			for (int f = 0; f < Ndevices; f++)
-				for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+            for (int f = 0; f < Ndevices; f++)
+                for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
             for (int k = 0; k < lattice_Nparts; k++){
 #endif
                 if (!turnoff_prns) SubLat[k].PRNG0->produce();
                 if (!turnoff_updates) SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_T_id);    // Update even T links
             }
-			if (!turnoff_updates)
-				UpdateEdges(T);
+            if (!turnoff_updates)
+                UpdateEdges(T);
 
             if (!turnoff_gramschmidt)
                 for (int k = 0; k < lattice_Nparts; k++)
@@ -5026,8 +5026,8 @@ void        model::lattice_simulate(void)
             for (int j=0; j<NITER; j++){
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
                 for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -5035,13 +5035,13 @@ void        model::lattice_simulate(void)
                     if (!turnoff_updates) 
                         SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_X_id);
                 }
-				if (!turnoff_updates)
-					UpdateEdges(X);
+                if (!turnoff_updates)
+                    UpdateEdges(X);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
                 for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -5049,13 +5049,13 @@ void        model::lattice_simulate(void)
                     if (!turnoff_updates) 
                         SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Y_id);
                 }
-				if (!turnoff_updates)
-					UpdateEdges(Y);
+                if (!turnoff_updates)
+                    UpdateEdges(Y);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
                 for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -5063,13 +5063,13 @@ void        model::lattice_simulate(void)
                     if (!turnoff_updates) 
                         SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_Z_id);
                 }
-				if (!turnoff_updates)
-					UpdateEdges(Z);
+                if (!turnoff_updates)
+                    UpdateEdges(Z);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
                 for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -5077,13 +5077,13 @@ void        model::lattice_simulate(void)
                     if (!turnoff_updates) 
                         SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_odd_T_id);
                 }
-				if (!turnoff_updates)
-					UpdateEdges(T);
+                if (!turnoff_updates)
+                    UpdateEdges(T);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
                 for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -5091,13 +5091,13 @@ void        model::lattice_simulate(void)
                     if (!turnoff_updates) 
                         SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_X_id);
                 }
-				if (!turnoff_updates)
-					UpdateEdges(X);
+                if (!turnoff_updates)
+                    UpdateEdges(X);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
                 for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -5105,13 +5105,13 @@ void        model::lattice_simulate(void)
                     if (!turnoff_updates) 
                         SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Y_id);
                 }
-				if (!turnoff_updates)
-					UpdateEdges(Y);
+                if (!turnoff_updates)
+                    UpdateEdges(Y);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
                 for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -5119,13 +5119,13 @@ void        model::lattice_simulate(void)
                     if (!turnoff_updates) 
                         SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_Z_id);
                 }
-				if (!turnoff_updates)
-					UpdateEdges(Z);
+                if (!turnoff_updates)
+                    UpdateEdges(Z);
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
                 for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -5133,15 +5133,15 @@ void        model::lattice_simulate(void)
                     if (!turnoff_updates) 
                         SubLat[k].GPU0->kernel_run(SubLat[k].sun_update_even_T_id);
                 }
-				if (!turnoff_updates)
-					UpdateEdges(T);
+                if (!turnoff_updates)
+                    UpdateEdges(T);
             }
 
             if (!turnoff_gramschmidt)
 #ifdef USE_OPENMP
 #pragma omp parallel for
-				for (int f = 0; f < Ndevices; f++)
-					for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++)
+                for (int f = 0; f < Ndevices; f++)
+                    for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++)
 #else
                 for(int k = 0; k < lattice_Nparts; k++)
 #endif
@@ -5151,8 +5151,8 @@ void        model::lattice_simulate(void)
 
 #ifdef USE_OPENMP
 #pragma omp parallel for
-			for (int f = 0; f < Ndevices; f++)
-				for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
+            for (int f = 0; f < Ndevices; f++)
+                for (int k = devLeftParts[f]; k < devLeftParts[f] + devParts[f]; k++){
 #else
             for (int k = 0; k < lattice_Nparts; k++){
 #endif
@@ -5177,8 +5177,8 @@ void        model::lattice_simulate(void)
         }
 
     //-----------------------------------------
-	time(&timer2);
-	printf("\nSIMULATION TIME: %f sec\n", difftime(timer2, timer1));
+    time(&timer2);
+    printf("\nSIMULATION TIME: %f sec\n", difftime(timer2, timer1));
 
     for (int k = 0; k < lattice_Nparts; k++)
     {
@@ -5282,28 +5282,28 @@ void        model::lattice_simulate(void)
         }
 
         if(get_actions_diff)
-	{
-	    GPU0->kernel_run(sun_action_diff_x_id);
-	    GPU0->print_stage("measurement S diff done");
+    {
+        GPU0->kernel_run(sun_action_diff_x_id);
+        GPU0->print_stage("measurement S diff done");
                 action_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_action_diff_x_reduce_id,&action_diff_index,argument_action_diff_x_index);
             GPU0->kernel_run(sun_action_diff_x_reduce_id);
             GPU0->print_stage("measurement action diff reduce done");
-	    
-	    GPU0->kernel_run(sun_action_diff_y_id);
-	    GPU0->print_stage("measurement S diff done");
+        
+        GPU0->kernel_run(sun_action_diff_y_id);
+        GPU0->print_stage("measurement S diff done");
                 action_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_action_diff_y_reduce_id,&action_diff_index,argument_action_diff_y_index);
             GPU0->kernel_run(sun_action_diff_y_reduce_id);
             GPU0->print_stage("measurement action diff reduce done");
-	    
-	    GPU0->kernel_run(sun_action_diff_z_id);
-	    GPU0->print_stage("measurement S diff done");
+        
+        GPU0->kernel_run(sun_action_diff_z_id);
+        GPU0->print_stage("measurement S diff done");
                 action_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_action_diff_z_reduce_id,&action_diff_index,argument_action_diff_z_index);
             GPU0->kernel_run(sun_action_diff_z_reduce_id);
             GPU0->print_stage("measurement action diff reduce done");
- 	}
+    }
         
         if (PL_level > 0) {
             GPU0->kernel_run(sun_polyakov_id);                     // Lattice Polyakov loop measurement
@@ -5321,15 +5321,15 @@ void        model::lattice_simulate(void)
                 GPU0->kernel_init_constant_reset(sun_polyakov_diff_x_reduce_id,&polyakov_diff_index,argument_polyakov_diff_x_index);
             GPU0->kernel_run(sun_polyakov_diff_x_reduce_id);              // Lattice Polyakov loop measurement reduction
             GPU0->print_stage("Polyakov loop diff reduce done");
-	    
-	    GPU0->kernel_run(sun_polyakov_diff_y_id);                     // Lattice Polyakov loop measurement
+        
+        GPU0->kernel_run(sun_polyakov_diff_y_id);                     // Lattice Polyakov loop measurement
             GPU0->print_stage("Polyakov loop diff measurement done");
                 polyakov_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_polyakov_diff_y_reduce_id,&polyakov_diff_index,argument_polyakov_diff_y_index);
             GPU0->kernel_run(sun_polyakov_diff_y_reduce_id);              // Lattice Polyakov loop measurement reduction
             GPU0->print_stage("Polyakov loop diff reduce done");
-	    
-	    GPU0->kernel_run(sun_polyakov_diff_z_id);                     // Lattice Polyakov loop measurement
+        
+        GPU0->kernel_run(sun_polyakov_diff_z_id);                     // Lattice Polyakov loop measurement
             GPU0->print_stage("Polyakov loop diff measurement done");
                 polyakov_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_polyakov_diff_z_reduce_id,&polyakov_diff_index,argument_polyakov_diff_z_index);
@@ -5430,22 +5430,22 @@ void        model::lattice_simulate(void)
         }
         
         if(get_actions_diff)
-	{
-	    GPU0->kernel_run(sun_action_diff_x_id);
-		action_diff_index = ITER_counter;
+    {
+        GPU0->kernel_run(sun_action_diff_x_id);
+        action_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_action_diff_x_reduce_id, &action_diff_index, argument_action_diff_x_index);
             GPU0->kernel_run(sun_action_diff_x_reduce_id);
-	    
-	    GPU0->kernel_run(sun_action_diff_y_id);
-		action_diff_index = ITER_counter;
+        
+        GPU0->kernel_run(sun_action_diff_y_id);
+        action_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_action_diff_y_reduce_id, &action_diff_index, argument_action_diff_y_index);
             GPU0->kernel_run(sun_action_diff_y_reduce_id);
-	    
-	    GPU0->kernel_run(sun_action_diff_z_id);
-		action_diff_index = ITER_counter;
+        
+        GPU0->kernel_run(sun_action_diff_z_id);
+        action_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_action_diff_z_reduce_id, &action_diff_index, argument_action_diff_z_index);
             GPU0->kernel_run(sun_action_diff_z_reduce_id);
-	}
+    }
 
 GPU0->kernel_run(sun_clear_measurement_id);
         if (PL_level > 0) {
@@ -5461,13 +5461,13 @@ GPU0->kernel_run(sun_clear_measurement_id);
                 polyakov_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_polyakov_diff_x_reduce_id,&polyakov_diff_index,argument_polyakov_diff_x_index);
             GPU0->kernel_run(sun_polyakov_diff_x_reduce_id);
-	    
-	    GPU0->kernel_run(sun_polyakov_diff_y_id);
+        
+        GPU0->kernel_run(sun_polyakov_diff_y_id);
                 polyakov_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_polyakov_diff_y_reduce_id,&polyakov_diff_index,argument_polyakov_diff_y_index);
             GPU0->kernel_run(sun_polyakov_diff_y_reduce_id);
-	    
-	    GPU0->kernel_run(sun_polyakov_diff_z_id);
+        
+        GPU0->kernel_run(sun_polyakov_diff_z_id);
                 polyakov_diff_index = ITER_counter;
                 GPU0->kernel_init_constant_reset(sun_polyakov_diff_z_reduce_id,&polyakov_diff_index,argument_polyakov_diff_z_index);
             GPU0->kernel_run(sun_polyakov_diff_z_reduce_id);

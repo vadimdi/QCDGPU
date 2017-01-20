@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EAA9DAA8-50D2-470D-896E-86768F71D799}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>QCDGPU-SUN</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CUDA_PATH)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(INTELOCLSDKROOT)/lib/$(Platform);$(CUDA_PATH)/lib/$(Platform);$(AMDAPPSDKROOT)/lib/x86;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CUDA_PATH)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(CUDA_PATH)/lib/x64;$(AMDAPPSDKROOT)/lib/x86_64;$(INTELOCLSDKROOT)/lib/x64;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CUDA_PATH)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(INTELOCLSDKROOT)/lib/$(Platform);$(CUDA_PATH)/lib/$(Platform);$(AMDAPPSDKROOT)/lib/x86;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CUDA_PATH)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(CUDA_PATH)/lib/x64;$(AMDAPPSDKROOT)/lib/x86_64;$(INTELOCLSDKROOT)/lib/x64;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="..\BigLattice\wilson_loop.cl" />
+    <None Include="..\kernel\misc.cl" />
+    <None Include="..\random\prngcl_common.cl" />
+    <None Include="..\random\prngcl_constant.cl" />
+    <None Include="..\random\prngcl_mrg32k3a.cl" />
+    <None Include="..\random\prngcl_pm.cl" />
+    <None Include="..\random\prngcl_ranecu.cl" />
+    <None Include="..\random\prngcl_ranlux.cl" />
+    <None Include="..\random\prngcl_ranmar.cl" />
+    <None Include="..\random\prngcl_xor128.cl" />
+    <None Include="..\random\prngcl_xor7.cl" />
+    <None Include="..\random\random.cl" />
+    <None Include="..\suncl\model.cl" />
+    <None Include="..\suncl\polyakov.cl" />
+    <None Include="..\suncl\su2cl.cl" />
+    <None Include="..\suncl\su2_matrix_memory.cl" />
+    <None Include="..\suncl\su2_measurements_cl.cl" />
+    <None Include="..\suncl\su2_update_cl.cl" />
+    <None Include="..\suncl\su3cl.cl" />
+    <None Include="..\suncl\su3_matrix_memory.cl" />
+    <None Include="..\suncl\su3_measurements_cl.cl" />
+    <None Include="..\suncl\su3_update_cl.cl" />
+    <None Include="..\suncl\suncl.cl" />
+    <None Include="..\suncl\sun_common.cl" />
+    <None Include="..\suncl\sun_measurements_cl.cl" />
+    <None Include="..\suncl\wilson_loop.cl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\clinterface\clinterface.cpp" />
+    <ClCompile Include="..\data_analysis\data_analysis.cpp" />
+    <ClCompile Include="..\QCDGPU.cpp" />
+    <ClCompile Include="..\random\random.cpp" />
+    <ClCompile Include="..\suncl\su2cpu.cpp" />
+    <ClCompile Include="..\suncl\su3cpu.cpp" />
+    <ClCompile Include="..\suncl\suncl.cpp" />
+    <ClCompile Include="..\suncl\suncpu.cpp" />
+    <ClCompile Include="..\suncpp\coord_work\coord_work.cpp" />
+    <ClCompile Include="..\suncpp\IO\io.cpp" />
+    <ClCompile Include="..\suncpp\Measurements\analysis_cpp.cpp" />
+    <ClCompile Include="..\suncpp\su2\algebra_su2.cpp" />
+    <ClCompile Include="..\suncpp\su2\update_su2.cpp" />
+    <ClCompile Include="..\suncpp\su3\algebra_su3.cpp" />
+    <ClCompile Include="..\suncpp\su3\update_su3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\clinterface\clinterface.h" />
+    <ClInclude Include="..\clinterface\platform.h" />
+    <ClInclude Include="..\data_analysis\data_analysis.h" />
+    <ClInclude Include="..\kernel\complex.h" />
+    <ClInclude Include="..\QCDGPU.h" />
+    <ClInclude Include="..\random\random.h" />
+    <ClInclude Include="..\suncl\su2cpu.h" />
+    <ClInclude Include="..\suncl\su3cpu.h" />
+    <ClInclude Include="..\suncl\suncl.h" />
+    <ClInclude Include="..\suncl\suncpu.h" />
+    <ClInclude Include="..\suncpp\coord_work\coord_work.h" />
+    <ClInclude Include="..\suncpp\IO\io.h" />
+    <ClInclude Include="..\suncpp\Measurements\analysis_cpp.h" />
+    <ClInclude Include="..\suncpp\Measurements\Plq.h" />
+    <ClInclude Include="..\suncpp\Measurements\S.h" />
+    <ClInclude Include="..\suncpp\su2\algebra_su2.h" />
+    <ClInclude Include="..\suncpp\su2\update_su2.h" />
+    <ClInclude Include="..\suncpp\su3\algebra_su3.h" />
+    <ClInclude Include="..\suncpp\su3\update_su3.h" />
+    <ClInclude Include="..\suncpp\suncpp.h" />
+    <ClInclude Include="..\suncpp\sunh.h" />
+    <ClInclude Include="..\suncpp\Update\sun_update.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

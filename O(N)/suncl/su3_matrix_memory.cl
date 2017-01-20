@@ -55,40 +55,40 @@ lattice_table_3(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint
 
 #ifdef  TBC
 //twist here if coord.z=N3
-	if ((*coord).z == (N3-1)){
-	hgpu_float4 m1,m2,m3,m4,m5,m6;
-	hgpu_float phi_p_omega_2 = ((*twist).phi + (*twist).omega)/2;
-	hgpu_float omega_m_phi_2 = ((*twist).omega - (*twist).phi)/2;
-	
-	hgpu_float4 a1,a2,a3,a4;
-	
-	a1.x = (hgpu_float) cos(phi_p_omega_2);
-	a1.y = a1.x;
-	a1.z = a1.x;
-	a1.w = (hgpu_float) cos(omega_m_phi_2);
-	
-		a2.x = (hgpu_float) sin(phi_p_omega_2);
-		a2.y = a2.x;
-		a2.z = a2.x;
-		a2.w = (hgpu_float) sin(omega_m_phi_2);
-		
-	a3 = (hgpu_float4) cos(omega_m_phi_2);
-	
-	a4.x = (hgpu_float) -sin(omega_m_phi_2);
-	a4.y =  a4.x;
-	a4.z = -a4.x;
-	a4.w = -a4.x;
-	
-	m1 = m.uv1 * a1;
-	m2 = m.uv2 * a2;
-	m3 = m.uv2 * a1;
-	m4 = m.uv1 * a2;
-	m5 = m.uv3 * a3;
-	m6 = m.uv3.zwxy * a4;
-	
-	m.uv1 = m1 - m2;
-	m.uv2 = m3 + m4;
-	m.uv3 = m5 + m6;
+    if ((*coord).z == (N3-1)){
+    hgpu_float4 m1,m2,m3,m4,m5,m6;
+    hgpu_float phi_p_omega_2 = ((*twist).phi + (*twist).omega)/2;
+    hgpu_float omega_m_phi_2 = ((*twist).omega - (*twist).phi)/2;
+    
+    hgpu_float4 a1,a2,a3,a4;
+    
+    a1.x = (hgpu_float) cos(phi_p_omega_2);
+    a1.y = a1.x;
+    a1.z = a1.x;
+    a1.w = (hgpu_float) cos(omega_m_phi_2);
+    
+        a2.x = (hgpu_float) sin(phi_p_omega_2);
+        a2.y = a2.x;
+        a2.z = a2.x;
+        a2.w = (hgpu_float) sin(omega_m_phi_2);
+        
+    a3 = (hgpu_float4) cos(omega_m_phi_2);
+    
+    a4.x = (hgpu_float) -sin(omega_m_phi_2);
+    a4.y =  a4.x;
+    a4.z = -a4.x;
+    a4.w = -a4.x;
+    
+    m1 = m.uv1 * a1;
+    m2 = m.uv2 * a2;
+    m3 = m.uv2 * a1;
+    m4 = m.uv1 * a2;
+    m5 = m.uv3 * a3;
+    m6 = m.uv3.zwxy * a4;
+    
+    m.uv1 = m1 - m2;
+    m.uv2 = m3 + m4;
+    m.uv3 = m5 + m6;
             }
 #endif
             break;

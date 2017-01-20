@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\BigLattice\wilson_loop.cl">
+      <Filter>BigLattice</Filter>
+    </None>
+    <None Include="..\kernel\misc.cl">
+      <Filter>kernel</Filter>
+    </None>
+    <None Include="..\random\prngcl_common.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\random\prngcl_constant.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\random\prngcl_mrg32k3a.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\random\prngcl_pm.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\random\prngcl_ranecu.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\random\prngcl_ranlux.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\random\prngcl_ranmar.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\random\prngcl_xor7.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\random\prngcl_xor128.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\random\random.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\suncl\model.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\polyakov.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\su2_matrix_memory.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\su2_measurements_cl.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\su2_update_cl.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\su2cl.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\su3_matrix_memory.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\su3_measurements_cl.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\su3_update_cl.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\su3cl.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\sun_common.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\sun_measurements_cl.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\suncl.cl">
+      <Filter>suncl</Filter>
+    </None>
+    <None Include="..\suncl\wilson_loop.cl">
+      <Filter>suncl</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="BigLattice">
+      <UniqueIdentifier>{bd4934a3-b252-420f-b7c4-0142e7a47018}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CLinterface">
+      <UniqueIdentifier>{bf754a45-61aa-4958-a36b-c4697ead48ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data_analysis">
+      <UniqueIdentifier>{1148d935-9062-4102-8b1b-113320af8fde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="kernel">
+      <UniqueIdentifier>{e1baeba5-b705-4301-bb78-9710bf168c00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="random">
+      <UniqueIdentifier>{46953180-fc5a-4231-929f-a5cf193bd6c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="suncl">
+      <UniqueIdentifier>{a3211043-0928-4f9a-ab99-87fb44b1e07f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="suncpp">
+      <UniqueIdentifier>{bd175ae4-6431-4fba-9149-b7046ff7413b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="suncpp\coord_work">
+      <UniqueIdentifier>{df38aae5-8fc1-4fc3-8b57-fc423a04516f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="suncpp\IO">
+      <UniqueIdentifier>{480c03bb-b9de-4a77-bebf-dd6f6d238e5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="suncpp\Measurements">
+      <UniqueIdentifier>{8f9c4b77-9928-497c-a914-16550b1ed9b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="suncpp\SU2">
+      <UniqueIdentifier>{883b63ad-f5fe-474e-83fd-89b29a37f5f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="suncpp\SU3">
+      <UniqueIdentifier>{cb4d3ed5-e934-477e-8023-d5391dda9d25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="suncpp\Update">
+      <UniqueIdentifier>{8eebd65d-2010-46a4-b4bb-017385eea25a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{41d80b2c-ee12-4f03-9e9a-633c87022e3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{99e5d9a7-e2db-403f-823d-0db1f1dbde8b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\clinterface\clinterface.cpp">
+      <Filter>CLinterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\data_analysis\data_analysis.cpp">
+      <Filter>data_analysis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\random\random.cpp">
+      <Filter>random</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncl\su2cpu.cpp">
+      <Filter>suncl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncl\su3cpu.cpp">
+      <Filter>suncl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncl\suncl.cpp">
+      <Filter>suncl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncl\suncpu.cpp">
+      <Filter>suncl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncpp\coord_work\coord_work.cpp">
+      <Filter>suncpp\coord_work</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncpp\IO\io.cpp">
+      <Filter>suncpp\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncpp\Measurements\analysis_cpp.cpp">
+      <Filter>suncpp\Measurements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncpp\su2\algebra_su2.cpp">
+      <Filter>suncpp\SU2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncpp\su2\update_su2.cpp">
+      <Filter>suncpp\SU2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncpp\su3\algebra_su3.cpp">
+      <Filter>suncpp\SU3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncpp\su3\update_su3.cpp">
+      <Filter>suncpp\SU3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\QCDGPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\clinterface\clinterface.h">
+      <Filter>CLinterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\clinterface\platform.h">
+      <Filter>CLinterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\data_analysis\data_analysis.h">
+      <Filter>data_analysis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\kernel\complex.h">
+      <Filter>kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\random\random.h">
+      <Filter>random</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncl\su2cpu.h">
+      <Filter>suncl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncl\su3cpu.h">
+      <Filter>suncl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncl\suncl.h">
+      <Filter>suncl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncl\suncpu.h">
+      <Filter>suncl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\suncpp.h">
+      <Filter>suncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\sunh.h">
+      <Filter>suncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\coord_work\coord_work.h">
+      <Filter>suncpp\coord_work</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\IO\io.h">
+      <Filter>suncpp\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\Measurements\analysis_cpp.h">
+      <Filter>suncpp\Measurements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\Measurements\Plq.h">
+      <Filter>suncpp\Measurements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\Measurements\S.h">
+      <Filter>suncpp\Measurements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\su2\algebra_su2.h">
+      <Filter>suncpp\SU2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\su2\update_su2.h">
+      <Filter>suncpp\SU2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\su3\algebra_su3.h">
+      <Filter>suncpp\SU3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\su3\update_su3.h">
+      <Filter>suncpp\SU3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncpp\Update\sun_update.h">
+      <Filter>suncpp\Update</Filter>
+    </ClInclude>
+    <ClInclude Include="..\QCDGPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

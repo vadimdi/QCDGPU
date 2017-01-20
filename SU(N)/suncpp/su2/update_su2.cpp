@@ -69,10 +69,10 @@ void update_link(su_2 *a, su_2 stap, hgpu_double beta, int nhit, int gid, int gi
     
     while ((i < nhit) && (flag == false)){
         if (gid_start){
-            rnd[0] = fabs(sin((0.005*(1.0 + nhit)+270.0/fsites)*gid));
-            rnd[1] = fabs(cos((0.005*(1.0 + nhit)+ 60.0/fsites)*gid));
-            rnd[2] = fabs(sin((0.005*(1.0 + nhit)-150.0/fsites)*gid));
-            rnd[3] = fabs(cos((0.005*(1.0 + nhit)-380.0/fsites)*gid));
+            rnd[0] = fabs((float) sin((0.005*(1.0 + nhit)+270.0/fsites)*gid));
+            rnd[1] = fabs((float) cos((0.005*(1.0 + nhit)+ 60.0/fsites)*gid));
+            rnd[2] = fabs((float) sin((0.005*(1.0 + nhit)-150.0/fsites)*gid));
+            rnd[3] = fabs((float) cos((0.005*(1.0 + nhit)-380.0/fsites)*gid));
         } else {
             /*rnd[0] = (float) (((double) rand()) / ((double) RAND_MAX + 1.0));
             rnd[1] = (float) (((double) rand()) / ((double) RAND_MAX + 1.0));
@@ -93,8 +93,8 @@ void update_link(su_2 *a, su_2 stap, hgpu_double beta, int nhit, int gid, int gi
     
     if (flag) {
         if (gid_start){
-            rnd[0] = fabs(cos((0.08-270.0/fsites)*gid));
-            rnd[1] = fabs(sin((0.08-60.0/fsites)*gid));
+            rnd[0] = fabs((float) cos((0.08-270.0/fsites)*gid));
+            rnd[1] = fabs((float) sin((0.08-60.0/fsites)*gid));
         } else {
             //rnd[0] = (float) (((double) rand()) / ((double) RAND_MAX + 1.0));
             //rnd[1] = (float) (((double) rand()) / ((double) RAND_MAX + 1.0));

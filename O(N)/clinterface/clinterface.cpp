@@ -480,6 +480,8 @@ int             GPU::device_initialize(void){
     }
     if ((GPU_limit_max_workgroup_size) && (GPU_limit_max_workgroup_size<GPU_info.max_workgroup_size)) GPU_info.max_workgroup_size = GPU_limit_max_workgroup_size;
 
+    if (!GPU_limit_max_workgroup_size) GPU_limit_max_workgroup_size = (unsigned int)(GPU_info.max_workgroup_size);//Nat
+
     return GPU_devices_number;
 }
 int             GPU::device_finalize(int error_code)

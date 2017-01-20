@@ -35,7 +35,7 @@
  * 
  *****************************************************************************/
 
-#ifndef SUNMEASURUMENTSCL_CL
+#ifndef SUNMEASUREMENTSCL_CL
 #define SUNMEASUREMENTSCL_CL
 
 #include "complex.h"

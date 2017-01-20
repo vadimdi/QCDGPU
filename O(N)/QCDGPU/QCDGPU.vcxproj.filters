@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="CLinterface">
+      <UniqueIdentifier>{fccefb72-84b0-41e8-a1db-4ff751cf175f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data_analysis">
+      <UniqueIdentifier>{c799921a-dd88-4ef3-8f49-08020ca186bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="kernel">
+      <UniqueIdentifier>{3cc4dabd-1c2b-4970-8455-0928532a7f17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ONCL">
+      <UniqueIdentifier>{33d93f40-0688-4cca-b1dc-a3a1fd90b37c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ONCL\CL">
+      <UniqueIdentifier>{763bb389-4067-4590-804c-3259ed763814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="random">
+      <UniqueIdentifier>{ea7b34e0-24b1-4f3d-8e99-790ed684a717}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SUNCL">
+      <UniqueIdentifier>{da0e5a4a-1d94-41f2-b6ab-e0bd67c33734}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SUNCL\BigLattice">
+      <UniqueIdentifier>{70a78e7a-bb34-4f6f-81d8-fe9ea79d627c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SUNCL\CL">
+      <UniqueIdentifier>{b8e11b5e-92d1-4a66-bd50-2723088a4256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SUNCL\SUNCPU">
+      <UniqueIdentifier>{207a1b6e-a413-4067-83c3-cb150d2435c6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\clinterface\clinterface.cpp">
+      <Filter>CLinterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\data_analysis\data_analysis.cpp">
+      <Filter>data_analysis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\random\random.cpp">
+      <Filter>random</Filter>
+    </ClCompile>
+    <ClCompile Include="..\QCDGPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncl\biglattice.cpp">
+      <Filter>SUNCL\BigLattice</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncl\suncpu.cpp">
+      <Filter>SUNCL\SUNCPU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\suncl\suncl.cpp">
+      <Filter>SUNCL</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\clinterface\clinterface.h">
+      <Filter>CLinterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\clinterface\platform.h">
+      <Filter>CLinterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\data_analysis\data_analysis.h">
+      <Filter>data_analysis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\QCDGPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\kernel\complex.h">
+      <Filter>kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\random\random.h">
+      <Filter>random</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncl\biglattice.h">
+      <Filter>SUNCL\BigLattice</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncl\suncpu.h">
+      <Filter>SUNCL\SUNCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\suncl\suncl.h">
+      <Filter>SUNCL</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\kernel\misc.cl">
+      <Filter>kernel</Filter>
+    </None>
+    <None Include="..\kernel\model.cl">
+      <Filter>kernel</Filter>
+    </None>
+    <None Include="..\kernel\neighbours.cl">
+      <Filter>kernel</Filter>
+    </None>
+    <None Include="..\oncl\o1_matrix_memory.cl">
+      <Filter>ONCL\CL</Filter>
+    </None>
+    <None Include="..\oncl\o1_update_cl.cl">
+      <Filter>ONCL\CL</Filter>
+    </None>
+    <None Include="..\oncl\o1cl.cl">
+      <Filter>ONCL\CL</Filter>
+    </None>
+    <None Include="..\oncl\on_measurements_cl.cl">
+      <Filter>ONCL\CL</Filter>
+    </None>
+    <None Include="..\oncl\oncl.cl">
+      <Filter>ONCL\CL</Filter>
+    </None>
+    <None Include="..\random\random.cl">
+      <Filter>random</Filter>
+    </None>
+    <None Include="..\suncl\boundary.cl">
+      <Filter>SUNCL\CL</Filter>
+    </None>
+    <None Include="..\suncl\polyakov.cl">
+      <Filter>SUNCL\CL</Filter>
+    </None>
+    <None Include="..\suncl\su3_matrix_memory.cl">
+      <Filter>SUNCL\CL</Filter>
+    </None>
+    <None Include="..\suncl\su3_measurements_cl.cl">
+      <Filter>SUNCL\CL</Filter>
+    </None>
+    <None Include="..\suncl\su3_update_cl.cl">
+      <Filter>SUNCL\CL</Filter>
+    </None>
+    <None Include="..\suncl\su3cl.cl">
+      <Filter>SUNCL\CL</Filter>
+    </None>
+    <None Include="..\suncl\sun_measurements_cl.cl">
+      <Filter>SUNCL\CL</Filter>
+    </None>
+    <None Include="..\suncl\suncl.cl">
+      <Filter>SUNCL\CL</Filter>
+    </None>
+    <None Include="..\suncl\wilson_loop.cl">
+      <Filter>SUNCL\CL</Filter>
+    </None>
+  </ItemGroup>
+</Project>

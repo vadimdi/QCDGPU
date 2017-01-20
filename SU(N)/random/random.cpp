@@ -82,14 +82,14 @@ using PRNG_CL::PRNG;
     PMseed   = PM_seed;
 
     // XORSeven parameters_________________________________
-	for (int i=0; i<8; i++) XOR7_state[i] = 0;
-	XOR7_index = 0;
+    for (int i=0; i<8; i++) XOR7_state[i] = 0;
+    XOR7_index = 0;
 #ifndef CPU_RUN
     // XOR128 parameters___________________________________
-	XOR128_state.s[0] = 0;
-	XOR128_state.s[1] = 0;
-	XOR128_state.s[2] = 0;
-	XOR128_state.s[3] = 0;
+    XOR128_state.s[0] = 0;
+    XOR128_state.s[1] = 0;
+    XOR128_state.s[2] = 0;
+    XOR128_state.s[3] = 0;
 #endif
     // RANECU parameters___________________________________
     RANECU_jseed1 = RANECU_seed1;
@@ -99,12 +99,12 @@ using PRNG_CL::PRNG;
 {
 
 }
-	
+    
 double              PRNG::trunc(double x)
 {
-	double y, z;
-	y = modf(x,&z);
-	return z;
+    double y, z;
+    y = modf(x,&z);
+    return z;
 }
 
 unsigned int PRNG::convert_generator_to_uint(PRNG::PRNG_generators generator){
@@ -224,9 +224,9 @@ void                PRNG::initialize(void)
         printf("PRNG instances: %u",PRNG_instances);
         if (PRNG_instances_autoselect) printf(" (auto)");
         printf("\n");
-    	// setup initial state: randseries=0(random, system timer-dependent) or other(static)
-    	PRNG_srandtime = (unsigned int) time(NULL);
-		if (!PRNG_randseries) {
+        // setup initial state: randseries=0(random, system timer-dependent) or other(static)
+        PRNG_srandtime = (unsigned int) time(NULL);
+        if (!PRNG_randseries) {
             PRNG_randseries = PRNG_srandtime;  // set the RANDOM seed random
         } else {
             PRNG_srandtime = PRNG_randseries;
@@ -439,11 +439,11 @@ void                PRNG::RL_initialize(void)
 #endif
 
         seeds_size      = PRNG_instances;
-	    seed_table_size = seeds_size * 7;               // 7 = size of Ranlux seed table for each PRNG (in quads)
+        seed_table_size = seeds_size * 7;               // 7 = size of Ranlux seed table for each PRNG (in quads)
         randoms_size    = PRNG_instances * PRNG_samples;
         //randoms_size    = 2048*5;
 
-	    PRNG_seeds              = (cl_uint*)   calloc(seeds_size,     sizeof(cl_uint));             // Input seeds
+        PRNG_seeds              = (cl_uint*)   calloc(seeds_size,     sizeof(cl_uint));             // Input seeds
         if (PRNG_precision == PRNG_precision_double)
             PRNG_randoms        = (void*) calloc(randoms_size,   sizeof(cl_double4));               // Output randoms
         else
@@ -477,23 +477,23 @@ void                PRNG::RL_initialize(void)
     GPU0->print_stage("randoms initialized");
         int argument_id;
 
-        const size_t global_size[]  = {PRNG_instances};                     // global_size
+        const size_t global_size[]  = {(size_t)PRNG_instances};                     // global_size
 //        const size_t  local_size[]  = {GPU0->GPU_info.max_workgroup_size};  // local_size
 
 
 //        printf("PRNG_instances = %u\n",PRNG_instances);
 //        printf("max_workgroup_size = %u\n",GPU0->GPU_info.max_workgroup_size);
 
-	    PRNG_randoms_seed_id = GPU0->kernel_init("ranlux_init",1,global_size,NULL);  // local_size // rlseed
+        PRNG_randoms_seed_id = GPU0->kernel_init("ranlux_init",1,global_size,NULL);  // local_size // rlseed
             argument_id = GPU0->kernel_init_buffer(PRNG_randoms_seed_id,  PRNG_seed_id);
             argument_id = GPU0->kernel_init_buffer(PRNG_randoms_seed_id,  PRNG_seed_table_id);
 
-	    int result = GPU0->kernel_run(PRNG_randoms_seed_id);                // Prepare seeds
+        int result = GPU0->kernel_run(PRNG_randoms_seed_id);                // Prepare seeds
 
         PRNG_randoms_kernel_id = GPU0->kernel_init("ranlux",1,global_size,NULL); // local_size // rlproduce
-	        argument_id = GPU0->kernel_init_buffer(PRNG_randoms_kernel_id,PRNG_seed_table_id);
-		    argument_id = GPU0->kernel_init_buffer(PRNG_randoms_kernel_id,PRNG_randoms_id);
-		    argument_id = GPU0->kernel_init_constant(PRNG_randoms_kernel_id,&PRNG_samples);
+            argument_id = GPU0->kernel_init_buffer(PRNG_randoms_kernel_id,PRNG_seed_table_id);
+            argument_id = GPU0->kernel_init_buffer(PRNG_randoms_kernel_id,PRNG_randoms_id);
+            argument_id = GPU0->kernel_init_constant(PRNG_randoms_kernel_id,&PRNG_samples);
 
 // TODO: Kill PRNG_seed_id buffer
 
@@ -507,70 +507,70 @@ void                PRNG::RL_initialize_CPU(void)
 
         RL_jseed = rand() % 2147483647;
 
-	    int		RL_k;
-	    //
-	    int RL_jseed_CPU = RL_jseed;
-	    //
-	    for (int i=0; i<24; i++)
-	    {
-		    RL_k = RL_jseed_CPU / 53668;
-		    RL_jseed_CPU = 40014 * (RL_jseed_CPU - RL_k * 53668) - RL_k * 12211;
-		    if (RL_jseed_CPU < 0) {RL_jseed_CPU = RL_jseed_CPU + RL_icons;}
-		    RL_seeds[i] = ((float) (RL_jseed_CPU % RL_itwo24)) * RL_twom24;
-	    }
-	    if (RL_seeds[23] == 0) RL_carry = RL_twom24;
+        int		RL_k;
+        //
+        int RL_jseed_CPU = RL_jseed;
+        //
+        for (int i=0; i<24; i++)
+        {
+            RL_k = RL_jseed_CPU / 53668;
+            RL_jseed_CPU = 40014 * (RL_jseed_CPU - RL_k * 53668) - RL_k * 12211;
+            if (RL_jseed_CPU < 0) {RL_jseed_CPU = RL_jseed_CPU + RL_icons;}
+            RL_seeds[i] = ((float) (RL_jseed_CPU % RL_itwo24)) * RL_twom24;
+        }
+        if (RL_seeds[23] == 0) RL_carry = RL_twom24;
 }
 float               PRNG::RL_produce_one_CPU(void)
 {
-	float uni;
+    float uni;
 
-	if (RL_in24 == 0)
-	{
-		RL_in24 = 24;
-		for (int isk = 0; isk < RL_nskip; isk++)	// TEMPORARY!!!
-		{
-			uni = RL_seeds[RL_j24] - RL_seeds[RL_i24] - RL_carry;
-			if (uni < 0.0f)
-			{
-				uni = uni + 1.0f;
-				RL_carry = RL_twom24;
-			}
-			else
-			{
-				RL_carry = 0.0f;
-			}
-			RL_seeds[RL_i24] = uni;
-			if (RL_i24==0) {RL_i24=24;}
-			if (RL_j24==0) {RL_j24=24;}
-			RL_i24--;
-			RL_j24--;
-		}
-	}
+    if (RL_in24 == 0)
+    {
+        RL_in24 = 24;
+        for (int isk = 0; isk < RL_nskip; isk++)	// TEMPORARY!!!
+        {
+            uni = RL_seeds[RL_j24] - RL_seeds[RL_i24] - RL_carry;
+            if (uni < 0.0f)
+            {
+                uni = uni + 1.0f;
+                RL_carry = RL_twom24;
+            }
+            else
+            {
+                RL_carry = 0.0f;
+            }
+            RL_seeds[RL_i24] = uni;
+            if (RL_i24==0) {RL_i24=24;}
+            if (RL_j24==0) {RL_j24=24;}
+            RL_i24--;
+            RL_j24--;
+        }
+    }
 
-			uni = RL_seeds[RL_j24] - RL_seeds[RL_i24] - RL_carry;
-			if (uni < 0.0f)
-		{
-			uni = uni + 1.0f;
-			RL_carry = RL_twom24;
-		}
-			else
-		{
-			RL_carry = 0.0f;
-		}
-			RL_seeds[RL_i24] = uni;
-			if (RL_i24==0) {RL_i24=24;}
-			if (RL_j24==0) {RL_j24=24;}
-			RL_i24--;
-			RL_j24--;
+            uni = RL_seeds[RL_j24] - RL_seeds[RL_i24] - RL_carry;
+            if (uni < 0.0f)
+        {
+            uni = uni + 1.0f;
+            RL_carry = RL_twom24;
+        }
+            else
+        {
+            RL_carry = 0.0f;
+        }
+            RL_seeds[RL_i24] = uni;
+            if (RL_i24==0) {RL_i24=24;}
+            if (RL_j24==0) {RL_j24=24;}
+            RL_i24--;
+            RL_j24--;
 
-	if (uni < RL_twom12)
-	{
-		uni = uni + RL_twom24 * RL_seeds[RL_j24];
-		if (uni == 0.0f) {uni = RL_twom24 * RL_twom24;}
-	}
-	RL_in24--;
+    if (uni < RL_twom12)
+    {
+        uni = uni + RL_twom24 * RL_seeds[RL_j24];
+        if (uni == 0.0f) {uni = RL_twom24 * RL_twom24;}
+    }
+    RL_in24--;
 
-	return uni;
+    return uni;
 }
 #ifndef CPU_RUN
 unsigned int        PRNG::RL_check_seeds(void)
@@ -662,7 +662,7 @@ void                PRNG::XOR128_initialize(void)
         PRNG_randoms_id    = GPU0->buffer_init(GPU0->buffer_type_IO, randoms_size,    PRNG_randoms,             sizeof(cl_float4));
 
         int argument_id;
-        const size_t global_size[]  = {PRNG_instances};                      // global_size
+        const size_t global_size[]  = {(size_t)PRNG_instances};                      // global_size
 //        const size_t  local_size[]  = {GPU0->GPU_info.max_workgroup_size};   // local_size
 
         PRNG_randoms_kernel_id   = GPU0->kernel_init("xor128",1,global_size,NULL); // local_size);
@@ -683,16 +683,16 @@ unsigned int        PRNG::XOR128_produce_one_uint_CPU(void)
 {
         unsigned long t=(XOR128_state.s[0]^(XOR128_state.s[0]<<11));
 
-	    XOR128_state.s[0] = XOR128_state.s[1];
-	    XOR128_state.s[1] = XOR128_state.s[2];
-	    XOR128_state.s[2] = XOR128_state.s[3];
-	    XOR128_state.s[3] = (XOR128_state.s[3]^(XOR128_state.s[3]>>19))^(t^(t>>8));
+        XOR128_state.s[0] = XOR128_state.s[1];
+        XOR128_state.s[1] = XOR128_state.s[2];
+        XOR128_state.s[2] = XOR128_state.s[3];
+        XOR128_state.s[3] = (XOR128_state.s[3]^(XOR128_state.s[3]>>19))^(t^(t>>8));
 
         return XOR128_state.s[0];
 }
 float               PRNG::XOR128_produce_one_CPU(void)
 {
-	    return ((float) XOR128_produce_one_uint_CPU()) / 4294967295.0f;
+        return ((float) XOR128_produce_one_uint_CPU()) / 4294967295.0f;
 }
 void                PRNG::XOR128_produce_CPU(float* randoms_cpu)
 {
@@ -718,7 +718,7 @@ void                PRNG::RANMAR_initialize(void)
         seed_table_size         = seeds_size * (97+1);  // 97 - size of seed table, 1 - size of indises
         randoms_size            = PRNG_instances * PRNG_samples;
 
-	    PRNG_seeds4             = (cl_uint4*)  calloc(seeds_size,     sizeof(cl_uint4));    // Input seeds
+        PRNG_seeds4             = (cl_uint4*)  calloc(seeds_size,     sizeof(cl_uint4));    // Input seeds
         PRNG_randoms            = (void*) calloc(randoms_size,        sizeof(cl_float4));   // Output randoms
         PRNG_seed_table_float4  = (cl_float4*) calloc(seed_table_size,sizeof(cl_float4));   // Seeds
 
@@ -751,19 +751,19 @@ void                PRNG::RANMAR_initialize(void)
 
         int argument_id;
 
-        const size_t global_size[]  = {PRNG_instances};                     // global_size
+        const size_t global_size[]  = {(size_t)PRNG_instances};                     // global_size
 //        const size_t  local_size[]  = {GPU0->GPU_info.max_workgroup_size};  // local_size
 
-	    PRNG_randoms_seed_id = GPU0->kernel_init("rmseed",1,global_size,NULL);  // local_size
+        PRNG_randoms_seed_id = GPU0->kernel_init("rmseed",1,global_size,NULL);  // local_size
             argument_id = GPU0->kernel_init_buffer(PRNG_randoms_seed_id,  PRNG_seed_id);
             argument_id = GPU0->kernel_init_buffer(PRNG_randoms_seed_id,  PRNG_seed_table_id);
 
-	    int result = GPU0->kernel_run(PRNG_randoms_seed_id);                // Prepare seeds
+        int result = GPU0->kernel_run(PRNG_randoms_seed_id);                // Prepare seeds
 
         PRNG_randoms_kernel_id = GPU0->kernel_init("rmproduce",1,global_size,NULL); // local_size
-	        argument_id = GPU0->kernel_init_buffer(PRNG_randoms_kernel_id,PRNG_seed_table_id);
-		    argument_id = GPU0->kernel_init_buffer(PRNG_randoms_kernel_id,PRNG_randoms_id);
-		    argument_id = GPU0->kernel_init_constant(PRNG_randoms_kernel_id,&PRNG_samples);
+            argument_id = GPU0->kernel_init_buffer(PRNG_randoms_kernel_id,PRNG_seed_table_id);
+            argument_id = GPU0->kernel_init_buffer(PRNG_randoms_kernel_id,PRNG_randoms_id);
+            argument_id = GPU0->kernel_init_constant(PRNG_randoms_kernel_id,&PRNG_samples);
 
 // TODO: Kill PRNG_seed_id buffer
 
@@ -776,43 +776,43 @@ void                PRNG::RANMAR_initialize_CPU(void)
     RM_seed1 = rand() % 31328;
     RM_seed2 = rand() % 30081;
 
-	int i = ((RM_seed1 / 177) % 177) + 2;
-	int j = (RM_seed1 % 177) + 2;
-	int k = ((RM_seed2 / 169) % 178) + 1;
-	int l = (RM_seed2 % 169);
-	for (int n = 0; n < 97; n++)
-	{
-		int s = 0;
-		int t = 8388608;
-		for (int m = 0; m < 24; m++)
-		{
-			int u = (i * j) % 179;
-			u = (u * k) % 179;
-			i = j;
-			j = k;
-			k = u;
-			l = (53 * l + 1) % 169;
-			if ((l * u) % 64 >= 32) s = s + t; 
-			t = t >> 1;
-		}
-		RM_seeds[n] = ((float) s) / 16777216.0f;
-	}
+    int i = ((RM_seed1 / 177) % 177) + 2;
+    int j = (RM_seed1 % 177) + 2;
+    int k = ((RM_seed2 / 169) % 178) + 1;
+    int l = (RM_seed2 % 169);
+    for (int n = 0; n < 97; n++)
+    {
+        int s = 0;
+        int t = 8388608;
+        for (int m = 0; m < 24; m++)
+        {
+            int u = (i * j) % 179;
+            u = (u * k) % 179;
+            i = j;
+            j = k;
+            k = u;
+            l = (53 * l + 1) % 169;
+            if ((l * u) % 64 >= 32) s = s + t; 
+            t = t >> 1;
+        }
+        RM_seeds[n] = ((float) s) / 16777216.0f;
+    }
 }
 float               PRNG::RANMAR_produce_one_CPU(void)
 {
-	float uni = RM_seeds[RM_I97] - RM_seeds[RM_J97];
-	if (uni < 0.0) {uni = uni + 1.0f;}
-	RM_seeds[RM_I97] = uni;
-	if (RM_I97==0){RM_I97=97;}
-	if (RM_J97==0){RM_J97=97;}
-	RM_I97--;
-	RM_J97--;
-	RM_C = (float) RM_C - (float) RM_CD;
-	if (RM_C < 0.0) {RM_C = (float) RM_C + (float) RM_CM;}
-	uni = uni - RM_C;
-	if (uni < 0.0) {uni = uni + 1.0f;}
+    float uni = RM_seeds[RM_I97] - RM_seeds[RM_J97];
+    if (uni < 0.0) {uni = uni + 1.0f;}
+    RM_seeds[RM_I97] = uni;
+    if (RM_I97==0){RM_I97=97;}
+    if (RM_J97==0){RM_J97=97;}
+    RM_I97--;
+    RM_J97--;
+    RM_C = (float) RM_C - (float) RM_CD;
+    if (RM_C < 0.0) {RM_C = (float) RM_C + (float) RM_CM;}
+    uni = uni - RM_C;
+    if (uni < 0.0) {uni = uni + 1.0f;}
 
-	return uni;
+    return uni;
 }
 #ifndef CPU_RUN
 unsigned int        PRNG::RANMAR_check_seeds(void)
@@ -880,7 +880,7 @@ void                PRNG::PM_initialize(void)
         PRNG_randoms_id    = GPU0->buffer_init(GPU0->buffer_type_IO, randoms_size,    PRNG_randoms,             sizeof(cl_float4));
 
         int argument_id;
-        const size_t global_size[]  = {PRNG_instances};                      // global_size
+        const size_t global_size[]  = {(size_t)PRNG_instances};                      // global_size
 //        const size_t  local_size[]  = {GPU0->GPU_info.max_workgroup_size};   // local_size
 
         PRNG_randoms_kernel_id   = GPU0->kernel_init("pm",1,global_size,NULL); // local_size
@@ -894,19 +894,19 @@ void                PRNG::PM_initialize_CPU(void)
         PMseed = rand() % 2147483647;
 }
 float               PRNG::PM_produce_one_CPU(void){
-	unsigned int PM_lo, PM_hi;
+    unsigned int PM_lo, PM_hi;
     int PM_test;
 
-	PM_hi = div(PMseed,PM_q).quot;
-	PM_lo = PMseed % PM_q;
+    PM_hi = div(PMseed,PM_q).quot;
+    PM_lo = PMseed % PM_q;
 
-	PM_test = PM_a * PM_lo - PM_r * PM_hi;
-	if (PM_test > 0) PMseed = PM_test;
-	  else PMseed = PM_test + PM_m;
+    PM_test = PM_a * PM_lo - PM_r * PM_hi;
+    if (PM_test > 0) PMseed = PM_test;
+      else PMseed = PM_test + PM_m;
 
-	float rnd = (float) (((double) PMseed) / PM_m_FP);
+    float rnd = (float) (((double) PMseed) / PM_m_FP);
 
-	return rnd;
+    return rnd;
 }
 void                PRNG::PM_produce_CPU(float* randoms_cpu)
 {
@@ -953,7 +953,7 @@ void                PRNG::XOR7_initialize(void)
         PRNG_randoms_id    = GPU0->buffer_init(GPU0->buffer_type_IO, randoms_size,    PRNG_randoms,             sizeof(cl_float4));
 
         int argument_id;
-        const size_t global_size[]  = {PRNG_instances};                      // global_size
+        const size_t global_size[]  = {(size_t)PRNG_instances};                      // global_size
 //        const size_t  local_size[]  = {GPU0->GPU_info.max_workgroup_size};   // local_size
 
         PRNG_randoms_kernel_id   = GPU0->kernel_init("xor7",1,global_size,NULL); // local_size
@@ -1025,7 +1025,7 @@ void                PRNG::RANECU_initialize(void)
         PRNG_randoms_id    = GPU0->buffer_init(GPU0->buffer_type_IO, randoms_size,    PRNG_randoms,             sizeof(cl_float4));
 
         int argument_id;
-        const size_t global_size[]  = {PRNG_instances};                      // global_size
+        const size_t global_size[]  = {(size_t)PRNG_instances};                      // global_size
 //        const size_t  local_size[]  = {GPU0->GPU_info.max_workgroup_size};   // local_size
 
         PRNG_randoms_kernel_id   = GPU0->kernel_init("ranecu",1,global_size,NULL); // local_size
@@ -1041,22 +1041,22 @@ void                PRNG::RANECU_initialize_CPU(void)
 }
 float               PRNG::RANECU_produce_one_CPU(void)
 {
-	int		RANECU_k;
-	//
-	RANECU_k = RANECU_jseed1 / RANECU_seedP11;
-		RANECU_jseed1 = RANECU_seedP13 * (RANECU_jseed1 - RANECU_k * RANECU_seedP11) - RANECU_k * RANECU_seedP12;
-		if (RANECU_jseed1 < 0) {RANECU_jseed1 = RANECU_jseed1 + RANECU_icons1;}
+    int		RANECU_k;
+    //
+    RANECU_k = RANECU_jseed1 / RANECU_seedP11;
+        RANECU_jseed1 = RANECU_seedP13 * (RANECU_jseed1 - RANECU_k * RANECU_seedP11) - RANECU_k * RANECU_seedP12;
+        if (RANECU_jseed1 < 0) {RANECU_jseed1 = RANECU_jseed1 + RANECU_icons1;}
 
-	RANECU_k = RANECU_jseed2 / RANECU_seedP21;
-		RANECU_jseed2 = RANECU_seedP23 * (RANECU_jseed2 - RANECU_k * RANECU_seedP21) - RANECU_k * RANECU_seedP22;
-		if (RANECU_jseed2 < 0) {RANECU_jseed2 = RANECU_jseed2 + RANECU_icons2;}
+    RANECU_k = RANECU_jseed2 / RANECU_seedP21;
+        RANECU_jseed2 = RANECU_seedP23 * (RANECU_jseed2 - RANECU_k * RANECU_seedP21) - RANECU_k * RANECU_seedP22;
+        if (RANECU_jseed2 < 0) {RANECU_jseed2 = RANECU_jseed2 + RANECU_icons2;}
 
-	int z = RANECU_jseed1 - RANECU_jseed2;
-	if (z < 1) {z = z + RANECU_icons3;}
+    int z = RANECU_jseed1 - RANECU_jseed2;
+    if (z < 1) {z = z + RANECU_icons3;}
 
-	float rnd =	(float) ((float) (z)) / ((float) RANECU_twom31);
+    float rnd =	(float) ((float) (z)) / ((float) RANECU_twom31);
 
-	return rnd;
+    return rnd;
 }
 void                PRNG::RANECU_produce_CPU(float* randoms_cpu)
 {

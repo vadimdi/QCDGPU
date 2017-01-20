@@ -96,14 +96,14 @@ model0->GPU0->GPU_limit_max_workgroup_size = 64; // please, remark it for Intel 
         model0->GPU0->GPU_debug.rebuild_binary = false;
 #endif
         model0->PRNG0->PRNG_generator   = PRNG_CL::PRNG::PRNG_generator_RANLUX3;
-		model0->PRNG0->PRNG_randseries = 54;//1432996491; // constant random series; 0 <--> system time
+        model0->PRNG0->PRNG_randseries = 54;//1432996491; // constant random series; 0 <--> system time
         model0->PRNG0->PRNG_precision   = PRNG_CL::PRNG::PRNG_precision_single;
         model0->lattice_nd      = 4;
         model0->lattice_group   = 3;       // SU(N) group
-		model0->lattice_full_size[0] = 32;  // Nx
-		model0->lattice_full_size[1] = 32;// 38;  // Ny
-		model0->lattice_full_size[2] = 32;// 38;  // Nz
-		model0->lattice_full_size[3] = 32;// 38;  // Nt
+        model0->lattice_full_size[0] = 32;  // Nx
+        model0->lattice_full_size[1] = 32;// 38;  // Ny
+        model0->lattice_full_size[2] = 32;// 38;  // Nz
+        model0->lattice_full_size[3] = 32;// 38;  // Nt
 
         //model0->big_lattice         = false;
                     model0->lattice_domain_size[0] = model0->lattice_full_size[0];
@@ -114,10 +114,10 @@ model0->GPU0->GPU_limit_max_workgroup_size = 64; // please, remark it for Intel 
                     model0->lattice_Nparts = NPARTS;
 
                     model0->SubLat = (SubLattice*)calloc(model0->lattice_Nparts, sizeof(SubLattice));
-			model0->SubLat[0].Nx = 18;
-			model0->SubLat[1].Nx = 14;
-			//model0->SubLat[2].Nx = 8;
-			//model0->SubLat[3].Nx = 8;
+            model0->SubLat[0].Nx = 18;
+            model0->SubLat[1].Nx = 14;
+            //model0->SubLat[2].Nx = 8;
+            //model0->SubLat[3].Nx = 8;
 
                     for(int k = 0; k < model0->lattice_Nparts; k++)
                     {
@@ -128,27 +128,27 @@ model0->GPU0->GPU_limit_max_workgroup_size = 64; // please, remark it for Intel 
 
                     model0->SubLat[0].desired_platform = 0;
                     model0->SubLat[0].desired_device   = 0;
-					//model0->SubLat[0].device_no = 0;
+                    //model0->SubLat[0].device_no = 0;
                         model0->SubLat[1].desired_platform = 0;
                         model0->SubLat[1].desired_device   = 0;
-						//model0->SubLat[1].device_no = 0;
+                        //model0->SubLat[1].device_no = 0;
                     /*model0->SubLat[2].desired_platform = 0;
                     model0->SubLat[2].desired_device   = 0;
-					//model0->SubLat[0].device_no = 1;
+                    //model0->SubLat[0].device_no = 1;
                         model0->SubLat[3].desired_platform = 0;
                         model0->SubLat[3].desired_device   = 0;
-						//model0->SubLat[0].device_no = 1;*/
+                        //model0->SubLat[0].device_no = 1;*/
 
-						//model0->Ndevices = 2;
+                        //model0->Ndevices = 2;
                         model0->Ndevices = NDEV;
-						model0->devParts = (unsigned int*)calloc(model0->Ndevices, sizeof(unsigned int));
+                        model0->devParts = (unsigned int*)calloc(model0->Ndevices, sizeof(unsigned int));
                                                 for(int k = 0; k < model0->Ndevices; k++)
-						//for(int k = 0; k < model0->lattice_Nparts; k++)
-						  model0->devParts[k] = 1;
-						//model0->devParts[0] = 1;
-						//model0->devParts[1] = 1;
-						//model0->devParts[2] = 1;
-						//model0->devParts[3] = 1;
+                        //for(int k = 0; k < model0->lattice_Nparts; k++)
+                          model0->devParts[k] = 1;
+                        //model0->devParts[0] = 1;
+                        //model0->devParts[1] = 1;
+                        //model0->devParts[2] = 1;
+                        //model0->devParts[3] = 1;
 
                         for(int k = 0; k < model0->lattice_Nparts; k++)
                         {
@@ -168,15 +168,15 @@ model0->GPU0->GPU_limit_max_workgroup_size = 64; // please, remark it for Intel 
 
                             model0->SubLat[k].PRNG0 = new(PRNG_CL::PRNG);
                             model0->SubLat[k].PRNG0->PRNG_generator   = PRNG_CL::PRNG::PRNG_generator_RANLUX3;
-	                        model0->SubLat[k].PRNG0->PRNG_randseries  = model0->PRNG0->PRNG_randseries;
+                            model0->SubLat[k].PRNG0->PRNG_randseries  = model0->PRNG0->PRNG_randseries;
                             model0->SubLat[k].PRNG0->PRNG_precision   = PRNG_CL::PRNG::PRNG_precision_single;
                         }
-						//model0->SubLat[2].GPU0->GPU_limit_max_workgroup_size = 64;
-						//model0->SubLat[3].GPU0->GPU_limit_max_workgroup_size = 64;
+                        //model0->SubLat[2].GPU0->GPU_limit_max_workgroup_size = 64;
+                        //model0->SubLat[3].GPU0->GPU_limit_max_workgroup_size = 64;
 #endif
 
         //model0->precision     = model::model_precision_single;
-						model0->precision = model::model_precision_double;
+                        model0->precision = model::model_precision_double;
         model0->INIT          = 1;                  // start simulations (0 - continue, 1 - start)
         model0->NAV           = 0;                  // number of thermalization cycles
         model0->ITER          = 2;                // number of working iterations (note: first measurement is performing on the initial configuration!!!)
@@ -226,10 +226,10 @@ model0->check_prngs         = true;   // check PRNG production
         strcpy_s(model0->path,(strlen(path) + 1),path);
 
         model0->fprefix = (char*) calloc((strlen(fprefix) + 1),sizeof(char));  // setup prefix for output files
-		if(model0->lattice_group == 3)
+        if(model0->lattice_group == 3)
                         strcpy_s(model0->fprefix,(strlen(fprefix) + 1),fprefix);
-		if(model0->lattice_group == 2)
-			strcpy_s(model0->fprefix,(strlen(fprefix) + 1),"su2-");
+        if(model0->lattice_group == 2)
+            strcpy_s(model0->fprefix,(strlen(fprefix) + 1),"su2-");
 
         model0->fstate = (char*) calloc((strlen(fload) + 1),sizeof(char));  // setup filename for state file
         strcpy_s(model0->fstate,(strlen(fload) + 1),fload);
@@ -239,8 +239,8 @@ model0->check_prngs         = true;   // check PRNG production
            model0->lattice_get_init_file(argv[1]);
         }
 
-	time_t timer1, timer2;
-	time(&timer1);
+    time_t timer1, timer2;
+    time(&timer1);
         
 #ifdef CPU_RUN
         if(model0->lattice_group == 2)
@@ -258,8 +258,8 @@ model0->check_prngs         = true;   // check PRNG production
     model0->lattice_write_results();
     model0->lattice_print_measurements();
 
-	time(&timer2);
-	printf("\nEXECUTION TIME: %f sec\n", difftime(timer2, timer1));
+    time(&timer2);
+    printf("\nEXECUTION TIME: %f sec\n", difftime(timer2, timer1));
 
     delete model0;
 

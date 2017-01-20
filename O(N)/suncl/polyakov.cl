@@ -198,7 +198,7 @@ reduce_polyakov_double2(__global hgpu_double2 * lattice_measurement,
     out = lattice_lds[TID];
 
 #if (PL == 2)
-	uint offset  = param.y;
+    uint offset  = param.y;
     uint offset2 = param.z;
     reduce_final_step_double2_offset(lattice_lds,lattice_measurement,size,offset);
     out2 = lattice_lds[TID];

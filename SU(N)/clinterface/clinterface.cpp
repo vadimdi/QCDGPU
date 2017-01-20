@@ -396,12 +396,12 @@ int             GPU::device_initialize(void)
     GPU_info.memory_align_factor = clGetDeviceInfoUint(GPU_device,CL_DEVICE_MAX_WORK_GROUP_SIZE);
 
 #ifdef BIGLAT
-	if (GPU_limit_max_workgroup_size){
-		GPU_info.max_workgroup_size = GPU_limit_max_workgroup_size;
-		GPU_info.memory_align_factor = GPU_limit_max_workgroup_size;
-	}
+    if (GPU_limit_max_workgroup_size){
+        GPU_info.max_workgroup_size = GPU_limit_max_workgroup_size;
+        GPU_info.memory_align_factor = GPU_limit_max_workgroup_size;
+    }
 #endif
-	printf("GPU_info.max_workgroup_size = %i\n", GPU_info.max_workgroup_size);
+    printf("GPU_info.max_workgroup_size = %u\n", (unsigned int)(GPU_info.max_workgroup_size));
 
     // create context
     GPU_context = clCreateContext(NULL,1,&GPU_device,NULL, NULL, &GPU_error);
@@ -416,7 +416,7 @@ int             GPU::device_initialize(void)
     GPU_info.local_memory_size  =          clGetDeviceInfoUlong(GPU_device,CL_DEVICE_LOCAL_MEM_SIZE);
     GPU_info.max_constant_size  =          clGetDeviceInfoUlong(GPU_device,CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE);
     GPU_info.max_memory_size    =          clGetDeviceInfoUlong(GPU_device,CL_DEVICE_MAX_MEM_ALLOC_SIZE);
-	GPU_info.max_memory_width = (size_t) clGetDeviceInfoUlong(GPU_device,CL_DEVICE_IMAGE3D_MAX_WIDTH);
+    GPU_info.max_memory_width = (size_t) clGetDeviceInfoUlong(GPU_device,CL_DEVICE_IMAGE3D_MAX_WIDTH);
 
     if (!GPU_info.max_memory_width)  GPU_info.max_memory_width  = 32;
 
@@ -446,11 +446,14 @@ int             GPU::device_initialize(void)
 #endif
 
 #ifndef IGNORE_INTEL
-	if (GPU_info.device_vendor == GPU_vendor_Intel) GPU_info.max_workgroup_size = 64;
+    if (GPU_info.device_vendor == GPU_vendor_Intel) {
+        GPU_info.max_workgroup_size = 64;
+        GPU_limit_max_workgroup_size = 64;
+    }
 #endif
     if ((GPU_limit_max_workgroup_size) && (GPU_limit_max_workgroup_size<GPU_info.max_workgroup_size)) GPU_info.max_workgroup_size = GPU_limit_max_workgroup_size;
 
-    if(!GPU_limit_max_workgroup_size) GPU_limit_max_workgroup_size = GPU_info.max_workgroup_size;//Nat
+    if(!GPU_limit_max_workgroup_size) GPU_limit_max_workgroup_size = (unsigned int)(GPU_info.max_workgroup_size);//Nat
 
     return GPU_devices_number;
 }
@@ -741,7 +744,7 @@ int             GPU::program_create_ndev(const char* source,const char* options,
     } else {
        GPU_programs[GPU_active_program].options        = NULL;
     }
-	
+    
     GPU_programs[GPU_active_program].md5      = MD5(source);
     GPU_programs[GPU_active_program].device   = device_get_name(GPU_device);
     GPU_programs[GPU_active_program].platform = platform_get_name(GPU_platform);
@@ -1431,24 +1434,24 @@ unsigned int*   GPU::buffer_map(int buffer_id)
 #ifdef BIGLAT
 unsigned int*   GPU::buffer_map(int buffer_id, size_t offset, size_t size)
 {
-	cl_uint *ptr;
-	cl_event buffer_event;
-	cl_ulong buffer_read_start, buffer_read_finish;
+    cl_uint *ptr;
+    cl_event buffer_event;
+    cl_ulong buffer_read_start, buffer_read_finish;
 
-	ptr = (cl_uint *)clEnqueueMapBuffer(GPU_queue, GPU_buffers[buffer_id].buffer, CL_TRUE, CL_MAP_WRITE, offset, size, 0, NULL, &buffer_event, &GPU_error);
+    ptr = (cl_uint *)clEnqueueMapBuffer(GPU_queue, GPU_buffers[buffer_id].buffer, CL_TRUE, CL_MAP_WRITE, offset, size, 0, NULL, &buffer_event, &GPU_error);
 
-	OpenCL_Check_Error(GPU_error, "clEnqueueMapBuffer failed");
-	if (GPU_debug.profiling){
-		OpenCL_Check_Error(clWaitForEvents(1, &buffer_event), "clWaitForEvents failed");
-		OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &buffer_read_finish, 0), "clGetEventProfilingInfo failed");
-		OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &buffer_read_start, 0), "clGetEventProfilingInfo failed");
-		GPU_buffers[buffer_id].buffer_read_elapsed_time += (double)(buffer_read_finish - buffer_read_start);
-		GPU_buffers[buffer_id].buffer_read_start = buffer_read_start;
-		GPU_buffers[buffer_id].buffer_read_finish = buffer_read_finish;
-		GPU_buffers[buffer_id].buffer_read_number_of++;
-	}
-	GPU_buffers[buffer_id].mapped_ptr = ptr;
-	return ptr;
+    OpenCL_Check_Error(GPU_error, "clEnqueueMapBuffer failed");
+    if (GPU_debug.profiling){
+        OpenCL_Check_Error(clWaitForEvents(1, &buffer_event), "clWaitForEvents failed");
+        OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &buffer_read_finish, 0), "clGetEventProfilingInfo failed");
+        OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &buffer_read_start, 0), "clGetEventProfilingInfo failed");
+        GPU_buffers[buffer_id].buffer_read_elapsed_time += (double)(buffer_read_finish - buffer_read_start);
+        GPU_buffers[buffer_id].buffer_read_start = buffer_read_start;
+        GPU_buffers[buffer_id].buffer_read_finish = buffer_read_finish;
+        GPU_buffers[buffer_id].buffer_read_number_of++;
+    }
+    GPU_buffers[buffer_id].mapped_ptr = ptr;
+    return ptr;
 }
 
 void*   GPU::buffer_map_void(int buffer_id)

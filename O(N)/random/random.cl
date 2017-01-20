@@ -141,10 +141,10 @@ xor128_step(uint4 seed)
     uint4 result;
     uint t = (seed.x^(seed.x<<11));
 
-	result.x = seed.y;
-	result.y = seed.z;
-	result.z = seed.w;
-	result.w = (seed.w^(seed.w>>19))^(t^(t>>8));
+    result.x = seed.y;
+    result.y = seed.z;
+    result.z = seed.w;
+    result.w = (seed.w^(seed.w>>19))^(t^(t>>8));
 
     return result;
 }
@@ -177,26 +177,26 @@ xor128(__global uint4* seed_table,
 __attribute__((always_inline)) int4
 rlseedint(int RL_jseed)
 {
-	int4 RL_output_int;
-		int RL_k = RL_jseed / 53668;
-		RL_jseed = 40014 * (RL_jseed - RL_k * 53668) - RL_k * 12211;
-		if (RL_jseed < 0) {RL_jseed = RL_jseed + RL_icons;}
-		RL_output_int.x = RL_jseed;
+    int4 RL_output_int;
+        int RL_k = RL_jseed / 53668;
+        RL_jseed = 40014 * (RL_jseed - RL_k * 53668) - RL_k * 12211;
+        if (RL_jseed < 0) {RL_jseed = RL_jseed + RL_icons;}
+        RL_output_int.x = RL_jseed;
 
-		RL_k = RL_jseed / 53668;
-		RL_jseed = 40014 * (RL_jseed - RL_k * 53668) - RL_k * 12211;
-		if (RL_jseed < 0) {RL_jseed = RL_jseed + RL_icons;}
-		RL_output_int.y = RL_jseed;
+        RL_k = RL_jseed / 53668;
+        RL_jseed = 40014 * (RL_jseed - RL_k * 53668) - RL_k * 12211;
+        if (RL_jseed < 0) {RL_jseed = RL_jseed + RL_icons;}
+        RL_output_int.y = RL_jseed;
 
-		RL_k = RL_jseed / 53668;
-		RL_jseed = 40014 * (RL_jseed - RL_k * 53668) - RL_k * 12211;
-		if (RL_jseed < 0) {RL_jseed = RL_jseed + RL_icons;}
-		RL_output_int.z = RL_jseed;
+        RL_k = RL_jseed / 53668;
+        RL_jseed = 40014 * (RL_jseed - RL_k * 53668) - RL_k * 12211;
+        if (RL_jseed < 0) {RL_jseed = RL_jseed + RL_icons;}
+        RL_output_int.z = RL_jseed;
 
-		RL_k = RL_jseed / 53668;
-		RL_jseed = 40014 * (RL_jseed - RL_k * 53668) - RL_k * 12211;
-		if (RL_jseed < 0) {RL_jseed = RL_jseed + RL_icons;}
-		RL_output_int.w = RL_jseed;
+        RL_k = RL_jseed / 53668;
+        RL_jseed = 40014 * (RL_jseed - RL_k * 53668) - RL_k * 12211;
+        if (RL_jseed < 0) {RL_jseed = RL_jseed + RL_icons;}
+        RL_output_int.w = RL_jseed;
 
     return RL_output_int;
 }
@@ -204,13 +204,13 @@ rlseedint(int RL_jseed)
 __attribute__((always_inline)) float4
 rlseedint2(int4 RL_temp)
 {
-	float4 RL_output_int;
-	float4 RL_tmp = (float4) (RL_twom24,RL_twom24,RL_twom24,RL_twom24);
-		RL_output_int.x = ((float) (RL_temp.x % RL_itwo24));
-		RL_output_int.y = ((float) (RL_temp.y % RL_itwo24));
-		RL_output_int.z = ((float) (RL_temp.z % RL_itwo24));
-		RL_output_int.w = ((float) (RL_temp.w % RL_itwo24));
-	RL_output_int = RL_output_int * RL_tmp;
+    float4 RL_output_int;
+    float4 RL_tmp = (float4) (RL_twom24,RL_twom24,RL_twom24,RL_twom24);
+        RL_output_int.x = ((float) (RL_temp.x % RL_itwo24));
+        RL_output_int.y = ((float) (RL_temp.y % RL_itwo24));
+        RL_output_int.z = ((float) (RL_temp.z % RL_itwo24));
+        RL_output_int.w = ((float) (RL_temp.w % RL_itwo24));
+    RL_output_int = RL_output_int * RL_tmp;
     return RL_output_int;
 }
 
@@ -218,66 +218,66 @@ __kernel void
 rlseed(const __global uint * seeds, __global float4 * seedtable)
 {
     int RL_jseed = (int) seeds[GID];
-	int4		RL_temp1 = rlseedint(RL_jseed);
-	seedtable[GID + 0 * GID_SIZE] = rlseedint2(RL_temp1);
-				RL_temp1 = rlseedint(RL_temp1.w);
-	seedtable[GID + 1 * GID_SIZE] = rlseedint2(RL_temp1);
-				RL_temp1 = rlseedint(RL_temp1.w);
-	seedtable[GID + 2 * GID_SIZE] = rlseedint2(RL_temp1);
-				RL_temp1 = rlseedint(RL_temp1.w);
-	seedtable[GID + 3 * GID_SIZE] = rlseedint2(RL_temp1);
-				RL_temp1 = rlseedint(RL_temp1.w);
-	seedtable[GID + 4 * GID_SIZE] = rlseedint2(RL_temp1);
-				RL_temp1 = rlseedint(RL_temp1.w);
-	float4		RL_temp2 = rlseedint2(RL_temp1);
-	seedtable[GID + 5 * GID_SIZE] = RL_temp2;
-	float4		RL_carin = (float4) (23.0f, 9.0f, 6.0f, 0.0f);
-	if (RL_temp2.w == 0) {RL_carin.w = RL_twom24;}
-	seedtable[GID + 6 * GID_SIZE] = RL_carin; // RL_i24, RL_j24, RL_in24, RL_carry
+    int4		RL_temp1 = rlseedint(RL_jseed);
+    seedtable[GID + 0 * GID_SIZE] = rlseedint2(RL_temp1);
+                RL_temp1 = rlseedint(RL_temp1.w);
+    seedtable[GID + 1 * GID_SIZE] = rlseedint2(RL_temp1);
+                RL_temp1 = rlseedint(RL_temp1.w);
+    seedtable[GID + 2 * GID_SIZE] = rlseedint2(RL_temp1);
+                RL_temp1 = rlseedint(RL_temp1.w);
+    seedtable[GID + 3 * GID_SIZE] = rlseedint2(RL_temp1);
+                RL_temp1 = rlseedint(RL_temp1.w);
+    seedtable[GID + 4 * GID_SIZE] = rlseedint2(RL_temp1);
+                RL_temp1 = rlseedint(RL_temp1.w);
+    float4		RL_temp2 = rlseedint2(RL_temp1);
+    seedtable[GID + 5 * GID_SIZE] = RL_temp2;
+    float4		RL_carin = (float4) (23.0f, 9.0f, 6.0f, 0.0f);
+    if (RL_temp2.w == 0) {RL_carin.w = RL_twom24;}
+    seedtable[GID + 6 * GID_SIZE] = RL_carin; // RL_i24, RL_j24, RL_in24, RL_carry
 }
 
 __attribute__((always_inline)) float4
 rlproducefloat4(float4 * RL_seeds_i24, const float4 RL_seeds_j24, const float RL_seeds_j24P, float * RL_carry)
 {
-	float RL_c = *RL_carry;
-	float4 RL_output_int = RL_seeds_j24 - (*RL_seeds_i24).wzyx;
-	RL_output_int.x = RL_output_int.x - RL_c;
-		if (RL_output_int.x < 0.0f) { RL_output_int.x = RL_output_int.x + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
-	RL_output_int.y = RL_output_int.y - RL_c;
-		if (RL_output_int.y < 0.0f) { RL_output_int.y = RL_output_int.y + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
-	RL_output_int.z = RL_output_int.z - RL_c;
-		if (RL_output_int.z < 0.0f) { RL_output_int.z = RL_output_int.z + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
-	RL_output_int.w = RL_output_int.w - RL_c;
-		if (RL_output_int.w < 0.0f) { RL_output_int.w = RL_output_int.w + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
+    float RL_c = *RL_carry;
+    float4 RL_output_int = RL_seeds_j24 - (*RL_seeds_i24).wzyx;
+    RL_output_int.x = RL_output_int.x - RL_c;
+        if (RL_output_int.x < 0.0f) { RL_output_int.x = RL_output_int.x + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
+    RL_output_int.y = RL_output_int.y - RL_c;
+        if (RL_output_int.y < 0.0f) { RL_output_int.y = RL_output_int.y + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
+    RL_output_int.z = RL_output_int.z - RL_c;
+        if (RL_output_int.z < 0.0f) { RL_output_int.z = RL_output_int.z + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
+    RL_output_int.w = RL_output_int.w - RL_c;
+        if (RL_output_int.w < 0.0f) { RL_output_int.w = RL_output_int.w + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
 
-	*RL_seeds_i24 = RL_output_int.wzyx;
+    *RL_seeds_i24 = RL_output_int.wzyx;
 
     float4 RL_temporary = RL_seeds_j24.yzwx;
     RL_temporary.w = RL_seeds_j24P;
 
-	float4 RL_output_int2 = select(RL_output_int, (RL_output_int + RL_twom24 * RL_temporary), RL_output_int < (float4) RL_twom12);
-			RL_output_int = select(RL_output_int2, RL_twom24sq, RL_output_int2 == (float4) 0.0f);
+    float4 RL_output_int2 = select(RL_output_int, (RL_output_int + RL_twom24 * RL_temporary), RL_output_int < (float4) RL_twom12);
+            RL_output_int = select(RL_output_int2, RL_twom24sq, RL_output_int2 == (float4) 0.0f);
 
-	*RL_carry = RL_c;
-	return RL_output_int;
+    *RL_carry = RL_c;
+    return RL_output_int;
 }
 
 __attribute__((always_inline)) void
 rlproduceupd4(float4 * RL_seeds_i24, const float4 RL_seeds_j24, float * RL_carry)
 {
-	float RL_c = *RL_carry;
-	float4 RL_output_int = RL_seeds_j24 - (*RL_seeds_i24).wzyx;
-	RL_output_int.x = RL_output_int.x - RL_c;
-		if (RL_output_int.x < 0.0f) { RL_output_int.x = RL_output_int.x + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
-	RL_output_int.y = RL_output_int.y - RL_c;
-		if (RL_output_int.y < 0.0f) { RL_output_int.y = RL_output_int.y + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
-	RL_output_int.z = RL_output_int.z - RL_c;
-		if (RL_output_int.z < 0.0f) { RL_output_int.z = RL_output_int.z + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
-	RL_output_int.w = RL_output_int.w - RL_c;
-		if (RL_output_int.w < 0.0f) { RL_output_int.w = RL_output_int.w + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
+    float RL_c = *RL_carry;
+    float4 RL_output_int = RL_seeds_j24 - (*RL_seeds_i24).wzyx;
+    RL_output_int.x = RL_output_int.x - RL_c;
+        if (RL_output_int.x < 0.0f) { RL_output_int.x = RL_output_int.x + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
+    RL_output_int.y = RL_output_int.y - RL_c;
+        if (RL_output_int.y < 0.0f) { RL_output_int.y = RL_output_int.y + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
+    RL_output_int.z = RL_output_int.z - RL_c;
+        if (RL_output_int.z < 0.0f) { RL_output_int.z = RL_output_int.z + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
+    RL_output_int.w = RL_output_int.w - RL_c;
+        if (RL_output_int.w < 0.0f) { RL_output_int.w = RL_output_int.w + 1.0f; RL_c = RL_twom24; } else { RL_c = 0.0f; }
 
-	*RL_seeds_i24 = RL_output_int.wzyx;
-	*RL_carry = RL_c;
+    *RL_seeds_i24 = RL_output_int.wzyx;
+    *RL_carry = RL_c;
 }
 
 __kernel void
@@ -285,42 +285,42 @@ rlproduce(__global float4 * seedtable,__global float4 * prns, const uint samples
 {
     uint giddst = GID;
 
-	float4 RL_seeds_j24, uni, RL_seed_temp, RL_seed_temp2;
-		float4 RL_seed0 = seedtable[GID + 0 * GID_SIZE];
-		float4 RL_seed1 = seedtable[GID + 1 * GID_SIZE];
-		float4 RL_seed2 = seedtable[GID + 2 * GID_SIZE];
-		float4 RL_seed3 = seedtable[GID + 3 * GID_SIZE];
-		float4 RL_seed4 = seedtable[GID + 4 * GID_SIZE];
-		float4 RL_seed5 = seedtable[GID + 5 * GID_SIZE];
-		float4 RL_carin = seedtable[GID + 6 * GID_SIZE];    // RL_i24, RL_j24, RL_in24, RL_carry
-	float RL_carry = RL_carin.w;
+    float4 RL_seeds_j24, uni, RL_seed_temp, RL_seed_temp2;
+        float4 RL_seed0 = seedtable[GID + 0 * GID_SIZE];
+        float4 RL_seed1 = seedtable[GID + 1 * GID_SIZE];
+        float4 RL_seed2 = seedtable[GID + 2 * GID_SIZE];
+        float4 RL_seed3 = seedtable[GID + 3 * GID_SIZE];
+        float4 RL_seed4 = seedtable[GID + 4 * GID_SIZE];
+        float4 RL_seed5 = seedtable[GID + 5 * GID_SIZE];
+        float4 RL_carin = seedtable[GID + 6 * GID_SIZE];    // RL_i24, RL_j24, RL_in24, RL_carry
+    float RL_carry = RL_carin.w;
 
-	for (int i=0; i<samples; i++) {
-		if (RL_carin.z >= 6.0f) {
-			for (int t=0; t<RL_skip_24; t++) {
-				RL_seeds_j24.xy = RL_seed2.yx;
-				RL_seeds_j24.zw = RL_seed1.wz;
-					rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed1.yx;
-				RL_seeds_j24.zw = RL_seed0.wz;
-					rlproduceupd4(&RL_seed4,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed0.yx;
-				RL_seeds_j24.zw = RL_seed5.wz;
-					rlproduceupd4(&RL_seed3,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed5.yx;
-				RL_seeds_j24.zw = RL_seed4.wz;
-					rlproduceupd4(&RL_seed2,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed4.yx;
-				RL_seeds_j24.zw = RL_seed3.wz;
-					rlproduceupd4(&RL_seed1,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed3.yx;
-				RL_seeds_j24.zw = RL_seed2.wz;
-					rlproduceupd4(&RL_seed0,RL_seeds_j24,&RL_carry);
-			}
+    for (int i=0; i<samples; i++) {
+        if (RL_carin.z >= 6.0f) {
+            for (int t=0; t<RL_skip_24; t++) {
+                RL_seeds_j24.xy = RL_seed2.yx;
+                RL_seeds_j24.zw = RL_seed1.wz;
+                    rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed1.yx;
+                RL_seeds_j24.zw = RL_seed0.wz;
+                    rlproduceupd4(&RL_seed4,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed0.yx;
+                RL_seeds_j24.zw = RL_seed5.wz;
+                    rlproduceupd4(&RL_seed3,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed5.yx;
+                RL_seeds_j24.zw = RL_seed4.wz;
+                    rlproduceupd4(&RL_seed2,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed4.yx;
+                RL_seeds_j24.zw = RL_seed3.wz;
+                    rlproduceupd4(&RL_seed1,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed3.yx;
+                RL_seeds_j24.zw = RL_seed2.wz;
+                    rlproduceupd4(&RL_seed0,RL_seeds_j24,&RL_carry);
+            }
 #if RL_skip_4 == 1
-				RL_seeds_j24.xy = RL_seed2.yx;
-				RL_seeds_j24.zw = RL_seed1.wz;
-					rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed2.yx;
+                RL_seeds_j24.zw = RL_seed1.wz;
+                    rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
                 RL_seed_temp = RL_seed5;    // 5->4, 4->3, 3->2, 2->1, 1->0, 0->5
                 RL_seed5 = RL_seed4;
                 RL_seed4 = RL_seed3;
@@ -329,12 +329,12 @@ rlproduce(__global float4 * seedtable,__global float4 * prns, const uint samples
                 RL_seed1 = RL_seed0;
                 RL_seed0 = RL_seed_temp;
 #elif RL_skip_4 == 2
-				RL_seeds_j24.xy = RL_seed2.yx;
-				RL_seeds_j24.zw = RL_seed1.wz;
-					rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed1.yx;
-				RL_seeds_j24.zw = RL_seed0.wz;
-					rlproduceupd4(&RL_seed4,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed2.yx;
+                RL_seeds_j24.zw = RL_seed1.wz;
+                    rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed1.yx;
+                RL_seeds_j24.zw = RL_seed0.wz;
+                    rlproduceupd4(&RL_seed4,RL_seeds_j24,&RL_carry);
                 RL_seed_temp = RL_seed5;    // 5->3, 4->2, 3->1, 2->0, 1->5, 0->4
                 RL_seed5 = RL_seed3;
                 RL_seed3 = RL_seed1;
@@ -344,15 +344,15 @@ rlproduce(__global float4 * seedtable,__global float4 * prns, const uint samples
                 RL_seed0 = RL_seed4;
                 RL_seed4 = RL_seed_temp;
 #elif RL_skip_4 == 3
-				RL_seeds_j24.xy = RL_seed2.yx;
-				RL_seeds_j24.zw = RL_seed1.wz;
-					rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed1.yx;
-				RL_seeds_j24.zw = RL_seed0.wz;
-					rlproduceupd4(&RL_seed4,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed0.yx;
-				RL_seeds_j24.zw = RL_seed5.wz;
-					rlproduceupd4(&RL_seed3,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed2.yx;
+                RL_seeds_j24.zw = RL_seed1.wz;
+                    rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed1.yx;
+                RL_seeds_j24.zw = RL_seed0.wz;
+                    rlproduceupd4(&RL_seed4,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed0.yx;
+                RL_seeds_j24.zw = RL_seed5.wz;
+                    rlproduceupd4(&RL_seed3,RL_seeds_j24,&RL_carry);
                 RL_seed_temp = RL_seed5;    // 5->2, 4->1, 3->0, 2->5, 1->4, 0->3
                 RL_seed5 = RL_seed2;
                 RL_seed2 = RL_seed_temp;
@@ -363,18 +363,18 @@ rlproduce(__global float4 * seedtable,__global float4 * prns, const uint samples
                 RL_seed3 = RL_seed0;
                 RL_seed0 = RL_seed_temp;
 #elif RL_skip_4 == 4
-				RL_seeds_j24.xy = RL_seed2.yx;
-				RL_seeds_j24.zw = RL_seed1.wz;
-					rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed1.yx;
-				RL_seeds_j24.zw = RL_seed0.wz;
-					rlproduceupd4(&RL_seed4,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed0.yx;
-				RL_seeds_j24.zw = RL_seed5.wz;
-					rlproduceupd4(&RL_seed3,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed5.yx;
-				RL_seeds_j24.zw = RL_seed4.wz;
-					rlproduceupd4(&RL_seed2,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed2.yx;
+                RL_seeds_j24.zw = RL_seed1.wz;
+                    rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed1.yx;
+                RL_seeds_j24.zw = RL_seed0.wz;
+                    rlproduceupd4(&RL_seed4,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed0.yx;
+                RL_seeds_j24.zw = RL_seed5.wz;
+                    rlproduceupd4(&RL_seed3,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed5.yx;
+                RL_seeds_j24.zw = RL_seed4.wz;
+                    rlproduceupd4(&RL_seed2,RL_seeds_j24,&RL_carry);
                 RL_seed_temp = RL_seed5;    // 5->1, 4->0, 3->5, 2->4, 1->3, 0->2
                 RL_seed5 = RL_seed1;
                 RL_seed1 = RL_seed3;
@@ -384,21 +384,21 @@ rlproduce(__global float4 * seedtable,__global float4 * prns, const uint samples
                 RL_seed0 = RL_seed2;
                 RL_seed2 = RL_seed_temp;
 #elif RL_skip_4 == 5
-				RL_seeds_j24.xy = RL_seed2.yx;
-				RL_seeds_j24.zw = RL_seed1.wz;
-					rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed1.yx;
-				RL_seeds_j24.zw = RL_seed0.wz;
-					rlproduceupd4(&RL_seed4,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed0.yx;
-				RL_seeds_j24.zw = RL_seed5.wz;
-					rlproduceupd4(&RL_seed3,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed5.yx;
-				RL_seeds_j24.zw = RL_seed4.wz;
-					rlproduceupd4(&RL_seed2,RL_seeds_j24,&RL_carry);
-				RL_seeds_j24.xy = RL_seed4.yx;
-				RL_seeds_j24.zw = RL_seed3.wz;
-					rlproduceupd4(&RL_seed1,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed2.yx;
+                RL_seeds_j24.zw = RL_seed1.wz;
+                    rlproduceupd4(&RL_seed5,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed1.yx;
+                RL_seeds_j24.zw = RL_seed0.wz;
+                    rlproduceupd4(&RL_seed4,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed0.yx;
+                RL_seeds_j24.zw = RL_seed5.wz;
+                    rlproduceupd4(&RL_seed3,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed5.yx;
+                RL_seeds_j24.zw = RL_seed4.wz;
+                    rlproduceupd4(&RL_seed2,RL_seeds_j24,&RL_carry);
+                RL_seeds_j24.xy = RL_seed4.yx;
+                RL_seeds_j24.zw = RL_seed3.wz;
+                    rlproduceupd4(&RL_seed1,RL_seeds_j24,&RL_carry);
                 RL_seed_temp = RL_seed5;    // 5->0, 4->5, 3->4, 2->3, 1->2, 0->1
                 RL_seed5 = RL_seed0;
                 RL_seed0 = RL_seed1;
@@ -551,51 +551,51 @@ rlproduce(__global float4 * seedtable,__global float4 * prns, const uint samples
                 RL_seed0.x   = RL_seed_temp2.x;
 #endif
             RL_carin.z = 0.0f;
-		}
+        }
         if (RL_carin.z < 1.0f) {
-			RL_seeds_j24.xy = RL_seed2.yx;
-			RL_seeds_j24.zw = RL_seed1.wz;
-				uni = rlproducefloat4(&RL_seed5,RL_seeds_j24,RL_seed1.y,&RL_carry);
-			RL_carin.z = 1.0f;
-		} else if (RL_carin.z == 1.0f) {
-			RL_seeds_j24.xy = RL_seed1.yx;
-			RL_seeds_j24.zw = RL_seed0.wz;
-				uni = rlproducefloat4(&RL_seed4,RL_seeds_j24,RL_seed0.y,&RL_carry);
-			RL_carin.z = 2.0f;
-		} else if (RL_carin.z == 2.0f) {
-			RL_seeds_j24.xy = RL_seed0.yx;
-			RL_seeds_j24.zw = RL_seed5.wz;
-				uni = rlproducefloat4(&RL_seed3,RL_seeds_j24,RL_seed5.y,&RL_carry);
-			RL_carin.z = 3.0f;
-		} else if (RL_carin.z == 3.0f) {
-			RL_seeds_j24.xy = RL_seed5.yx;
-			RL_seeds_j24.zw = RL_seed4.wz;
-				uni = rlproducefloat4(&RL_seed2,RL_seeds_j24,RL_seed4.y,&RL_carry);
-			RL_carin.z = 4.0f;
-		} else if (RL_carin.z == 4.0f) {
-			RL_seeds_j24.xy = RL_seed4.yx;
-			RL_seeds_j24.zw = RL_seed3.wz;
-				uni = rlproducefloat4(&RL_seed1,RL_seeds_j24,RL_seed3.y,&RL_carry);
-			RL_carin.z = 5.0f;
-		} else if (RL_carin.z == 5.0f) {
-			RL_seeds_j24.xy = RL_seed3.yx;
-			RL_seeds_j24.zw = RL_seed2.wz;
-				uni = rlproducefloat4(&RL_seed0,RL_seeds_j24,RL_seed2.y,&RL_carry);
-			RL_carin.z = 6.0f;
-		}
-		prns[giddst] = uni;
-		giddst += GID_SIZE;
-	}
+            RL_seeds_j24.xy = RL_seed2.yx;
+            RL_seeds_j24.zw = RL_seed1.wz;
+                uni = rlproducefloat4(&RL_seed5,RL_seeds_j24,RL_seed1.y,&RL_carry);
+            RL_carin.z = 1.0f;
+        } else if (RL_carin.z == 1.0f) {
+            RL_seeds_j24.xy = RL_seed1.yx;
+            RL_seeds_j24.zw = RL_seed0.wz;
+                uni = rlproducefloat4(&RL_seed4,RL_seeds_j24,RL_seed0.y,&RL_carry);
+            RL_carin.z = 2.0f;
+        } else if (RL_carin.z == 2.0f) {
+            RL_seeds_j24.xy = RL_seed0.yx;
+            RL_seeds_j24.zw = RL_seed5.wz;
+                uni = rlproducefloat4(&RL_seed3,RL_seeds_j24,RL_seed5.y,&RL_carry);
+            RL_carin.z = 3.0f;
+        } else if (RL_carin.z == 3.0f) {
+            RL_seeds_j24.xy = RL_seed5.yx;
+            RL_seeds_j24.zw = RL_seed4.wz;
+                uni = rlproducefloat4(&RL_seed2,RL_seeds_j24,RL_seed4.y,&RL_carry);
+            RL_carin.z = 4.0f;
+        } else if (RL_carin.z == 4.0f) {
+            RL_seeds_j24.xy = RL_seed4.yx;
+            RL_seeds_j24.zw = RL_seed3.wz;
+                uni = rlproducefloat4(&RL_seed1,RL_seeds_j24,RL_seed3.y,&RL_carry);
+            RL_carin.z = 5.0f;
+        } else if (RL_carin.z == 5.0f) {
+            RL_seeds_j24.xy = RL_seed3.yx;
+            RL_seeds_j24.zw = RL_seed2.wz;
+                uni = rlproducefloat4(&RL_seed0,RL_seeds_j24,RL_seed2.y,&RL_carry);
+            RL_carin.z = 6.0f;
+        }
+        prns[giddst] = uni;
+        giddst += GID_SIZE;
+    }
 
-	seedtable[GID + 0 * GID_SIZE] = RL_seed0;
-	seedtable[GID + 1 * GID_SIZE] = RL_seed1;
-	seedtable[GID + 2 * GID_SIZE] = RL_seed2;
-	seedtable[GID + 3 * GID_SIZE] = RL_seed3;
-	seedtable[GID + 4 * GID_SIZE] = RL_seed4;
-	seedtable[GID + 5 * GID_SIZE] = RL_seed5;
+    seedtable[GID + 0 * GID_SIZE] = RL_seed0;
+    seedtable[GID + 1 * GID_SIZE] = RL_seed1;
+    seedtable[GID + 2 * GID_SIZE] = RL_seed2;
+    seedtable[GID + 3 * GID_SIZE] = RL_seed3;
+    seedtable[GID + 4 * GID_SIZE] = RL_seed4;
+    seedtable[GID + 5 * GID_SIZE] = RL_seed5;
 
-	RL_carin.w = RL_carry;
-	seedtable[GID + 6 * GID_SIZE] = RL_carin;
+    RL_carin.w = RL_carry;
+    seedtable[GID + 6 * GID_SIZE] = RL_carin;
 }
 
 //________________________________________________________________________________________________________ RANMAR PRNG
@@ -636,7 +636,7 @@ rmseed(const __global uint4 * seeds, __global float4 * seedtable)
         seed.z = ((float) s.z);
         seed.w = ((float) s.w);
         seedtable[GID + GID_SIZE * n] = seed / ((float4) 16777216.0f);
-	}
+    }
     Uint_and_Float indx_I97, indx_J97;
     indx_I97.uint_value = 96;
     indx_J97.uint_value = 32;
@@ -664,21 +664,21 @@ rmproduce(__global float4 * seedtable,__global float4 * prns, const uint samples
 
     for (uint i=0; i<samples; i++) {
         uni = seedtable[GID + GID_SIZE * RM_I97] - seedtable[GID + GID_SIZE * RM_J97];
-	    uni = select(uni, (uni + 1.0f), uni < (float4) 0.0f);
+        uni = select(uni, (uni + 1.0f), uni < (float4) 0.0f);
         seedtable[GID + GID_SIZE * RM_I97] = uni;
 
-	    if (RM_I97 == 0) RM_I97 = 97;
-	    if (RM_J97 == 0) RM_J97 = 97;
-	    RM_I97--;
-	    RM_J97--;
+        if (RM_I97 == 0) RM_I97 = 97;
+        if (RM_J97 == 0) RM_J97 = 97;
+        RM_I97--;
+        RM_J97--;
 
         indx.z -= RM_CD;
-	    if (indx.z < 0.0f) {indx.z += RM_CM;}
-	    uni.x -= indx.z;
-	    uni.y -= indx.z;
-	    uni.z -= indx.z;
-	    uni.w -= indx.z;
-	    uni = select(uni, (uni + 1.0f), uni < (float4) 0.0f);
+        if (indx.z < 0.0f) {indx.z += RM_CM;}
+        uni.x -= indx.z;
+        uni.y -= indx.z;
+        uni.z -= indx.z;
+        uni.w -= indx.z;
+        uni = select(uni, (uni + 1.0f), uni < (float4) 0.0f);
 
         prns[giddst] = uni;
         giddst += GID_SIZE;
@@ -775,7 +775,7 @@ ranecu(__global uint4* seed_table,
     uint4 z;
     for (uint i = 0; i < N; i++) {
 
-	    uint4 RANECU_k = seed1 / ((uint4) RANECU_seedP11);
+        uint4 RANECU_k = seed1 / ((uint4) RANECU_seedP11);
 
         uint4 RANECU_test_1 = ((uint4) RANECU_seedP13) * (seed1 - RANECU_k * ((uint4) RANECU_seedP11));
         uint4 RANECU_test_2 = RANECU_k * ((uint4) RANECU_seedP12);
@@ -785,7 +785,7 @@ ranecu(__global uint4* seed_table,
         if (RANECU_test_1.z > RANECU_test_2.z) seed1.z = RANECU_test_1.z - RANECU_test_2.z; else seed1.z = RANECU_test_1.z - RANECU_test_2.z + RANECU_icons1;
         if (RANECU_test_1.w > RANECU_test_2.w) seed1.w = RANECU_test_1.w - RANECU_test_2.w; else seed1.w = RANECU_test_1.w - RANECU_test_2.w + RANECU_icons1;
 
-	    RANECU_k = seed2 / ((uint4) RANECU_seedP21);
+        RANECU_k = seed2 / ((uint4) RANECU_seedP21);
 
         RANECU_test_1 = ((uint4) RANECU_seedP23) * (seed2 - RANECU_k * ((uint4) RANECU_seedP21));
         RANECU_test_2 = RANECU_k * ((uint4) RANECU_seedP22);

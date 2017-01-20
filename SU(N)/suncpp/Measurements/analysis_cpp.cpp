@@ -84,9 +84,9 @@ void lattice_estimates (data_analysis_cpp *Analysis){
     
     int length = Analysis->data_size - 1;
     
-    for (int i = 1; i < Analysis->data_size; i++)
+    for (unsigned int i = 1; i < Analysis->data_size; i++)
         mean += Analysis->data[i] / length;
-    for (int i = 1; i < Analysis->data_size; i++)
+    for (unsigned int i = 1; i < Analysis->data_size; i++)
         variance += pow((Analysis->data[i] - mean), 2) / length;
     Analysis->mean_value = mean;
     Analysis->variance = variance;
