@@ -90,7 +90,7 @@ class GPU {
             } GPU_time_deviation;
 
             typedef struct _GPU_init_parameters{
-                char   Variable[250];
+                char   Variable[HGPU_MAX_STRINGLEN];
                 int    iVarVal;
                 double fVarVal;
                 char   txtVarVal[8192];

@@ -908,7 +908,7 @@ void        model::lattice_analysis(void){
 }
 void        model::lattice_write_results(void) {
     FILE *stream;
-    char buffer[250];
+    char buffer[HGPU_MAX_STRINGLEN];
     int j;
 
     char* header2 = lattice_make_header2();
@@ -970,7 +970,7 @@ void        model::lattice_write_results(void) {
 }
 void        model::lattice_write_configuration(void) {
     FILE *stream;
-    char buffer[250];
+    char buffer[HGPU_MAX_STRINGLEN];
     int j;
 
     j  = sprintf_s(buffer  ,sizeof(buffer),  "%s",run->path);
@@ -1028,7 +1028,7 @@ void        model::lattice_save_state(void){
         lattice_polyakov_loop_save = GPU0->buffer_map(lattice_polyakov_loop);
 
     FILE *stream;
-    char buffer[250];
+    char buffer[HGPU_MAX_STRINGLEN];
     int j = 0;
 
     unsigned int* head = lattice_make_bin_header();
@@ -1202,7 +1202,7 @@ bool        model::lattice_load_bin_header(unsigned int* head){
 }
 void        model::lattice_load_state(void){
     FILE *stream;
-    char buffer[250];
+    char buffer[HGPU_MAX_STRINGLEN];
     int j = 0;
 
     unsigned int* head = (unsigned int*) calloc(BIN_HEADER_SIZE,sizeof(unsigned int));

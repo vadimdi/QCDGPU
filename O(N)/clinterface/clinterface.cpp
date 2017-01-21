@@ -272,69 +272,69 @@ const char*     GPU::HGPU_GPU_error_code_description(int error_code){
     return error_message;
 }
 void            GPU::OpenCL_Check_Error(const cl_int CL_Error_code, const char * CL_Error_description){
-    if (CL_Error_code != CL_SUCCESS){
-        printf("ERROR %i: (%s)\n", CL_Error_code, CL_Error_description);
-        if (GPU_current_kernel>0){
-            char* clBuildLog;
-            size_t clBuildLog_size, clBuildLog_actual_size;
-            FILE *stream;
-            char buffer[250];
-            int j;
+    if (CL_Error_code == CL_SUCCESS) return;
 
-                j = sprintf_s(buffer, sizeof(buffer), "%s", PRG_SOURCE_DEBUG);
-                fopen_s(&stream, buffer, "w+");
+    printf("ERROR %i: (%s)\n", CL_Error_code, CL_Error_description);
+    if (GPU_current_kernel > 0) {
+        char* clBuildLog;
+        size_t clBuildLog_size, clBuildLog_actual_size;
+        FILE *stream;
+        char buffer[HGPU_MAX_STRINGLEN];
+        int j;
 
-                clGetProgramInfo(GPU_programs[GPU_active_program].program,CL_PROGRAM_SOURCE,0,NULL,&clBuildLog_size);
-                clBuildLog = (char*) calloc(clBuildLog_size+1, sizeof(char));
-                if (clBuildLog) {
-                    clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_SOURCE, clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
-                    if (stream) {
-                        if (clBuildLog) fprintf(stream, clBuildLog);
-                        if (fclose(stream)) printf("The file was not closed!\n");
-                    }
-                    FREE(clBuildLog);
-                }
+        j = sprintf_s(buffer, sizeof(buffer), "%s", PRG_SOURCE_DEBUG);
+        fopen_s(&stream, buffer, "w+");
 
-                clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_STATUS, 
-                                        0, NULL, &clBuildLog_size );
-                clBuildLog = (char*) calloc(clBuildLog_size+1, sizeof(char));
-                if (clBuildLog) {
-                    clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_STATUS,
-                        clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
-                    printf("\nBuild status:\n%s\n", clBuildLog);
-                    FREE(clBuildLog);
-                }
-
-                clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_OPTIONS, 
-                                        0, NULL, &clBuildLog_size );
-                clBuildLog = (char*) calloc(clBuildLog_size+1, sizeof(char));
-                if (clBuildLog) {
-                    clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_OPTIONS,
-                        clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
-                    printf("\nBuild options:\n%s\n", clBuildLog);
-                    FREE(clBuildLog);
-                }
-
-                j = sprintf_s(buffer, sizeof(buffer), "%s", PRG_ERROR_DEBUG);
-                fopen_s(&stream, buffer, "w+");
-
-                clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG,
-                                    0, NULL, &clBuildLog_size );
-                clBuildLog = (char*) calloc(clBuildLog_size+1, sizeof(char));
-                if (clBuildLog) {
-                    clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG,
-                        clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
-                    printf("\nLog:\n%s\n", clBuildLog);
-
-                    if (stream) {
-                        fprintf(stream, clBuildLog);
-                        if (fclose(stream)) printf("The file was not closed!\n");
-                    }
-                    FREE(clBuildLog);
-                }
+        clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_SOURCE, 0, NULL, &clBuildLog_size);
+        clBuildLog = (char*)calloc(clBuildLog_size + 1, sizeof(char));
+        if (clBuildLog) {
+            clGetProgramInfo(GPU_programs[GPU_active_program].program, CL_PROGRAM_SOURCE, clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
+            if (stream) {
+                if (clBuildLog) fprintf(stream, clBuildLog);
+                if (fclose(stream)) printf("The file was not closed!\n");
+            }
+            FREE(clBuildLog);
         }
-        Check_Error(CL_Error_code);
+
+        clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_STATUS,
+            0, NULL, &clBuildLog_size);
+        clBuildLog = (char*)calloc(clBuildLog_size + 1, sizeof(char));
+        if (clBuildLog) {
+            clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_STATUS,
+                clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
+            printf("\nBuild status:\n%s\n", clBuildLog);
+            FREE(clBuildLog);
+        }
+
+        clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_OPTIONS,
+            0, NULL, &clBuildLog_size);
+        clBuildLog = (char*)calloc(clBuildLog_size + 1, sizeof(char));
+        if (clBuildLog) {
+            clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_OPTIONS,
+                clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
+            printf("\nBuild options:\n%s\n", clBuildLog);
+            FREE(clBuildLog);
+        }
+
+        j = sprintf_s(buffer, sizeof(buffer), "%s", PRG_ERROR_DEBUG);
+        fopen_s(&stream, buffer, "w+");
+
+        clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG,
+            0, NULL, &clBuildLog_size);
+        clBuildLog = (char*)calloc(clBuildLog_size + 1, sizeof(char));
+        if (clBuildLog) {
+            clGetProgramBuildInfo(GPU_programs[GPU_active_program].program, GPU_device, CL_PROGRAM_BUILD_LOG,
+                clBuildLog_size + 1, clBuildLog, &clBuildLog_actual_size);
+            printf("\nLog:\n%s\n", clBuildLog);
+
+            if (stream) {
+                fprintf(stream, clBuildLog);
+                if (fclose(stream)) printf("The file was not closed!\n");
+            }
+            FREE(clBuildLog);
+        }
     }
+    Check_Error(CL_Error_code);
 }
 cl_uint         GPU::clGetDeviceInfoUint(cl_device_id device,cl_device_info inf){
     size_t result; // cl_uint
@@ -1768,9 +1768,9 @@ GPU::GPU_init_parameters*    GPU::get_init_file(char finitf[])
     GPU_init_parameters* result = (GPU_init_parameters*) calloc(struc_quant, sizeof(GPU_init_parameters));
 
     char line[8192];
-    char buffer[250];
+    char buffer[HGPU_MAX_STRINGLEN];
     int j,j2;
-    char Variable[250];
+    char Variable[HGPU_MAX_STRINGLEN];
     char txtVal[8192];
     int iVarVal;
     double fVarVal;
