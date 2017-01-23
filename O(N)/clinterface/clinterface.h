@@ -233,6 +233,11 @@ class GPU {
            void*    buffer_get_mem_host_ptr(int buffer_id);
             int     buffer_write(int buffer_id);
    unsigned int*    buffer_map(int buffer_id);
+#ifdef BIGLAT
+   unsigned int*    buffer_map(int buffer_id, size_t offset, size_t size);
+           void*    buffer_map_part(int buffer_id, size_t start, size_t size);
+           void     buffer_unmap(int buffer_id, void *ptr);
+#endif
       cl_float4*    buffer_map_float4(int buffer_id);
       cl_float4*    buffer_read_float4(int buffer_id);
            void*    buffer_map_void(int buffer_id);
