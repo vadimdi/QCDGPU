@@ -1536,7 +1536,7 @@ void        model::lattice_make_programs(void){
     }
 
     if (run->get_acceptance_rate) {
-        int lattice_measurement_size_correction = max(size_reduce_acceptance_rate_odd,size_reduce_acceptance_rate_even);
+        int lattice_measurement_size_correction = _MAX(size_reduce_acceptance_rate_odd,size_reduce_acceptance_rate_even);
 
         sun_reduce_acceptance_rate_id = GPU0->kernel_init("reduce_acceptance_rate",1,reduce_measurement_global_size,reduce_local_size);
                     argument_id = GPU0->kernel_init_buffer(sun_reduce_acceptance_rate_id,lattice_measurement);
@@ -1748,7 +1748,7 @@ void        model::lattice_make_programs(void){
             }
 
     if (run->get_acceptance_rate) {
-        int lattice_measurement_size_correction = max(max(max(max(max(max(max(
+        int lattice_measurement_size_correction = _MAX(_MAX(_MAX(_MAX(_MAX(_MAX(_MAX(
                                                     size_reduce_acceptance_rate_odd_X ,size_reduce_acceptance_rate_even_X),
                                                     size_reduce_acceptance_rate_odd_Y),size_reduce_acceptance_rate_even_Y),
                                                     size_reduce_acceptance_rate_odd_Z),size_reduce_acceptance_rate_even_Z),
@@ -1841,7 +1841,7 @@ void        model::lattice_make_programs(void){
             mesurement_plq_param.s[3] = 0;
                           argument_plq_index = GPU0->kernel_init_constant(sun_measurement_plq_reduce_id,&mesurement_plq_param);
 
-    int lattice_measurement_size_correction = max(size_reduce_measurement_double2,size_reduce_measurement_plq_double2);
+    int lattice_measurement_size_correction = _MAX(size_reduce_measurement_double2,size_reduce_measurement_plq_double2);
     if (lattice_measurement_size_F<(unsigned int) lattice_measurement_size_correction){
 
         printf ("buffer plattice_measurement should be resized!!!\n");
