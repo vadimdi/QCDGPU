@@ -385,7 +385,12 @@ unsigned int    GPU::convert_to_uint(const float value){
     return u2fconv.uint_value[0];
 }
 // ___ device _____________________________________________________________________________________
-int             GPU::device_initialize(void){
+#ifdef BIGLAT
+int             GPU::device_initialize(int k)
+#else
+int             GPU::device_initialize(void)
+#endif
+{
     // initialize CPU timers by time of device initialization time
     int current_time = clock();
     for (int i = 0; i < CPU_timers; ++i) CPU_timer[i] = current_time;
@@ -439,6 +444,13 @@ int             GPU::device_initialize(void){
         GPU_info.max_workgroup_size  = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_WORK_GROUP_SIZE);
         GPU_info.memory_align_factor = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_WORK_GROUP_SIZE);
         GPU_info.max_compute_units   = clGetDeviceInfoUint(GPU_device, CL_DEVICE_MAX_COMPUTE_UNITS);
+        
+#ifdef BIGLAT
+        if (GPU_limit_max_workgroup_size){
+            GPU_info.max_workgroup_size = GPU_limit_max_workgroup_size;
+            GPU_info.memory_align_factor = GPU_limit_max_workgroup_size;
+        }
+#endif
     }
 
     // create context
@@ -461,6 +473,9 @@ int             GPU::device_initialize(void){
     if (!GPU_info.max_memory_height) GPU_info.max_memory_height = 8192;
 
     GPU_info.device_name = device_get_name(GPU_device);
+#ifdef BIGLAT
+    GPU_info.device_ocl = device_get_OCL(GPU_device);
+#endif
 
     // GPU_debug.rebuild_binary !!!
     if (GPU_debug->rebuild_binary) {
@@ -468,19 +483,29 @@ int             GPU::device_initialize(void){
         int err = 0;
         int file_idx = 1;
         while (!err) {
+#ifdef BIGLAT
+            err = inf_file_delete(k + 1, file_idx);
+#else
             err = inf_file_delete(file_idx);
+#endif
             file_idx++;
         }
     } else
+#ifdef BIGLAT
+    GPU_inf_max_n = inf_file_get_max_n(k);
+#else
     GPU_inf_max_n = inf_file_get_max_n();
+#endif
 
+#ifndef IGNORE_INTEL
     if (GPU_info.device_vendor == GPU_vendor_Intel) {
         GPU_info.max_workgroup_size = 64;
         GPU_limit_max_workgroup_size = 64;
     }
+#endif
     if ((GPU_limit_max_workgroup_size) && (GPU_limit_max_workgroup_size<GPU_info.max_workgroup_size)) GPU_info.max_workgroup_size = GPU_limit_max_workgroup_size;
 
-    if (!GPU_limit_max_workgroup_size) GPU_limit_max_workgroup_size = (unsigned int)(GPU_info.max_workgroup_size);//Nat
+    if (!GPU_limit_max_workgroup_size) GPU_limit_max_workgroup_size = (unsigned int)(GPU_info.max_workgroup_size);
 
     return GPU_devices_number;
 }

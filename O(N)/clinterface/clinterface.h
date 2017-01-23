@@ -191,7 +191,11 @@ class GPU {
            static double convert_to_double(const unsigned int value_LOW, const unsigned int value_HIGH);
 
             // ___________________________________________ public functions
+#ifdef BIGLAT
+            int     device_initialize(int k);
+#else
             int     device_initialize(void);
+#endif
             int     device_finalize(int error_code);
             bool    device_auto_select(int platform_vendor,int vendor);
             bool    device_select(unsigned int platform_id,unsigned int device_id);
