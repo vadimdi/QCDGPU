@@ -713,6 +713,21 @@ char*           GPU::platform_get_name(cl_platform_id platform){
 
     return result;
 }
+
+char*           GPU::device_get_OCL(cl_device_id device){
+    size_t result_length = 0;
+    char* result = NULL;
+
+    OpenCL_Check_Error(clGetDeviceInfo(device, CL_DEVICE_VERSION, 0, NULL, &result_length), "clGetDeviceInfo failed");
+    result = (char*) calloc(result_length,sizeof(char));
+    if (result) {
+        OpenCL_Check_Error(clGetDeviceInfo(device, CL_DEVICE_VERSION, result_length, (void*)result, NULL), "clGetDeviceInfo failed");
+        trim(result);
+    }
+
+    return result;
+}
+
 // ___ source _____________________________________________________________________________________
 char*           GPU::source_read(const char* file_name){
    /* create a CL program using the kernel source */

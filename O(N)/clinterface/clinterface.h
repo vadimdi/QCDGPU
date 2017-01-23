@@ -201,6 +201,7 @@ class GPU {
             bool    device_select(unsigned int platform_id,unsigned int device_id);
             char*   device_get_name(cl_device_id device);
             char*   platform_get_name(cl_platform_id platform);
+            char*   device_get_OCL(cl_device_id device);
 
             char*   source_read(const char* file_name);
             char*   source_add(char* source, const char* file_name);
