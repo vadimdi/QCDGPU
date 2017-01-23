@@ -457,8 +457,8 @@ int             GPU::device_initialize(void){
     GPU_info.max_memory_width   = (size_t) clGetDeviceInfoUlong(GPU_device,CL_DEVICE_IMAGE3D_MAX_WIDTH);
     GPU_info.max_memory_height  = (size_t) clGetDeviceInfoUlong(GPU_device,CL_DEVICE_IMAGE3D_MAX_HEIGHT);
 
-    if (GPU_info.max_memory_width)  GPU_info.max_memory_width  = 8192;
-    if (GPU_info.max_memory_height) GPU_info.max_memory_height = 8192;
+    if (!GPU_info.max_memory_width)  GPU_info.max_memory_width  = 8192;
+    if (!GPU_info.max_memory_height) GPU_info.max_memory_height = 8192;
 
     GPU_info.device_name = device_get_name(GPU_device);
 
