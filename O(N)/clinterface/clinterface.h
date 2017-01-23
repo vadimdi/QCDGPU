@@ -208,6 +208,9 @@ class GPU {
 
             int     program_create(const char* source);
             int     program_create(const char* source,const char* options);
+#ifdef BIGLAT
+            int     program_create_ndev(const char* source,const char* options, int ndev);
+#endif
             int     program_set_active(int program_id);
             int     program_get_active(void);
 
