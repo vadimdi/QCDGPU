@@ -1554,27 +1554,7 @@ cl_float4*      GPU::buffer_map_float4(int buffer_id)
     GPU_buffers[buffer_id].mapped_ptr = (unsigned int*) ptr;
     return ptr;
 }
-#ifdef BIGLAT
-void*   GPU::buffer_map_void(int buffer_id)
-{
-    void *ptr;
-    cl_event buffer_event;
-    cl_ulong buffer_read_start, buffer_read_finish;
-    ptr = clEnqueueMapBuffer( GPU_queue,GPU_buffers[buffer_id].buffer,CL_TRUE,CL_MAP_WRITE,0,GPU_buffers[buffer_id].size_in_bytes,0, NULL, &buffer_event, &GPU_error );
-    OpenCL_Check_Error(GPU_error,"clEnqueueMapBuffer failed");
-    if (GPU_debug->profiling){
-        OpenCL_Check_Error(clWaitForEvents(1, &buffer_event),"clWaitForEvents failed");
-        OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_END,   sizeof(cl_ulong), &buffer_read_finish, 0),"clGetEventProfilingInfo failed");
-        OpenCL_Check_Error(clGetEventProfilingInfo(buffer_event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &buffer_read_start,  0),"clGetEventProfilingInfo failed");
-        GPU_buffers[buffer_id].buffer_read_elapsed_time   += (double) (buffer_read_finish-buffer_read_start);
-        GPU_buffers[buffer_id].buffer_read_start           = buffer_read_start;
-        GPU_buffers[buffer_id].buffer_read_finish          = buffer_read_finish;
-        GPU_buffers[buffer_id].buffer_read_number_of++;
-    }
-    GPU_buffers[buffer_id].mapped_ptr_void = ptr;
-    return ptr;
-}
-#else
+
 void*           GPU::buffer_map_void(int buffer_id){
     cl_event buffer_event;
     cl_ulong buffer_read_start, buffer_read_finish;
@@ -1603,7 +1583,7 @@ void*           GPU::buffer_map_void(int buffer_id){
 #endif
     return ptr;
 }
-#endif
+
 int             GPU::buffer_unmap_void(int buffer_id,void* data){
     cl_event buffer_event;
     cl_ulong buffer_write_start, buffer_write_finish;
