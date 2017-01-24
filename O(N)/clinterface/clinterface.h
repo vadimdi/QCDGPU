@@ -415,6 +415,11 @@ static GPU_init_parameters* get_init_file(char finitf[]);
             int         inf_file_delete(int index);
             int         inf_file_rename(int index_old,int index_new);
             int         inf_file_get_max_n(void);
+#ifdef BIGLAT
+            int         inf_file_delete(int k, int index);
+            int         inf_file_rename(int k, int index_old,int index_new);
+            int         inf_file_get_max_n(int k);
+#endif
     static char*        str_parameter_init(char* str_source);
 };
 };

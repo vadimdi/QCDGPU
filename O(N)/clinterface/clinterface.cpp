@@ -2267,6 +2267,7 @@ int             GPU::inf_file_delete(int index){
         FREE(buffer_inf);
         return err;
 }
+
 int             GPU::inf_file_rename(int index_old,int index_new){
         int j;
         int err;
@@ -2304,6 +2305,61 @@ int             GPU::inf_file_get_max_n(void){
         FREE(buffer_inf);
         return result;
 }
+
+#ifdef BIGLAT
+int             GPU::inf_file_delete(int k, int index){
+        int err;
+        char* buffer_inf = (char*) calloc(FNAME_MAX_LENGTH,sizeof(char));
+
+        // kill .inf-file
+        int j  = sprintf_s(buffer_inf,FNAME_MAX_LENGTH,"program%u-%i.inf", index, k);
+        err = remove(buffer_inf);
+        if (err) {delete[] buffer_inf; return err;}
+        j = sprintf_s(buffer_inf,FNAME_MAX_LENGTH,"program%u-%i.bin", index, k);
+        // kill .bin-file
+        err = remove(buffer_inf);
+        delete[] buffer_inf;
+        return err;
+}
+
+int             GPU::inf_file_rename(int k, int index_old,int index_new){
+        int j;
+        int err;
+        char* buffer_old = (char*) calloc(FNAME_MAX_LENGTH,sizeof(char));
+        char* buffer_new = (char*) calloc(FNAME_MAX_LENGTH,sizeof(char));
+
+            j = sprintf_s(buffer_old,FNAME_MAX_LENGTH,"program%u-%i.inf", index_old, k);
+            j = sprintf_s(buffer_new,FNAME_MAX_LENGTH,"program%u-%i.inf", index_new, k);
+        // rename .inf-file
+        err = rename(buffer_old,buffer_new);
+        if (err) {delete[] buffer_old; delete[] buffer_new; return err;}
+
+            j = sprintf_s(buffer_old,FNAME_MAX_LENGTH,"program%u-%i.bin", index_old, k);
+            j = sprintf_s(buffer_new,FNAME_MAX_LENGTH,"program%u-%i.bin", index_new, k);
+        // rename .bin-file
+        err = rename(buffer_old,buffer_new);
+        delete[] buffer_old;
+        delete[] buffer_new;
+
+        return err;
+}
+
+int             GPU::inf_file_get_max_n(int k){
+        char* buffer_inf = (char*) calloc(FNAME_MAX_LENGTH,sizeof(char));
+        int j = 0;
+
+        int result = 1;
+        bool flag = true;
+        while(flag){
+            j = sprintf_s(buffer_inf,FNAME_MAX_LENGTH,"program%u-%i.inf",result, k+1);
+            flag = is_file_exist(buffer_inf);
+            result++;
+        }
+        result -= 2;
+        free(buffer_inf);
+        return result;
+}
+#endif
 
 bool            GPU::is_file_exist(char* path){
         FILE * is_file;

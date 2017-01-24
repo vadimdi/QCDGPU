@@ -84,7 +84,7 @@
 #define FREE(ptr)           {free((void*)ptr); ptr=NULL;}
 #define FNAME_MAX_LENGTH    FILENAME_MAX  // FILENAME_MAX is definned by <stdio.h>
 
-#define HGPU_MAX_STRINGLEN  255 ///< default length of constant char arrays
+#define HGPU_MAX_STRINGLEN  384 ///< default length of constant char arrays
 #define HGPU_MAX_LINELEN    8192
 
 #define HGPU_CHAR_SPACE     ' ' ///< char: space
