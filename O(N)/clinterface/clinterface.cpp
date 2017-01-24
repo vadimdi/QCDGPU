@@ -1704,9 +1704,18 @@ void            GPU::print_available_hardware(void)
 {
     printf("OpenCL platforms available: %u\n",  GPU_platforms_number);
     printf("OpenCL devices available:   %u\n",  GPU_total_devices_number);
+#ifndef BIGLAT
+    printf("Active OpenCL platform: %s\n",      platform_get_name(GPU_platform));
+    printf("Active OpenCL device:   %s\n\n",    GPU_info.device_name);
+#endif
+}
+#ifdef BIGLAT
+void            GPU::print_actual_hardware(void)
+{
     printf("Active OpenCL platform: %s\n",      platform_get_name(GPU_platform));
     printf("Active OpenCL device:   %s\n\n",    GPU_info.device_name);
 }
+#endif
 void            GPU::print_stage(const char * stage){
                 if (GPU_debug->show_stage) printf(">>> Runtime stage >>> %s\n",stage);
 }

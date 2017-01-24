@@ -261,6 +261,9 @@ static GPU_init_parameters* get_init_file(char finitf[]);
             bool    is_file_exist(char* path);
 
             void    print_available_hardware(void);
+#ifdef BIGLAT
+            void    print_actual_hardware(void);
+#endif
             void    print_stage(const char * stage);
             void    print_memory_utilized(void);
             int     print_mapped_buffer_uint   (int buffer_id,unsigned int number_of_elements);
