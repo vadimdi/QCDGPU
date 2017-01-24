@@ -2099,20 +2099,26 @@ GPU::GPU_init_parameters*    GPU::get_init_file(char finitf[])
 
     GPU_init_parameters* result = (GPU_init_parameters*) calloc(struc_quant, sizeof(GPU_init_parameters));
 
-    char line[8192];
+    char line[HGPU_MAX_LINELEN];
     char buffer[HGPU_MAX_STRINGLEN];
     int j,j2;
     char Variable[HGPU_MAX_STRINGLEN];
-    char txtVal[8192];
+    char txtVal[HGPU_MAX_LINELEN];
     int iVarVal;
     double fVarVal;
+#ifdef BIGLAT
+    int ivVarVal[NPARTS];
+    int ii = 0, len;
+    char *txtVal1;
+    txtVal1 = (char*)calloc(HGPU_MAX_STRINGLEN, sizeof(char));
+#endif
 
     j = sprintf_s(buffer,sizeof(buffer),"%s",finitf);
 
     fopen_s(&stream,buffer,"r");
     if(stream)
     {
-    while(fgets( line, 8192, stream ) != NULL)
+    while(fgets( line, HGPU_MAX_LINELEN, stream ) != NULL)
       {
         int istart1 = 0;
         char ch=line[istart1];
@@ -2149,12 +2155,24 @@ GPU::GPU_init_parameters*    GPU::get_init_file(char finitf[])
             
             sscanf_s(txtVal,"%d", &iVarVal);
             sscanf_s(txtVal,"%lf", &fVarVal);
-
+#ifdef BIGLAT
+            sscanf_s(txtVal,"%['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ',', '{', '}']", txtVal1);
+#endif
             if (struc_length>0) result[struc_length-1].final = false;
             j2 = sprintf_s(result[struc_length].Variable,sizeof(result[struc_length].Variable),"%s",Variable);
             j2 = sprintf_s(result[struc_length].txtVarVal,sizeof(result[struc_length].txtVarVal),"%s",txtVal);
             result[struc_length].iVarVal = iVarVal;
             result[struc_length].fVarVal = fVarVal;
+#ifdef BIGLAT
+            ii = 0;
+            txtVal1 += 1;
+            while (sscanf(txtVal1, "%d%n", &ivVarVal[ii], &len) == 1){
+                    txtVal1 += (len + 1);
+                    ii++;
+            }
+            for(int j = 0; j < NPARTS; j++)
+                result[struc_length].ivVarVal[j] = ivVarVal[j];
+#endif
             result[struc_length].final   = true;
 
             struc_length++;

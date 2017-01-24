@@ -93,7 +93,10 @@ class GPU {
                 char   Variable[HGPU_MAX_STRINGLEN];
                 int    iVarVal;
                 double fVarVal;
-                char   txtVarVal[8192];
+#ifdef BIGLAT
+                int    ivVarVal[NPARTS];
+#endif
+                char   txtVarVal[HGPU_MAX_LINELEN];
                 bool   final;
             } GPU_init_parameters;
 
