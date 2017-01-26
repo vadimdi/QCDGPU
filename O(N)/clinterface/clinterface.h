@@ -41,6 +41,13 @@
 #include <CL/cl.h>
 #include "platform.h"
 
+#ifdef BIGLAT
+    #define BUFF_STEP 64
+    #ifdef USE_OPENMP
+        #include <omp.h>
+    #endif
+#endif
+
 namespace GPU_CL{
 class GPU {
     public:
@@ -113,6 +120,9 @@ class GPU {
                 size_t      memory_align_factor;            // memory align factor for buffers
              GPU_vendors    platform_vendor;                // active platform vendor
              GPU_vendors    device_vendor;                  // active device vendor
+#ifdef BIGLAT
+                    char*   device_ocl;
+#endif
             } GPU_device_info;
 
             typedef enum enum_GPU_precision{
@@ -295,8 +305,11 @@ static GPU_init_parameters* get_init_file(char finitf[]);
      static  int    str_char_replace(char* str, const char search, const char replace);
 
 
-
+#ifndef BIGLAT
     private:
+#else
+    public:
+#endif
 
       class kernels_hash {
          public:
@@ -330,6 +343,9 @@ static GPU_init_parameters* get_init_file(char finitf[]);
                      void*   host_ptr;
                       int    size;
                    size_t    size_in_bytes;                     // buffer size in bytes ( size*sizeof(...) )
+#ifdef BIGLAT
+                     void*        mapped_ptr_void;                        // ptr to corresponding host memory after mapping
+#endif
              unsigned int*   mapped_ptr;                        // ptr to corresponding host memory after mapping
                      char*   name;                              // buffer's name
                 // profiling data __________________________
