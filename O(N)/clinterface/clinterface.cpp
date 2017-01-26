@@ -49,7 +49,7 @@
 #define PATH_SEPARATOR      "/"
 #endif
 
-#define HASHES_SIZE         30
+#define HASHES_SIZE         64
 
 namespace GPU_CL{
 
@@ -521,7 +521,9 @@ int             GPU::device_finalize(int error_code)
             }
     }
      // clean GPU_buffers
-    for (int i=1; i<GPU_current_buffer; i++) buffer_kill(i);
+    for (int i=1; i<GPU_current_buffer; i++) 
+	if(GPU_buffers[i].buffer)
+	    buffer_kill(i);
 
     // clean command queue and context
     if (GPU_queue) clReleaseCommandQueue(GPU_queue);
