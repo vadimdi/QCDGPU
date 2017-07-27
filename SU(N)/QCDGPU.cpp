@@ -72,9 +72,9 @@ int main(int argc, char ** argv)
     model* model0 = new(model);
 #ifndef CPU_RUN
 model0->GPU0->GPU_limit_max_workgroup_size = 64; // please, remark it for Intel platform
-//#ifndef WIN32
-//setenv("CUDA_CACHE_DISABLE", "1", 1); // disable nVidia cach, if needed
-//#endif
+#ifndef WIN32
+setenv("CUDA_CACHE_DISABLE", "1", 1); // disable nVidia cach, if needed
+#endif
 
     // setup debug_level
     model0->GPU0->GPU_debug.local_run             = true;
@@ -206,8 +206,8 @@ model0->turnoff_gramschmidt = false;                // turn off orthogonalizatio
 model0->get_actions_avr     = true;                 // calculate mean action values
 model0->get_plaquettes_avr  = true;                 // calculate mean plaquette values
 #ifndef CPU_RUN
-model0->get_wilson_loop     = true;                // calculate Wilson loop values
-model0->get_Fmunu           = true;                 // calculate Fmunu tensor for H field (3-rd and 8-ht by default)
+model0->get_wilson_loop     = false;                // calculate Wilson loop values
+model0->get_Fmunu           = false;                 // calculate Fmunu tensor for H field (3-rd and 8-ht by default)
 model0->get_F0mu            = false;                // calculate Fmunu tensor for E field (3-rd and 8-ht by default)
 model0->get_Fmunu1          = false;                // flag to measure chomomagnetic field strength corresponding to the 1-st SU(3) generator
 model0->get_Fmunu5          = false;                // --"-- for 5-th group generator

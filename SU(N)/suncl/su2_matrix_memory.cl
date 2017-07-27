@@ -72,8 +72,8 @@ lattice_table_2(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint
 #endif
 
 	hgpu_float cosphi, sinphi;
-	sinphi = (hgpu_float) sin((*twist).phi);
-	cosphi = (hgpu_float) cos((*twist).phi);
+	sinphi = (hgpu_float) sin((*twist).phi/2);
+	cosphi = (hgpu_float) cos((*twist).phi/2);
 		
 	Omega.uv1.x = cosphi;
 	Omega.uv1.z = sinphi;

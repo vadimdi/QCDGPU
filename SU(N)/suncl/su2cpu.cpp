@@ -168,8 +168,8 @@ SU::su_2        SU::lattice_table_2(model* lat,coords_4 coords,unsigned int gind
         double phi   = lat->PHI;
 
         SU::su_2 Omega;
-        Omega.u1.re = cos(phi);
-        Omega.u1.im = sin(phi);
+        Omega.u1.re = cos(phi / 2);
+        Omega.u1.im = sin(phi / 2);
         Omega.u2.re = 0.0;
         Omega.u2.im = 0.0;
         Omega.v1.re = 0.0;
