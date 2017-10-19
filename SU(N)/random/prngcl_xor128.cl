@@ -16,7 +16,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik
+ * Copyright (c) 2013-2017 Vadim Demchik
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -64,10 +64,10 @@ xor128_step(uint4 seed)
     uint4 result;
     uint t = (seed.x^(seed.x<<11));
 
-	result.x = seed.y;
-	result.y = seed.z;
-	result.z = seed.w;
-	result.w = (seed.w^(seed.w>>19))^(t^(t>>8));
+    result.x = seed.y;
+    result.y = seed.z;
+    result.z = seed.w;
+    result.w = (seed.w^(seed.w>>19))^(t^(t>>8));
 
     return result;
 }

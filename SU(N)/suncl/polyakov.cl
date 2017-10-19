@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -104,7 +104,7 @@ lattice_polyakov(__global hgpu_float4  * lattice_table,
 
           v2 = matrix_times_su2(&v0,&v1);
 #elif SUN == 3
- 	  m1 = lattice_table_3(lattice_table,&coord10,gdiT,T,&twist);   // [p,T]
+          m1 = lattice_table_3(lattice_table,&coord10,gdiT,T,&twist);   // [p,T]
           v1 = lattice_reconstruct3(&m1);
  
           v2 = matrix_times_su3(&v0,&v1);
@@ -175,7 +175,7 @@ lattice_polyakov_diff_x(__global hgpu_float4  * lattice_table,
     if(gindex < N1N2N3N4){
 #endif
         lattice_gid_to_coords(&gindex,&coord);
-	
+
         m0 = lattice_table_2(lattice_table,&coord,gindex,T,&twist);       // [p,T]
         v0 = lattice_reconstruct2(&m0);
 
@@ -210,7 +210,7 @@ lattice_polyakov_diff_x(__global hgpu_float4  * lattice_table,
     if(gindex < N1N2N3N4){
 #endif
         lattice_gid_to_coords(&gindex,&coord);
-	
+
         m0 = lattice_table_3(lattice_table,&coord,gindex,T,&twist);       // [p,T]
         v0 = lattice_reconstruct3(&m0);
 
@@ -416,7 +416,7 @@ reduce_polyakov_double2(__global hgpu_double2 * lattice_measurement,
     out = lattice_lds[TID];
 
 #if (PL >= 2)
-	uint offset  = param.y;
+    uint offset  = param.y;
     uint offset2 = param.z;
     reduce_final_step_double2_offset(lattice_lds,lattice_measurement,size,offset);
     out2 = lattice_lds[TID];
@@ -457,8 +457,8 @@ reduce_polyakov_diff_x_double2(__global hgpu_double2 * lattice_measurement,
     }
 
 #ifndef BIGLAT
-	 offset  = param.y;
-	 size    = param.x;
+     offset  = param.y;
+     size    = param.x;
 #endif
     uint offset2 = param.z;
 
@@ -502,8 +502,8 @@ reduce_polyakov_diff_y_double2(__global hgpu_double2 * lattice_measurement,
     }
 
 #ifndef BIGLAT
-	 offset  = param.y;
-	 size    = param.x;
+     offset  = param.y;
+     size    = param.x;
 #endif
     uint offset2 = param.z;
 
@@ -547,8 +547,8 @@ reduce_polyakov_diff_z_double2(__global hgpu_double2 * lattice_measurement,
     }
 
 #ifndef BIGLAT
-	 offset  = param.y;
-	 size    = param.x;
+     offset  = param.y;
+     size    = param.x;
 #endif
     uint offset2 = param.z;
 #ifndef BIGLAT

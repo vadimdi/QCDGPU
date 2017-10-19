@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -39,7 +39,7 @@
 
 #include "su3cl.cl"
 
-                    __attribute__((always_inline)) __private gpu_su_3
+                    HGPU_INLINE_PREFIX gpu_su_3
 lattice_table_3(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint gindex,const uint dir,const su3_twist * twist)
 {
     gpu_su_3 m;
@@ -114,7 +114,7 @@ lattice_table_3(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint
     return m;
 }                                                                                                                                                
 
-                    __attribute__((always_inline)) __private gpu_su_3
+                    HGPU_INLINE_PREFIX gpu_su_3
 lattice_table_notwist_3(__global hgpu_float4 * lattice_table,uint gindex,const uint dir)
 {
     gpu_su_3 m;
@@ -147,7 +147,7 @@ lattice_table_notwist_3(__global hgpu_float4 * lattice_table,uint gindex,const u
 }                                                                                                                                                
 
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_store_3(__global hgpu_float4 * lattice_table,gpu_su_3* m,uint gindex,const uint dir){
     switch (dir){
         case 0:
@@ -175,32 +175,32 @@ lattice_store_3(__global hgpu_float4 * lattice_table,gpu_su_3* m,uint gindex,con
     }
 }
 
-					__attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_store_3_rowsize(__global hgpu_float4 * lattice_table, gpu_su_3* m, uint gindex, const uint dir, int rowsize){
-	switch (dir){
-		case 0:
-			lattice_table[gindex + 0 * rowsize] = (*m).uv1;
-			lattice_table[gindex + 4 * rowsize] = (*m).uv2;
-			lattice_table[gindex + 8 * rowsize] = (*m).uv3;
-			break;
-		case 1:
-			lattice_table[gindex + 1 * rowsize] = (*m).uv1;
-			lattice_table[gindex + 5 * rowsize] = (*m).uv2;
-			lattice_table[gindex + 9 * rowsize] = (*m).uv3;
-			break;
-		case 2:
-			lattice_table[gindex + 2 * rowsize] = (*m).uv1;
-			lattice_table[gindex + 6 * rowsize] = (*m).uv2;
-			lattice_table[gindex + 10 * rowsize] = (*m).uv3;
-			break;
-		case 3:
-			lattice_table[gindex + 3 * rowsize] = (*m).uv1;
-			lattice_table[gindex + 7 * rowsize] = (*m).uv2;
-			lattice_table[gindex + 11 * rowsize] = (*m).uv3;
-			break;
-		default:
-			break;
-	}
+    switch (dir){
+        case 0:
+            lattice_table[gindex + 0 * rowsize] = (*m).uv1;
+            lattice_table[gindex + 4 * rowsize] = (*m).uv2;
+            lattice_table[gindex + 8 * rowsize] = (*m).uv3;
+            break;
+        case 1:
+            lattice_table[gindex + 1 * rowsize] = (*m).uv1;
+            lattice_table[gindex + 5 * rowsize] = (*m).uv2;
+            lattice_table[gindex + 9 * rowsize] = (*m).uv3;
+            break;
+        case 2:
+            lattice_table[gindex + 2 * rowsize] = (*m).uv1;
+            lattice_table[gindex + 6 * rowsize] = (*m).uv2;
+            lattice_table[gindex + 10 * rowsize] = (*m).uv3;
+            break;
+        case 3:
+            lattice_table[gindex + 3 * rowsize] = (*m).uv1;
+            lattice_table[gindex + 7 * rowsize] = (*m).uv2;
+            lattice_table[gindex + 11 * rowsize] = (*m).uv3;
+            break;
+        default:
+            break;
+    }
 }
 
 

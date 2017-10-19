@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -2801,7 +2801,7 @@ void    model::lattice_kern_init_Action_diff(void){
     SubLat[k].sun_action_diff_x_id = SubLat[k].GPU0->kernel_init("lattice_action_diff_x", 1, measurement3_global_size, local_size_lattice_measurement);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_x_id, SubLat[k].sublattice_table);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_x_id, SubLat[k].sublattice_measurement_diff);
-           argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_x_id, SubLat[k].sublattice_parameters);	
+           argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_x_id, SubLat[k].sublattice_parameters);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_x_id, SubLat[k].sublattice_lds);
         size_reduce_action_diff_double2 = (int) ceil((double) SubLat[k].sublattice_action_x_size / SubLat[k].GPU0->kernel_get_worksize(SubLat[k].sun_action_diff_x_id));
 
@@ -2823,7 +2823,7 @@ void    model::lattice_kern_init_Action_diff(void){
         SubLat[k].sun_action_diff_y_id = SubLat[k].GPU0->kernel_init("lattice_action_diff_y", 1, measurement3_global_size, local_size_lattice_measurement);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_y_id, SubLat[k].sublattice_table);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_y_id, SubLat[k].sublattice_measurement_diff);
-           argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_y_id, SubLat[k].sublattice_parameters);	
+           argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_y_id, SubLat[k].sublattice_parameters);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_y_id, SubLat[k].sublattice_lds);
         size_reduce_action_diff_double2 = (int) ceil((double) SubLat[k].sublattice_action_y_size / SubLat[k].GPU0->kernel_get_worksize(SubLat[k].sun_action_diff_y_id));
 
@@ -2845,7 +2845,7 @@ void    model::lattice_kern_init_Action_diff(void){
         SubLat[k].sun_action_diff_z_id = SubLat[k].GPU0->kernel_init("lattice_action_diff_z", 1, measurement3_global_size, local_size_lattice_measurement);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_z_id, SubLat[k].sublattice_table);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_z_id, SubLat[k].sublattice_measurement_diff);
-           argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_z_id, SubLat[k].sublattice_parameters);	
+           argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_z_id, SubLat[k].sublattice_parameters);
            argument_id = SubLat[k].GPU0->kernel_init_buffer(SubLat[k].sun_action_diff_z_id, SubLat[k].sublattice_lds);
         size_reduce_action_diff_double2 = (int) ceil((double) SubLat[k].sublattice_action_z_size / SubLat[k].GPU0->kernel_get_worksize(SubLat[k].sun_action_diff_z_id));
 
@@ -3448,7 +3448,7 @@ void        model::lattice_make_programs(void)
     sun_action_diff_x_id = GPU0->kernel_init("lattice_action_diff_x",1,measurement3_global_size,local_size_lattice_measurement);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_table);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_measurement);
-           argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_parameters);	
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_parameters);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_x_id,lattice_lds);
         int size_reduce_action_diff_double2 = (int) ceil((double) lattice_action_size / GPU0->kernel_get_worksize(sun_action_diff_x_id));
     
@@ -3461,7 +3461,7 @@ void        model::lattice_make_programs(void)
     sun_action_diff_y_id = GPU0->kernel_init("lattice_action_diff_y",1,measurement3_global_size,local_size_lattice_measurement);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_table);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_measurement);
-           argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_parameters);	
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_parameters);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_y_id,lattice_lds);
         size_reduce_action_diff_double2 = (int) ceil((double) lattice_action_size / GPU0->kernel_get_worksize(sun_action_diff_y_id));
     
@@ -3474,7 +3474,7 @@ void        model::lattice_make_programs(void)
     sun_action_diff_z_id = GPU0->kernel_init("lattice_action_diff_z",1,measurement3_global_size,local_size_lattice_measurement);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_table);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_measurement);
-           argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_parameters);	
+           argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_parameters);
            argument_id = GPU0->kernel_init_buffer(sun_action_diff_z_id,lattice_lds);
         size_reduce_action_diff_double2 = (int) ceil((double) lattice_action_size / GPU0->kernel_get_worksize(sun_action_diff_z_id));
     
@@ -4262,7 +4262,7 @@ void    model::lattice_make_WLx(void){
     for(k = 0; k < lattice_Nparts; k++){
 #endif
         SubLat[k].GPU0->kernel_run(SubLat[k].sun_measurement_WLx0_id);
-        SubLat[k].GPU0->print_stage("measurement WLx0 done");	    
+        SubLat[k].GPU0->print_stage("measurement WLx0 done");
     }
 
 #ifdef USE_OPENMP
@@ -4685,7 +4685,7 @@ void        model::lattice_simulate(void)
                         for (int f = 0; f < Ndevices; f++){
                             int k = kk + devLeftParts[f];
 //#else
-//					for (int k = 0; k < lattice_Nparts; k++){
+//                  for (int k = 0; k < lattice_Nparts; k++){
 //#endif
                         if (!turnoff_prns) SubLat[k].PRNG0->produce();
                         if (!turnoff_updates)

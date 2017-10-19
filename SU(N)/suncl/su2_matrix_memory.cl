@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +38,7 @@
 #ifndef SU2_MATRIX_MEMORY_CL
 #define SU2_MATRIX_MEMORY_CL
 
-                    __attribute__((always_inline)) __private gpu_su_2
+                    HGPU_INLINE_PREFIX gpu_su_2
 matrix_times2(gpu_su_2* u,gpu_su_2* v)
 {
     gpu_su_2 a;
@@ -52,7 +52,7 @@ matrix_times2(gpu_su_2* u,gpu_su_2* v)
     return a;
 }
 
-                    __attribute__((always_inline)) __private gpu_su_2
+                    HGPU_INLINE_PREFIX gpu_su_2
 lattice_table_2(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint gindex,const uint dir,const su2_twist * twist)
 {
     gpu_su_2 m;
@@ -62,28 +62,28 @@ lattice_table_2(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint
 
 #ifdef  TBC
 //twist here if coord.x=N1; H = (0, 0, Hz)
-    	gpu_su_2 Omega;	
-	gpu_su_2 tmp;
-	
+        gpu_su_2 Omega;
+    gpu_su_2 tmp;
+
 #ifdef BIGLAT
     if (((*coord).x + LEFT_SITES/N2N3N4 == 0)||((*coord).x + LEFT_SITES/N2N3N4 == FULL_SITES/N2N3N4)){
 #else
     if ((*coord).x == (N1-1)){
 #endif
 
-	hgpu_float cosphi, sinphi;
-	sinphi = (hgpu_float) sin((*twist).phi/2);
-	cosphi = (hgpu_float) cos((*twist).phi/2);
-		
-	Omega.uv1.x = cosphi;
-	Omega.uv1.z = sinphi;
-	
-	Omega.uv1.y = 0.0;
-	Omega.uv1.w = 0.0;
+    hgpu_float cosphi, sinphi;
+    sinphi = (hgpu_float) sin((*twist).phi/2);
+    cosphi = (hgpu_float) cos((*twist).phi/2);
 
-	tmp = matrix_times2(&Omega, &m);
+    Omega.uv1.x = cosphi;
+    Omega.uv1.z = sinphi;
 
-	m.uv1 = tmp.uv1;
+    Omega.uv1.y = 0.0;
+    Omega.uv1.w = 0.0;
+
+    tmp = matrix_times2(&Omega, &m);
+
+    m.uv1 = tmp.uv1;
     }
 
 #endif
@@ -96,7 +96,7 @@ lattice_table_2(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint
     return m;
 }                                                                                                                                                
 
-                    __attribute__((always_inline)) __private gpu_su_2
+                    HGPU_INLINE_PREFIX gpu_su_2
 lattice_table_notwist_2(__global hgpu_float4 * lattice_table,uint gindex,const uint dir)
 {
     gpu_su_2 m;
@@ -121,7 +121,7 @@ lattice_table_notwist_2(__global hgpu_float4 * lattice_table,uint gindex,const u
 }                                                                                                                                                
 
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_store_2(__global hgpu_float4 * lattice_table,gpu_su_2* m,uint gindex,const uint dir){
     switch (dir){
         case 0:

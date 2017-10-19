@@ -16,7 +16,7 @@ using PRNG_CL::PRNG;
 #define FNAME_MAX_LENGTH     250  // max length of filename with path
 
 
-                    PRNG::PRNG(void)	
+                    PRNG::PRNG(void)
 {
 #ifndef CPU_RUN
     random = NULL;
@@ -52,11 +52,11 @@ using PRNG_CL::PRNG;
 #endif
     // RANLUX parameters___________________________________
         // Planar values______________________________________
-        //static const int	RL_nskip	= 384;	// lux level 4
-        //static const int	RL_nskip	= 224;	// lux level 3
-        //static const int	RL_nskip	= 96;	// lux level 2
-        //static const int	RL_nskip	= 24;	// lux level 1
-        //static const int	RL_nskip	= 0;	// lux level 0
+        //static const int  RL_nskip    = 384;  // lux level 4
+        //static const int  RL_nskip    = 224;  // lux level 3
+        //static const int  RL_nskip    = 96;   // lux level 2
+        //static const int  RL_nskip    = 24;   // lux level 1
+        //static const int  RL_nskip    = 0;    // lux level 0
 
         //  0  1   2   3   4  LUXURY level
         // 24 48  97 223 389  original
@@ -95,7 +95,7 @@ using PRNG_CL::PRNG;
     RANECU_jseed1 = RANECU_seed1;
     RANECU_jseed2 = RANECU_seed2;
 }
-                    PRNG::~PRNG(void)	
+                    PRNG::~PRNG(void)
 {
 
 }
@@ -507,7 +507,7 @@ void                PRNG::RL_initialize_CPU(void)
 
         RL_jseed = rand() % 2147483647;
 
-        int		RL_k;
+        int     RL_k;
         //
         int RL_jseed_CPU = RL_jseed;
         //
@@ -527,7 +527,7 @@ float               PRNG::RL_produce_one_CPU(void)
     if (RL_in24 == 0)
     {
         RL_in24 = 24;
-        for (int isk = 0; isk < RL_nskip; isk++)	// TEMPORARY!!!
+        for (int isk = 0; isk < RL_nskip; isk++)    // TEMPORARY!!!
         {
             uni = RL_seeds[RL_j24] - RL_seeds[RL_i24] - RL_carry;
             if (uni < 0.0f)
@@ -1041,7 +1041,7 @@ void                PRNG::RANECU_initialize_CPU(void)
 }
 float               PRNG::RANECU_produce_one_CPU(void)
 {
-    int		RANECU_k;
+    int     RANECU_k;
     //
     RANECU_k = RANECU_jseed1 / RANECU_seedP11;
         RANECU_jseed1 = RANECU_seedP13 * (RANECU_jseed1 - RANECU_k * RANECU_seedP11) - RANECU_k * RANECU_seedP12;
@@ -1054,7 +1054,7 @@ float               PRNG::RANECU_produce_one_CPU(void)
     int z = RANECU_jseed1 - RANECU_jseed2;
     if (z < 1) {z = z + RANECU_icons3;}
 
-    float rnd =	(float) ((float) (z)) / ((float) RANECU_twom31);
+    float rnd = (float) ((float) (z)) / ((float) RANECU_twom31);
 
     return rnd;
 }

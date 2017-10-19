@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -39,7 +39,7 @@
 
 #include "sun_common.cl"
 
-                    __attribute__((always_inline)) __private su_2
+                    HGPU_INLINE_PREFIX su_2
 matrix_times_su2(su_2* u,su_2* v)
 {
     su_2 tmp;
@@ -59,7 +59,7 @@ matrix_times_su2(su_2* u,su_2* v)
     return tmp;
 }
 
-                     __attribute__((always_inline)) __private su_2
+                     HGPU_INLINE_PREFIX su_2
 lattice_reconstruct2(gpu_su_2* m)
 {
     su_2 result;

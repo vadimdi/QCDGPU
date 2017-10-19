@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +38,7 @@
 #define SU2UPDATECL_CL
 
 // _________________ single precision ________________________
-                     __attribute__((always_inline)) void
+                     HGPU_INLINE_PREFIX_VOID void
 lattice_unity_2(su_2* matrix)
 {
     (*matrix).u1.re = 1.0;
@@ -54,7 +54,7 @@ lattice_unity_2(su_2* matrix)
     (*matrix).v2.im = 0.0;
 }
 
-                     __attribute__((always_inline)) void
+                     HGPU_INLINE_PREFIX_VOID void
 lattice_zero_2(su_2* matrix)
 {
     (*matrix).u1.re = 0.0;
@@ -70,17 +70,17 @@ lattice_zero_2(su_2* matrix)
     (*matrix).v2.im = 0.0;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_unity2(gpu_su_2* matrix)
 {
    (*matrix).uv1 = (hgpu_float4) (1.0, 0.0, 0.0, 0.0);
 }
 
-                    __attribute__((always_inline)) __private gpu_su_2
+                    HGPU_INLINE_PREFIX gpu_su_2
 matrix_hermitian2(gpu_su_2* u)
 {
-    __private gpu_su_2 tmp;
-    __private hgpu_float4 u1;
+    gpu_su_2 tmp;
+    hgpu_float4 u1;
     
     u1 = (*u).uv1;
     tmp.uv1 = (hgpu_float4)(u1.x, -u1.y, -u1.z, -u1.w);
@@ -88,7 +88,7 @@ matrix_hermitian2(gpu_su_2* u)
     return tmp;
 }
 
-                    __attribute__((always_inline)) __private su_2
+                    HGPU_INLINE_PREFIX su_2
 matrix_add2(su_2* u,su_2* v)
 {
     su_2 tmp;
@@ -106,19 +106,19 @@ matrix_add2(su_2* u,su_2* v)
     return tmp;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_random2(gpu_su_2* matrix,__global const hgpu_prng_float4 * prns,uint gidprn)
 {
     /* M. Di Pierro */
     gpu_su_2 m1;
-    __private hgpu_float alpha,phi;
-    __private hgpu_float sinth,costh;
-    __private hgpu_float sinph,cosph;
-    __private hgpu_float sinal;
-    __private hgpu_float a0,a1,a2,a3;
-    __private hgpu_float t1;
+    hgpu_float alpha,phi;
+    hgpu_float sinth,costh;
+    hgpu_float sinph,cosph;
+    hgpu_float sinal;
+    hgpu_float a0,a1,a2,a3;
+    hgpu_float t1;
 
-    __private hgpu_float4 rnd;
+    hgpu_float4 rnd;
     rnd.x = (hgpu_float) prns[gidprn].x;
     rnd.y = (hgpu_float) prns[gidprn].y;
     rnd.z = (hgpu_float) prns[gidprn].z;
@@ -145,7 +145,7 @@ lattice_random2(gpu_su_2* matrix,__global const hgpu_prng_float4 * prns,uint gid
      (*matrix).uv1 = (hgpu_float4)(a0, a2, a3, a1);
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_su2_Normalize(gpu_su_2* matrix)
 {
     hgpu_float det;
@@ -155,7 +155,7 @@ lattice_su2_Normalize(gpu_su_2* matrix)
     (*matrix).uv1 /= det;
 }
 
-                    __attribute__((always_inline)) __private su_2
+                    HGPU_INLINE_PREFIX su_2
 lattice_staple_hermitian2(gpu_su_2* u1, gpu_su_2* u2, gpu_su_2* u3)
 {                                             
     gpu_su_2 m1, m2, m3;                      ///////////////////////////
@@ -171,7 +171,7 @@ lattice_staple_hermitian2(gpu_su_2* u1, gpu_su_2* u2, gpu_su_2* u3)
     return result;                            ///////////////////////////
 }
 
-                    __attribute__((always_inline)) __private su_2
+                    HGPU_INLINE_PREFIX su_2
 lattice_staple_backward2(gpu_su_2* u1, gpu_su_2* u2, gpu_su_2* u3)
 {                                             ///////////////////////////
     gpu_su_2 m1, m2, m3;                      //                       //
@@ -186,7 +186,7 @@ lattice_staple_backward2(gpu_su_2* u1, gpu_su_2* u2, gpu_su_2* u3)
     return result;                            ///////////////////////////
 }
 
-                    __attribute__((always_inline)) __private su_2
+                    HGPU_INLINE_PREFIX su_2
 lattice_staple_hermitian_backward2(gpu_su_2* u1, gpu_su_2* u2, gpu_su_2* u3)
 {
     gpu_su_2 m1, m2, m3;                      ///////////////////////////
@@ -202,7 +202,7 @@ lattice_staple_hermitian_backward2(gpu_su_2* u1, gpu_su_2* u2, gpu_su_2* u3)
     return result;                            ///////////////////////////
 }
 
-                    __attribute__((always_inline)) __private su_2
+                    HGPU_INLINE_PREFIX su_2
 lattice_staple_2(__global hgpu_float4 * lattice_table, uint gindex,const uint dir,const su2_twist * twist)
 {
         coords_4 coord,coordX,coordY,coordZ,coordT;
@@ -430,7 +430,7 @@ lattice_staple_2(__global hgpu_float4 * lattice_table, uint gindex,const uint di
     return staple;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_prng_float4 * prns,uint* indprng)
 {
     //Gattringer, Lang; Kennedy, Pendleton
@@ -482,11 +482,11 @@ rnd.w = (hgpu_float) fabs(cos((0.005*(1 + NHIT)-380.0/SITES)*gid));
         (*indprng) += PRNGSTEP;
 #endif
         cosrnd = cos(PI2 * rnd.y);
-	delta = -(log(1.0 - rnd.x) + cosrnd * cosrnd * log(1.0 - rnd.z)) / bdet;  //delta = -(...)/[beta sqrt(det(a))] = 2 lambda^2 (Gattr)
+    delta = -(log(1.0 - rnd.x) + cosrnd * cosrnd * log(1.0 - rnd.z)) / bdet;  //delta = -(...)/[beta sqrt(det(a))] = 2 lambda^2 (Gattr)
         if ((rnd.w * rnd.w)<=(1.0 - 0.5 * delta)) {flag=true;}
 #ifdef GID_UPD
-	delta = cosrnd * cosrnd / bdet;  
-	flag = true;
+    delta = cosrnd * cosrnd / bdet;  
+    flag = true;
 #endif
         i++;
     }
@@ -530,7 +530,7 @@ rnd.w = (hgpu_float) fabs(sin((0.08+380.0/SITES)*gid));
         }
 }
 
-                    __attribute__((always_inline)) __private gpu_su_2
+                    HGPU_INLINE_PREFIX gpu_su_2
 lattice_heatbath_2(su_2* staple,gpu_su_2* m0,hgpu_float* beta,__global const hgpu_prng_float4 * prns)
 {
     gpu_su_2 reslt;

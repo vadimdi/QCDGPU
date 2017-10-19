@@ -20,7 +20,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik
+ * Copyright (c) 2013-2017 Vadim Demchik
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -99,7 +99,7 @@ ranmar_init(const __global uint4* seeds, __global float4* seedtable)
         seed.z = ((float) s.z);
         seed.w = ((float) s.w);
         seedtable[GID + GID_SIZE * n] = seed / ((float4) 16777216.0f);
-	}
+    }
     Uint_and_Float indx_I97, indx_J97;
     indx_I97.uint_value = 96;
     indx_J97.uint_value = 32;
@@ -117,18 +117,18 @@ rm_step(__global float4 * seedtable,uint* RM_I97,uint* RM_J97,float* uniz)
 {
         float4 uni;
         uni = seedtable[GID + GID_SIZE * (*RM_I97)] - seedtable[GID + GID_SIZE * (*RM_J97)];
-	    uni = select(uni, (uni + 1.0f), uni < (float4) 0.0f);
+        uni = select(uni, (uni + 1.0f), uni < (float4) 0.0f);
         seedtable[GID + GID_SIZE * (*RM_I97)] = uni;
 
-	    if ((*RM_I97) == 0) (*RM_I97) = 97;
-	    if ((*RM_J97) == 0) (*RM_J97) = 97;
-	    (*RM_I97)--;
-	    (*RM_J97)--;
+        if ((*RM_I97) == 0) (*RM_I97) = 97;
+        if ((*RM_J97) == 0) (*RM_J97) = 97;
+        (*RM_I97)--;
+        (*RM_J97)--;
 
         (*uniz) -= RM_CD;
-	    if ((*uniz) < 0.0) {(*uniz) += RM_CM;}
+        if ((*uniz) < 0.0) {(*uniz) += RM_CM;}
         uni -= (*uniz);
-	    uni = select(uni, (uni + 1.0f), uni < (float4) 0.0f);
+        uni = select(uni, (uni + 1.0f), uni < (float4) 0.0f);
         return uni;
 }
 

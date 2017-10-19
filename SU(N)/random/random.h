@@ -11,20 +11,20 @@ namespace PRNG_CL{
 class PRNG {
         public:
             typedef enum enum_PRNG_generators{
-				PRNG_generator_none,                    // none
-				PRNG_generator_any,                     // any generator
-				PRNG_generator_XOR128,                  // XOR128 generator
-				PRNG_generator_RANLUX0,                 // RANLUX (level 0) generator
-				PRNG_generator_RANLUX1,                 // RANLUX (level 1) generator
-				PRNG_generator_RANLUX2,                 // RANLUX (level 2) generator
-				PRNG_generator_RANLUX3,                 // RANLUX (level 3) generator
-				PRNG_generator_RANLUX4,                 // RANLUX (level 4) generator
+                PRNG_generator_none,                    // none
+                PRNG_generator_any,                     // any generator
+                PRNG_generator_XOR128,                  // XOR128 generator
+                PRNG_generator_RANLUX0,                 // RANLUX (level 0) generator
+                PRNG_generator_RANLUX1,                 // RANLUX (level 1) generator
+                PRNG_generator_RANLUX2,                 // RANLUX (level 2) generator
+                PRNG_generator_RANLUX3,                 // RANLUX (level 3) generator
+                PRNG_generator_RANLUX4,                 // RANLUX (level 4) generator
                 PRNG_generator_RANLUX,                  // RANLUX (arbitrary level) generator
                 PRNG_generator_RANMAR,                  // RANMAR generator
                 PRNG_generator_PM,                      // Park-Miller generator
-				PRNG_generator_XOR7,                    // XORSeven generator
+                PRNG_generator_XOR7,                    // XORSeven generator
                 PRNG_generator_RANECU                   // RANECU generator
-			} PRNG_generators;
+            } PRNG_generators;
 
             typedef enum enum_PRNG_precision{
                 PRNG_precision_single,            // float (32 bit)
@@ -98,7 +98,7 @@ PRNG::PRNG_generators convert_uint_to_generator(unsigned int generator);
 
         // ___ RANLUX___________________________________________________________________
          #define  RL_icons  2147483563
-         #define  RL_itwo24	16777216	// 1<<24
+         #define  RL_itwo24 16777216    // 1<<24
          #define  RL_twom24  0.000000059604644775390625f
          #define  RL_twom12  0.000244140625f
            float  RL_seeds[24];
@@ -179,7 +179,7 @@ PRNG::PRNG_generators convert_uint_to_generator(unsigned int generator);
             void  XOR7_produce_CPU(float* randoms_cpu,int number_of_prns_CPU);   // XOR7 produce on CPU (float)
 
         // ___ RANECU___________________________________________________________________
-         #define  RANECU_twom31	(2147483648.0)
+         #define  RANECU_twom31 (2147483648.0)
 
          #define  RANECU_icons1  2147483563
          #define  RANECU_icons2  2147483399
@@ -194,7 +194,7 @@ PRNG::PRNG_generators convert_uint_to_generator(unsigned int generator);
          #define  RANECU_seedP23 40692
 
          #define  RANECU_seed1  314159265
-         #define  RANECU_seed2	123456789
+         #define  RANECU_seed2  123456789
 
              int  RANECU_jseed1;
              int  RANECU_jseed2;

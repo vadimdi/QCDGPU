@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -39,7 +39,7 @@
 
 #include "sun_common.cl"
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_unity3(gpu_su_3* matrix)
 {
     (*matrix).uv1 = (hgpu_float4) (1.0, 0.0, 0.0, 0.0);
@@ -47,7 +47,7 @@ lattice_unity3(gpu_su_3* matrix)
     (*matrix).uv3 = (hgpu_float4) (0.0, 1.0, 0.0, 0.0);
 }
 
-                    __attribute__((always_inline)) __private gpu_su_3
+                    HGPU_INLINE_PREFIX gpu_su_3
 matrix_times3(gpu_su_3* u,gpu_su_3* v)
 {
     gpu_su_3 tmp;
@@ -97,7 +97,7 @@ matrix_times3(gpu_su_3* u,gpu_su_3* v)
     return tmp;
 }
 
-                    __attribute__((always_inline)) __private su_3
+                    HGPU_INLINE_PREFIX su_3
 matrix_times_su3(su_3* u,su_3* v)
 {
     su_3 tmp;
@@ -133,7 +133,7 @@ matrix_times_su3(su_3* u,su_3* v)
     return tmp;
 }
 
-                    __attribute__((always_inline)) __private su_3
+                    HGPU_INLINE_PREFIX su_3
 lattice_reconstruct3(gpu_su_3* a)
 {
     su_3 b;

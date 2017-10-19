@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +40,7 @@
 #include "su3cl.cl"
 
 // _________________ single precision ________________________
-                     __attribute__((always_inline)) void
+                     HGPU_INLINE_PREFIX_VOID void
 lattice_unity_2(su_2* matrix)
 {
     (*matrix).u1.re = 1.0;
@@ -56,13 +56,13 @@ lattice_unity_2(su_2* matrix)
     (*matrix).v2.im = 0.0;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_unity2(gpu_su_2* matrix)
 {
     (*matrix).uv1 = (hgpu_float4) (1.0, 0.0, 0.0, 0.0);
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_zero3(gpu_su_3* matrix)
 {
     (*matrix).uv1 = (hgpu_float4) (0.0, 0.0, 0.0, 0.0);
@@ -70,7 +70,7 @@ lattice_zero3(gpu_su_3* matrix)
     (*matrix).uv3 = (hgpu_float4) (0.0, 0.0, 0.0, 0.0);
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_zero_3(su_3* matrix)
 {
     (*matrix).u1.re = 0.0;     (*matrix).u2.re = 0.0;     (*matrix).u3.re = 0.0;
@@ -83,11 +83,11 @@ lattice_zero_3(su_3* matrix)
     (*matrix).w1.im = 0.0;     (*matrix).w2.im = 0.0;     (*matrix).w3.im = 0.0;
 }
 
-                    __attribute__((always_inline)) __private gpu_su_3
+                    HGPU_INLINE_PREFIX gpu_su_3
 matrix_hermitian3(gpu_su_3* u)
 {
-    __private gpu_su_3 tmp;
-    __private hgpu_float4 u1,u2,u3;
+    gpu_su_3 tmp;
+    hgpu_float4 u1,u2,u3;
     
     u1 = (*u).uv1;
     u2 = (*u).uv2;
@@ -109,7 +109,7 @@ matrix_hermitian3(gpu_su_3* u)
     return tmp;
 }
 
-                     __attribute__((always_inline)) __private su_2
+                    HGPU_INLINE_PREFIX su_2
 lattice_reconstruct2(gpu_su_2* a)
 {
     su_2 b;
@@ -127,7 +127,7 @@ lattice_reconstruct2(gpu_su_2* a)
     return b;
 }
 
-                    __attribute__((always_inline)) __private su_3
+                    HGPU_INLINE_PREFIX su_3
 matrix_add3(su_3* u,su_3* v)
 {
     su_3 tmp;
@@ -147,7 +147,7 @@ matrix_add3(su_3* u,su_3* v)
     return tmp;
 }
 
-                    __attribute__((always_inline)) __private gpu_su_2
+                    HGPU_INLINE_PREFIX gpu_su_2
 matrix_times2(gpu_su_2* u,gpu_su_2* v)
 {
     gpu_su_2 a;
@@ -161,18 +161,18 @@ matrix_times2(gpu_su_2* u,gpu_su_2* v)
     return a;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_random3(gpu_su_3* matrix,__global const hgpu_prng_float4 * prns,uint gidprn1,uint gidprn2,uint gidprn3)
 {
-    __private gpu_su_3 m1;
-    __private hgpu_float4 alpha,phi;
-    __private hgpu_float4 sinth,costh;
-    __private hgpu_float4 sinph,cosph;
-    __private hgpu_float4 sinal;
-    __private hgpu_float4 a0,a1,a2,a3;
-    __private hgpu_float4 t1;
+    gpu_su_3 m1;
+    hgpu_float4 alpha,phi;
+    hgpu_float4 sinth,costh;
+    hgpu_float4 sinph,cosph;
+    hgpu_float4 sinal;
+    hgpu_float4 a0,a1,a2,a3;
+    hgpu_float4 t1;
 
-    __private hgpu_float4 rnd1,rnd2,rnd3;
+    hgpu_float4 rnd1,rnd2,rnd3;
     rnd1.x = (hgpu_float) prns[gidprn1].x;
     rnd1.y = (hgpu_float) prns[gidprn1].y;
     rnd1.z = (hgpu_float) prns[gidprn1].z;
@@ -224,7 +224,7 @@ lattice_random3(gpu_su_3* matrix,__global const hgpu_prng_float4 * prns,uint gid
     (*matrix).uv3 = m1.uv3;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_GramSchmidt3(gpu_su_3* matrix)
 {
     hgpu_float4 t1,t2,t3,t4,t5;
@@ -290,7 +290,7 @@ lattice_GramSchmidt3(gpu_su_3* matrix)
     (*matrix).uv3 = z3;
 }
 
-                    __attribute__((always_inline)) __private su_3
+                    HGPU_INLINE_PREFIX su_3
 lattice_staple_hermitian3(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3)
 {
     gpu_su_3 m1, m2, m3;
@@ -306,7 +306,7 @@ lattice_staple_hermitian3(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3)
     return result;
 }
 
-                    __attribute__((always_inline)) __private su_3
+                    HGPU_INLINE_PREFIX su_3
 lattice_staple_backward3(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3)
 {
     gpu_su_3 m1, m2, m3;
@@ -321,7 +321,7 @@ lattice_staple_backward3(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3)
     return result;
 }
 
-                    __attribute__((always_inline)) __private su_3
+                    HGPU_INLINE_PREFIX su_3
 lattice_staple_hermitian_backward3(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3)
 {
     gpu_su_3 m1, m2, m3;
@@ -337,7 +337,7 @@ lattice_staple_hermitian_backward3(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3)
     return result;
 }
 
-                    __attribute__((always_inline)) __private su_3
+                    HGPU_INLINE_PREFIX su_3
 lattice_staple_3(__global hgpu_float4 * lattice_table, uint gindex,const uint dir,const su3_twist * twist)
 {
         coords_4 coord,coordX,coordY,coordZ,coordT;
@@ -564,7 +564,7 @@ lattice_staple_3(__global hgpu_float4 * lattice_table, uint gindex,const uint di
     return staple;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_heatbath2(su_2* a,hgpu_float* beta,__global const hgpu_prng_float4 * prns,uint* indprng)
 {
     gpu_su_2 aH,c,d;
@@ -668,7 +668,7 @@ rnd.w = (hgpu_float) fabs(sin((0.08+380.0/SITES)*gid));
         }
 }
 
-__attribute__((always_inline)) __private gpu_su_3
+                    HGPU_INLINE_PREFIX gpu_su_3
 lattice_heatbath3(su_3* staple,gpu_su_3* m0,hgpu_float* beta,__global const hgpu_prng_float4 * prns)
 {
     gpu_su_3 reslt, Vg, m1, m2, m3;

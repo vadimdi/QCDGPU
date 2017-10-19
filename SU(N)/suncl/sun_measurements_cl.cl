@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -173,8 +173,8 @@ lattice_measurement(__global hgpu_float4  * lattice_table,
         retrac_temp += lattice_retrace_plaquette3(&m5,&m2,&m3,&m6); // z-t: [p,Z]-[p+Z,T]-[p+T,Z]*-[p,T]*
 
         // first reduction
-		out.x = bet * (9.0 - retrac_spat);
-		out.y = bet * (9.0 - retrac_temp);
+        out.x = bet * (9.0 - retrac_spat);
+        out.y = bet * (9.0 - retrac_temp);
     }
     
     reduce_first_step_val_double2(lattice_lds,&out, &out2);
@@ -650,7 +650,7 @@ reduce_action_diff_x_double2(__global hgpu_double2 * lattice_measurement,
     uint offset2 = param.y;
     if (GID==0)
       for(i = 0; i < N1; i++)
-	lattice_energies[index + offset2 * i] = out[i];
+    lattice_energies[index + offset2 * i] = out[i];
 }
 
                                         __kernel void
@@ -677,7 +677,7 @@ reduce_action_diff_y_double2(__global hgpu_double2 * lattice_measurement,
     uint offset2 = param.y;
     if (GID==0)
       for(i = 0; i < N2; i++)
-	lattice_energies[index + offset2 * i] = out[i];
+    lattice_energies[index + offset2 * i] = out[i];
 }
 
                                         __kernel void
@@ -704,7 +704,7 @@ reduce_action_diff_z_double2(__global hgpu_double2 * lattice_measurement,
     uint offset2 = param.y;
     if (GID==0)
       for(i = 0; i < N3; i++)
-	lattice_energies[index + offset2 * i] = out[i];
+    lattice_energies[index + offset2 * i] = out[i];
 }
 
 #ifdef FMUNU

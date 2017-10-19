@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -128,13 +128,13 @@ reduce_final_step_double2_offset(__local hgpu_double2 * lds,
 
                               __attribute__((always_inline)) void
 reduce_first_step_val_double2(__local hgpu_double2 * lds, hgpu_double2 * val,hgpu_double2 * out){
-		lds[TID] = (*val);
+        lds[TID] = (*val);
         for(uint i = GROUP_SIZE >> 1; i > 0; i >>= 1){
             barrier(CLK_LOCAL_MEM_FENCE);
             if(TID < i) lds[TID] += lds[TID + i];
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-		if (TID == 0) (*out) = lds[TID];
+        if (TID == 0) (*out) = lds[TID];
 }
 
                               __attribute__((always_inline)) void

@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -37,7 +37,7 @@
 #ifndef SUN_COMMON_CL
 #define SUN_COMMON_CL
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_gid_to_coords(const uint * gindex,coords_4 * coord)
 {
     coords_4 tmp;
@@ -59,13 +59,13 @@ lattice_gid_to_coords(const uint * gindex,coords_4 * coord)
     (*coord) = tmp;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_coords_to_gid(uint * gindex,const coords_4 * coord)
 {
     (*gindex) = (*coord).y + (*coord).z * N2 + (*coord).t * N2N3 + (*coord).x * N2N3N4;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_gid_to_gid_xyz(const uint * gindex,uint * gnew)
 {
     coords_4 tmp;
@@ -90,7 +90,7 @@ lattice_gid_to_gid_xyz(const uint * gindex,uint * gnew)
 }
 
 #if (defined PLK) || (defined PLKx)
-__attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_gidK_x_to_gid_xyz(const uint * gindex,uint * gnew)
 {
 // convert gindex[y, z, x, t] -> gnew[y, z, t, x]
@@ -138,7 +138,7 @@ lattice_gidK_x_to_gid_xyz(const uint * gindex,uint * gnew)
 #endif
 }
 
-__attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_gidK_y_to_gid_xyz(const uint * gindex,uint * gnew)
 {
 // gindex = x + z*N1 + y*N1N3 + t*N1N2N3
@@ -178,7 +178,7 @@ lattice_gidK_y_to_gid_xyz(const uint * gindex,uint * gnew)
     else (*gnew) = N1N2N3N4;
 }
 
-__attribute__((always_inline)) void
+                HGPU_INLINE_PREFIX_VOID void
 lattice_gidK_z_to_gid_xyz(const uint * gindex,uint * gnew)
 {
 // gindex = x + y*N1 + z*N1N2 + t*N1N2N3
@@ -218,7 +218,7 @@ lattice_gidK_z_to_gid_xyz(const uint * gindex,uint * gnew)
     else (*gnew) = N1N2N3N4;
 }
 
-__attribute__((always_inline)) void
+                HGPU_INLINE_PREFIX_VOID void
 lattice_gidK_x_to_gid(const uint * gindex,uint * gnew)
 {
 // convert gindex[y, z, x, t] -> gnew[y, z, t, x]
@@ -266,7 +266,7 @@ lattice_gidK_x_to_gid(const uint * gindex,uint * gnew)
 #endif
 }
 
-__attribute__((always_inline)) void
+                HGPU_INLINE_PREFIX_VOID void
 lattice_gidK_y_to_gid(const uint * gindex,uint * gnew)
 {
 // gindex = t + x*N4 + z*N1N4 + y*N1N3N4
@@ -306,7 +306,7 @@ lattice_gidK_y_to_gid(const uint * gindex,uint * gnew)
     else (*gnew) = N1N2N3N4;
 }
 
-__attribute__((always_inline)) void
+                HGPU_INLINE_PREFIX_VOID void
 lattice_gidK_z_to_gid(const uint * gindex,uint * gnew)
 {
 // gindex = t + y*N4 + x*N2N4 + z*N1N2N4
@@ -347,7 +347,7 @@ lattice_gidK_z_to_gid(const uint * gindex,uint * gnew)
 }
 #endif
 
-                    __attribute__((always_inline)) __private uint
+                    HGPU_INLINE_PREFIX uint
 lattice_even_gid(void)
 {
     uint odd_check,gindex,gde;
@@ -363,7 +363,7 @@ lattice_even_gid(void)
     return gindex;
 }
 
-                    __attribute__((always_inline)) __private uint
+                    HGPU_INLINE_PREFIX uint
 lattice_odd_gid(void)
 {
     uint even_check,gindex,gde;
@@ -380,7 +380,7 @@ lattice_odd_gid(void)
 }
 
 #ifdef BIGLAT
-                    __attribute__((always_inline)) __private uint
+                    HGPU_INLINE_PREFIX uint
 Lattice_odd_gid(void)
 {
     uint even_check,gindex,gde;
@@ -398,7 +398,7 @@ Lattice_odd_gid(void)
     return gindex;
 }
 
-                    __attribute__((always_inline)) __private uint
+                    HGPU_INLINE_PREFIX uint
 Lattice_even_gid(void)
 {
     uint odd_check,gindex,gde;
@@ -416,7 +416,7 @@ Lattice_even_gid(void)
     return gindex;
 }
 
-                    __attribute__((always_inline)) __private uint
+                    HGPU_INLINE_PREFIX uint
 full_lattice_even_gid(void)
 {
     uint odd_check,gindex,gde;
@@ -433,7 +433,7 @@ full_lattice_even_gid(void)
     return gindex;
 }
 
-                    __attribute__((always_inline)) __private uint
+                    HGPU_INLINE_PREFIX uint
 full_lattice_odd_gid(void)
 {
     uint even_check,gindex,gde;
@@ -451,7 +451,7 @@ full_lattice_odd_gid(void)
 }
 #endif
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_neighbours_gid(const coords_4 * coord,coords_4 * coord_new,uint * gneighbour,const uint dir)
 {
     uint gne;
@@ -481,7 +481,7 @@ lattice_neighbours_gid(const coords_4 * coord,coords_4 * coord_new,uint * gneigh
     (*coord_new) = tmp;
 }                                                                                                                                                
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_neighbours_gid_minus(const coords_4 * coord,coords_4 * coord_new,uint * gneighbour,const uint dir)
 {
     uint gne;

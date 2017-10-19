@@ -10,7 +10,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik
+ * Copyright (c) 2013-2017 Vadim Demchik
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -57,9 +57,9 @@
 //#define PRNG_SKIP_CHECK     // if defined = skip uniformity checking in double precision
 
 #if defined(cl_amd_fp64)    // AMD extension available?
-	#pragma OPENCL EXTENSION cl_amd_fp64 : enable
+    #pragma OPENCL EXTENSION cl_amd_fp64 : enable
 #elif defined(cl_khr_fp64)  // Khronos extension available?
-	#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+    #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 #endif
 
 #ifndef PRNG_PRECISION

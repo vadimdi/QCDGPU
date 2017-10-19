@@ -55,6 +55,10 @@
 #define PRECISION_MIXED             // define mixed precision
 #endif
 
+#if !defined(HGPU_INLINE_PREFIX)
+#define HGPU_INLINE_PREFIX_VOID  __attribute__((always_inline)) // the list of modifiers for void  inline functions
+#define HGPU_INLINE_PREFIX       __attribute__((always_inline)) // the list of modifiers for typed inline functions
+#endif
 
 // ________________ additional functions
 #define MIN(a,b) ((a) < (b)) ? (a) : (b)

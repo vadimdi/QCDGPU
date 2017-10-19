@@ -20,7 +20,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik
+ * Copyright (c) 2013-2017 Vadim Demchik
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -77,7 +77,7 @@
 __attribute__((always_inline)) void
 ranecu_step(uint4* seed1,uint4* seed2,uint4* rnd)
 {
-	uint4 k = (*seed1) / ((uint4) RANECU_seedP11);
+    uint4 k = (*seed1) / ((uint4) RANECU_seedP11);
     uint4 RANECU_test_1 = ((uint4) RANECU_seedP13) * ((*seed1) - k * ((uint4) RANECU_seedP11));
     uint4 RANECU_test_2 = k * ((uint4) RANECU_seedP12);
 
@@ -86,7 +86,7 @@ ranecu_step(uint4* seed1,uint4* seed2,uint4* rnd)
     if (RANECU_test_1.z > RANECU_test_2.z) (*seed1).z = RANECU_test_1.z - RANECU_test_2.z; else (*seed1).z = RANECU_test_1.z - RANECU_test_2.z + RANECU_icons1;
     if (RANECU_test_1.w > RANECU_test_2.w) (*seed1).w = RANECU_test_1.w - RANECU_test_2.w; else (*seed1).w = RANECU_test_1.w - RANECU_test_2.w + RANECU_icons1;
 
-	k = (*seed2) / ((uint4) RANECU_seedP21);
+    k = (*seed2) / ((uint4) RANECU_seedP21);
 
     RANECU_test_1 = ((uint4) RANECU_seedP23) * ((*seed2) - k * ((uint4) RANECU_seedP21));
     RANECU_test_2 = k * ((uint4) RANECU_seedP22);

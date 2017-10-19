@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -91,14 +91,14 @@ class model {
 
 #ifdef BIGLAT
                        int     lattice_Nparts;
-			  unsigned int     Ndevices;
-			  unsigned int*    devParts;
-			  unsigned int*    devLeftParts;
+              unsigned int     Ndevices;
+              unsigned int*    devParts;
+              unsigned int*    devLeftParts;
 
                 SubLattice*    SubLat;
 
                       void     Fmunu_defaults(void);
-					  void     UpdateEdges(void);
+                      void     UpdateEdges(void);
                       void     UpdateEdges(int dir);
 #endif
 
@@ -308,43 +308,43 @@ analysis_CL::analysis::data_analysis*   Analysis_S_Z;
              int    sun_get_boundary_low_id;
              int    sun_put_boundary_low_id;
              int    sun_measurement_id;
-	     int    sun_action_diff_x_id;
-	     int    sun_action_diff_y_id;
-	     int    sun_action_diff_z_id;
+             int    sun_action_diff_x_id;
+             int    sun_action_diff_y_id;
+             int    sun_action_diff_z_id;
              int    sun_measurement_reduce_id;
-	     int    sun_action_diff_x_reduce_id;
-	     int    sun_action_diff_y_reduce_id;
-	     int    sun_action_diff_z_reduce_id;
+             int    sun_action_diff_x_reduce_id;
+             int    sun_action_diff_y_reduce_id;
+             int    sun_action_diff_z_reduce_id;
              int    sun_measurement_plq_id;
              int    sun_measurement_plq_reduce_id;
              int    sun_measurement_wilson_id;
              int    sun_wilson_loop_reduce_id;
              int    sun_polyakov_id;
-	     int    sun_polyakov_diff_x_id;
-	     int    sun_polyakov_diff_y_id;
-	     int    sun_polyakov_diff_z_id;
+             int    sun_polyakov_diff_x_id;
+             int    sun_polyakov_diff_y_id;
+             int    sun_polyakov_diff_z_id;
              int    sun_polyakov_reduce_id;
-	     int    sun_polyakov_diff_x_reduce_id;
-	     int    sun_polyakov_diff_y_reduce_id;
-	     int    sun_polyakov_diff_z_reduce_id;
+             int    sun_polyakov_diff_x_reduce_id;
+             int    sun_polyakov_diff_y_reduce_id;
+             int    sun_polyakov_diff_z_reduce_id;
              int    sun_update_indices_id;
 
              int    argument_wilson_index;
              int    argument_plq_index;
              int    argument_polyakov_index;
-	     int    argument_polyakov_diff_x_index;
-	     int    argument_polyakov_diff_y_index;
-	     int    argument_polyakov_diff_z_index;
+             int    argument_polyakov_diff_x_index;
+             int    argument_polyakov_diff_y_index;
+             int    argument_polyakov_diff_z_index;
              int    argument_measurement_index;
-	     int    argument_action_diff_x_index;
-	     int    argument_action_diff_y_index;
-	     int    argument_action_diff_z_index;
+             int    argument_action_diff_x_index;
+             int    argument_action_diff_y_index;
+             int    argument_action_diff_z_index;
              int    wilson_index;
              int    plq_index;
              int    polyakov_index;
-	     int    polyakov_diff_index;
+             int    polyakov_diff_index;
              int    measurement_index;
-	     int    action_diff_index;
+             int    action_diff_index;
 
             // identificators for buffers
     unsigned int    lattice_table;
@@ -404,7 +404,7 @@ analysis_CL::analysis::data_analysis*   Analysis_S_Z;
             void    lattice_kern_update_Sim(void);
 
             void    lattice_mp_Meas(void);
-			void    lattice_kern_init_Tables(void);
+            void    lattice_kern_init_Tables(void);
             void    lattice_kern_init_Plq(void);
             void    lattice_kern_init_Action(void);
             void    lattice_kern_init_Action_diff(void);
@@ -458,8 +458,8 @@ analysis_CL::analysis::data_analysis*   Analysis_S_Z;
            unsigned int lattice_table_exact_group;
            unsigned int lattice_polyakov_size;
            unsigned int lattice_parameters_size;
-	   
-	   unsigned int lattice_action_size;
+
+           unsigned int lattice_action_size;
 
            void    model_create(void);          // subroutine for tunning particular SU(N) model
            void    model_lattice_init(void);    // subroutine for tunning lattice initialization for SU(N) model
@@ -479,7 +479,7 @@ public:
     unsigned int    desired_device;
             bool    device_select;
      GPU_CL::GPU*   GPU0;
-	unsigned int    device_no;
+    unsigned int    device_no;
 
    PRNG_CL::PRNG*   PRNG0;
     unsigned int    prngstep;            // step between two threads in prng table
@@ -488,9 +488,9 @@ public:
              int    sublattice_Sites;
 
              int    sublattice_table_Size;
-			 int    sublattice_table_size;
+             int    sublattice_table_size;
              int    sublattice_table_row_size;
-			 int    sublattice_table_row_size1;
+             int    sublattice_table_row_size1;
              int    sublattice_table_row_Size;
              int    sublattice_table_row_size_half;
              int    sublattice_table_row_Size_half;
@@ -525,7 +525,7 @@ public:
     unsigned int*   sublattice_pointer_last;
 
              int    size_sublattice_table;
-			 int    size_sublattice_table_small;
+             int    size_sublattice_table_small;
     unsigned int    size_sublattice_parameters;
              int    size_sublattice_measurement;
              int    size_sublattice_measurement_diff;
@@ -563,7 +563,7 @@ public:
       cl_double2*   psublattice_action_diff_z;
 
     unsigned int    sublattice_table;
-	unsigned int    sublattice_table_small;
+    unsigned int    sublattice_table_small;
     unsigned int    sublattice_parameters;
     unsigned int    sublattice_lds;
     unsigned int    sublattice_measurement;
@@ -604,7 +604,7 @@ public:
              int    sun_update_even_Z_id;
              int    sun_update_even_T_id;
 
-			 int    sun_tables_id;
+             int    sun_tables_id;
              int    sun_measurement_plq_id;
              int    sun_measurement_plq_reduce_id;
              int    sun_measurement_id;
@@ -624,18 +624,18 @@ public:
              int    sun_wilson_loop_reduce_id;
 
              int    sun_polyakov_diff_x_id;
-	         int    sun_polyakov_diff_y_id;
-	         int    sun_polyakov_diff_z_id;
-	         int    sun_polyakov_diff_x_reduce_id;
-	         int    sun_polyakov_diff_y_reduce_id;
-	         int    sun_polyakov_diff_z_reduce_id;
+             int    sun_polyakov_diff_y_id;
+             int    sun_polyakov_diff_z_id;
+             int    sun_polyakov_diff_x_reduce_id;
+             int    sun_polyakov_diff_y_reduce_id;
+             int    sun_polyakov_diff_z_reduce_id;
 
              int    sun_action_diff_x_id;
-	         int    sun_action_diff_y_id;
-	         int    sun_action_diff_z_id;
-	         int    sun_action_diff_x_reduce_id;
-	         int    sun_action_diff_y_reduce_id;
-	         int    sun_action_diff_z_reduce_id;
+             int    sun_action_diff_y_id;
+             int    sun_action_diff_z_id;
+             int    sun_action_diff_x_reduce_id;
+             int    sun_action_diff_y_reduce_id;
+             int    sun_action_diff_z_reduce_id;
 
              int    argument_measurement_index;
              int    argument_plq_index;

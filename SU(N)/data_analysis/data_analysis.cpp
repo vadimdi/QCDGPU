@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -77,7 +77,7 @@ bool        analysis::CPU_GPU_verification_single(double a, double b, const char
     bool result = true;
     if ((hgpu_abs(a)>CHECKING_PRECISION_SINGLE) && (hgpu_abs(b)>CHECKING_PRECISION_SINGLE))
     {
-	float c = (float) (1.0 - b/a);
+    float c = (float) (1.0 - b/a);
         if (hgpu_abs(1.0-b/a)>VDELTA_SINGLE) {
             if (err_str) printf("%s test failed!\n",err_str);
             result = false;
@@ -90,7 +90,7 @@ bool        analysis::CPU_GPU_verification_double(double a, double b, const char
     bool result = true;
     if ((hgpu_abs(a)>CHECKING_PRECISION_DOUBLE) && (hgpu_abs(b)>CHECKING_PRECISION_DOUBLE))
     {
-	double c =1.0 - b/a;
+    double c =1.0 - b/a;
         if (hgpu_abs(c)>VDELTA_DOUBLE) {
             if (err_str) printf("%s test failed!\n",err_str);
             result = false;

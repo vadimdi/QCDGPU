@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -52,7 +52,7 @@
 #include "su3_measurements_cl.cl"
 #endif
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_zero3(gpu_su_3* matrix)
 {
     (*matrix).uv1 = (hgpu_float4) (0.0, 0.0, 0.0, 0.0);
@@ -60,28 +60,28 @@ lattice_zero3(gpu_su_3* matrix)
     (*matrix).uv3 = (hgpu_float4) (0.0, 0.0, 0.0, 0.0);
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_Lt_store_3(__global hgpu_float4 * lattice_table, gpu_su_3* m, uint gindex){
             lattice_table[gindex +  0 * ROWSIZE_LT] = (*m).uv1;
             lattice_table[gindex +  1 * ROWSIZE_LT] = (*m).uv2;
             lattice_table[gindex +  2 * ROWSIZE_LT] = (*m).uv3;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_Lr2_store_3(__global hgpu_float4 * lattice_table, gpu_su_3* m, uint gindex){
             lattice_table[gindex +  0 * ROWSIZE_LR2] = (*m).uv1;
             lattice_table[gindex +  1 * ROWSIZE_LR2] = (*m).uv2;
             lattice_table[gindex +  2 * ROWSIZE_LR2] = (*m).uv3;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_L_store_3(__global hgpu_float4 * lattice_table, gpu_su_3* m, uint gindex, int rowsize){
             lattice_table[gindex +  0 * rowsize] = (*m).uv1;
             lattice_table[gindex +  1 * rowsize] = (*m).uv2;
             lattice_table[gindex +  2 * rowsize] = (*m).uv3;
 }
 
-                    __attribute__((always_inline)) __private gpu_su_3
+                    HGPU_INLINE_PREFIX gpu_su_3
 lattice_Lt_get_3(__global hgpu_float4 * lattice_table, uint gindex){
     gpu_su_3 matrix;
             matrix.uv1 = lattice_table[gindex +  0 * ROWSIZE_LT];
@@ -90,7 +90,7 @@ lattice_Lt_get_3(__global hgpu_float4 * lattice_table, uint gindex){
     return matrix;
 }
 
-                    __attribute__((always_inline)) __private gpu_su_3
+                    HGPU_INLINE_PREFIX gpu_su_3
 lattice_Lr2_get_3(__global hgpu_float4 * lattice_table, uint gindex){
     gpu_su_3 matrix;
             matrix.uv1 = lattice_table[gindex +  0 * ROWSIZE_LR2];
@@ -99,7 +99,7 @@ lattice_Lr2_get_3(__global hgpu_float4 * lattice_table, uint gindex){
     return matrix;
 }
 
-                    __attribute__((always_inline)) __private gpu_su_3
+                    HGPU_INLINE_PREFIX gpu_su_3
 lattice_L_get_3(__global hgpu_float4 * lattice_table, uint gindex, int rowsize){
     gpu_su_3 matrix;
             matrix.uv1 = lattice_table[gindex +  0 * rowsize];
@@ -108,18 +108,18 @@ lattice_L_get_3(__global hgpu_float4 * lattice_table, uint gindex, int rowsize){
     return matrix;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_zero2(gpu_su_2* matrix)
 {
     (*matrix).uv1 = (hgpu_float4) (0.0, 0.0, 0.0, 0.0);
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_L_store_2(__global hgpu_float4 * lattice_table, gpu_su_2* m, uint gindex){
             lattice_table[gindex] = (*m).uv1;
 }
 
-                    __attribute__((always_inline)) __private gpu_su_2
+                    HGPU_INLINE_PREFIX gpu_su_2
 lattice_L_get_2(__global hgpu_float4 * lattice_table, uint gindex){
     gpu_su_2 matrix;
             matrix.uv1 = lattice_table[gindex];
