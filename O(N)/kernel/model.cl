@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017, Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -57,6 +57,12 @@
 #endif
 
 //#define ON_SUB_SCHEME   // for symmetric scheme for differences
+
+#if !defined(HGPU_INLINE_PREFIX)
+#undef  HGPU_INLINE_PREFIX_VOID
+#define HGPU_INLINE_PREFIX_VOID  __attribute__((always_inline)) // the list of qualifiers for void  inline functions
+#define HGPU_INLINE_PREFIX       __attribute__((always_inline)) // the list of qualifiers for typed inline functions
+#endif
 
 // ________________ additional functions
 #define MIN(a,b)    (((a) < (b)) ? (a) : (b))

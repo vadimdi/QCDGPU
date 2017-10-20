@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017, Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +38,7 @@
 #ifndef SU3MEASUREMENTSCL_CL
 #define SU3MEASUREMENTSCL_CL
 
-                     __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_lambda1(double_su_3* matrix)
 {
     (*matrix).u1.re = 0.0;
@@ -69,7 +69,7 @@ lattice_lambda1(double_su_3* matrix)
     (*matrix).w3.im = 0.0;
 }
 
-                     __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_lambda2(double_su_3* matrix)
 {
     (*matrix).u1.re = 0.0;
@@ -100,7 +100,7 @@ lattice_lambda2(double_su_3* matrix)
     (*matrix).w3.im = 0.0;
 }
 
-                     __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_lambda3(double_su_3* matrix)
 {
     (*matrix).u1.re = 1.0;
@@ -131,7 +131,7 @@ lattice_lambda3(double_su_3* matrix)
     (*matrix).w3.im = 0.0;
 }
 
-                     __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_lambda4(double_su_3* matrix)
 {
     (*matrix).u1.re = 0.0;
@@ -162,7 +162,7 @@ lattice_lambda4(double_su_3* matrix)
     (*matrix).w3.im = 0.0;
 }
 
-                     __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_lambda5(double_su_3* matrix)
 {
     (*matrix).u1.re = 0.0;
@@ -193,7 +193,7 @@ lattice_lambda5(double_su_3* matrix)
     (*matrix).w3.im = 0.0;
 }
 
-                     __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_lambda6(double_su_3* matrix)
 {
     (*matrix).u1.re = 0.0;
@@ -224,7 +224,7 @@ lattice_lambda6(double_su_3* matrix)
     (*matrix).w3.im = 0.0;
 }
 
-                     __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_lambda7(double_su_3* matrix)
 {
     (*matrix).u1.re = 0.0;
@@ -255,7 +255,7 @@ lattice_lambda7(double_su_3* matrix)
     (*matrix).w3.im = 0.0;
 }
 
-                     __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_lambda8(double_su_3* matrix)
 {
     (*matrix).u1.re = 0.57735026918962576450914878050196;
@@ -289,7 +289,7 @@ lattice_lambda8(double_su_3* matrix)
 
 
 // _________________ double precision ________________________
-                    __attribute__((always_inline)) double_su_3
+                    HGPU_INLINE_PREFIX double_su_3
 lattice_reconstruct3_double(gpu_su_3* a)
 {
     double_su_3 b;
@@ -318,7 +318,7 @@ lattice_reconstruct3_double(gpu_su_3* a)
     return b;
 }
 
-                    __attribute__((always_inline)) __private double_su_3
+                    HGPU_INLINE_PREFIX double_su_3
 matrix_times_su3_double(double_su_3* u,double_su_3* v)
 {
     double_su_3 tmp;
@@ -354,7 +354,7 @@ matrix_times_su3_double(double_su_3* u,double_su_3* v)
     return tmp;
 }
 
-                    __attribute__((always_inline)) __private hgpu_complex_double
+                    HGPU_INLINE_PREFIX hgpu_complex_double
 matrix_trace3_double(const double_su_3* u)
 {
     hgpu_complex_double tmp;
@@ -363,7 +363,7 @@ matrix_trace3_double(const double_su_3* u)
     return tmp;
 }
 
-                    __attribute__((always_inline)) __private double_su_3
+                    HGPU_INLINE_PREFIX double_su_3
 matrix_hermitian_su3_double(double_su_3* a)
 {
     double_su_3 result;
@@ -392,7 +392,7 @@ matrix_hermitian_su3_double(double_su_3* a)
     return result;
 }
 
-                    __attribute__((always_inline)) __private hgpu_double
+                    HGPU_INLINE_PREFIX hgpu_double
 matrix_retrace3_double(const double_su_3* u)
 {
     hgpu_double tmp;
@@ -400,7 +400,7 @@ matrix_retrace3_double(const double_su_3* u)
     return tmp;
 }
 
-                    __attribute__((always_inline)) __private hgpu_double
+                    HGPU_INLINE_PREFIX hgpu_double
 lattice_retrace_plaquette3(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3, gpu_su_3* u4)
 {
     double_su_3 m1, m2, m3, m4;
@@ -423,7 +423,7 @@ lattice_retrace_plaquette3(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3, gpu_su_3* u
     return result;
 }
 
-                    __attribute__((always_inline)) __private hgpu_double
+                    HGPU_INLINE_PREFIX hgpu_double
 lattice_retrace_plaquette3_F(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3, gpu_su_3* u4, hgpu_complex_double* F3, hgpu_complex_double* F8){
     double_su_3 m1, m2, m3, m4;
     double_su_3 w1, w2, w3, w4, w5;
@@ -469,21 +469,21 @@ lattice_retrace_plaquette3_F(gpu_su_3* u1, gpu_su_3* u2, gpu_su_3* u3, gpu_su_3*
     return result;
 }
 
-                    __attribute__((always_inline)) __private hgpu_double
+                    HGPU_INLINE_PREFIX hgpu_double
 matrix_retrace_su3(const su_3* u)
 {
     hgpu_double tmp = (hgpu_double) (*u).u1.re + (hgpu_double) (*u).v2.re + (hgpu_double) (*u).w3.re;
     return tmp;
 }
 
-                    __attribute__((always_inline)) __private hgpu_double
+                    HGPU_INLINE_PREFIX hgpu_double
 matrix_imtrace_su3(const su_3* u)
 {
     hgpu_double tmp = (hgpu_double) (*u).u1.im + (hgpu_double) (*u).v2.im + (hgpu_double) (*u).w3.im;
     return tmp;
 }
 
-                    __attribute__((always_inline)) __private hgpu_double
+                    HGPU_INLINE_PREFIX hgpu_double
 lattice_retrace_plaquette3_double(double_su_3* m1, double_su_3* m2, double_su_3* m3, double_su_3* m4)
 {
     double_su_3 w1, w2, w3;

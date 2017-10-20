@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017, Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +38,7 @@
 #ifndef NEIGHBOURS_CL
 #define NEIGHBOURS_CL
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_gid_to_coords(const uint * gindex,coords_4 * coord)
 {
     coords_4 tmp;
@@ -60,13 +60,13 @@ lattice_gid_to_coords(const uint * gindex,coords_4 * coord)
     (*coord) = tmp;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_coords_to_gid(uint * gindex,const coords_4 * coord)
 {
     (*gindex) = (*coord).y + (*coord).z * N2 + (*coord).t * N2N3 + (*coord).x * N2N3N4;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_gid_to_gid_xyz(const uint * gindex,uint * gnew)
 {
 // convert gindex[y, z, x, t] -> gnew[y, z, t, x]
@@ -93,7 +93,7 @@ lattice_gid_to_gid_xyz(const uint * gindex,uint * gnew)
     (*gnew) = gtmp;
 }
 
-                    __attribute__((always_inline)) __private uint
+                    HGPU_INLINE_PREFIX uint
 lattice_even_gid(void)
 {
     uint odd_check,gindex,gde;
@@ -106,7 +106,7 @@ lattice_even_gid(void)
     return gindex;
 }
 
-                    __attribute__((always_inline)) __private uint
+                    HGPU_INLINE_PREFIX uint
 lattice_odd_gid(void)
 {
     uint even_check,gindex,gde;
@@ -119,7 +119,7 @@ lattice_odd_gid(void)
     return gindex;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_neighbours_gid(const coords_4 * coord,coords_4 * coord_new,uint * gneighbour,const uint dir)
 {
     uint gne;
@@ -146,7 +146,7 @@ lattice_neighbours_gid(const coords_4 * coord,coords_4 * coord_new,uint * gneigh
     (*coord_new) = tmp;
 }                                                                                                                                                
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_neighbours_gid_minus(const coords_4 * coord,coords_4 * coord_new,uint * gneighbour,const uint dir)
 {
     uint gne;
@@ -177,7 +177,7 @@ lattice_neighbours_gid_minus(const coords_4 * coord,coords_4 * coord_new,uint * 
     (*coord_new) = tmp;
 }    
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_neighbours_step_gid(const coords_4 * coord,coords_4 * coord_new,uint * gneighbour,uint * stepz,const uint dir)
 {
     uint gne;
@@ -204,7 +204,7 @@ lattice_neighbours_step_gid(const coords_4 * coord,coords_4 * coord_new,uint * g
     (*coord_new) = tmp;
 }                                                                                                                                                
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_neighbours_step2_gid(const coords_4 * coord,coords_4 * coord_new,uint * gneighbour,const coords_4 * stepz)
 {
     uint gne;
@@ -219,7 +219,7 @@ lattice_neighbours_step2_gid(const coords_4 * coord,coords_4 * coord_new,uint * 
     (*coord_new) = tmp;
 }                                                                                                                                                
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_neighbours_diagonal_gid(const coords_4 * coord,coords_4 * coord_new,uint * gneighbour)
 {
     uint gne;

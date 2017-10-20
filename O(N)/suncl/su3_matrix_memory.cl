@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017, Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +38,7 @@
 #ifndef SU3_MATRIX_MEMORY_CL
 #define SU3_MATRIX_MEMORY_CL
 
-                    __attribute__((always_inline)) __private gpu_su_3
+                    HGPU_INLINE_PREFIX gpu_su_3
 lattice_table_3(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint gindex,const uint dir,const su3_twist * twist)
 {
     gpu_su_3 m;
@@ -109,7 +109,7 @@ lattice_table_3(__global hgpu_float4 * lattice_table,const coords_4 * coord,uint
     return m;
 }                                                                                                                                                
 
-                    __attribute__((always_inline)) __private gpu_su_3
+                    HGPU_INLINE_PREFIX gpu_su_3
 lattice_table_notwist_3(__global hgpu_float4 * lattice_table,uint gindex,const uint dir)
 {
     gpu_su_3 m;
@@ -142,7 +142,7 @@ lattice_table_notwist_3(__global hgpu_float4 * lattice_table,uint gindex,const u
 }                                                                                                                                                
 
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_store_3(__global hgpu_float4 * lattice_table,gpu_su_3* m,uint gindex,const uint dir){
     switch (dir){
         case 0:

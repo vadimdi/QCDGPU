@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017, Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +38,7 @@
 #ifndef O1_MATRIX_MEMORY_CL
 #define O1_MATRIX_MEMORY_CL
 
-                 __attribute__((always_inline)) __private gpu_o_1
+                    HGPU_INLINE_PREFIX gpu_o_1
 lattice_table_o_1(__global hgpu_float * lattice_table,uint gindex)
 {
     gpu_o_1 m;
@@ -47,7 +47,7 @@ lattice_table_o_1(__global hgpu_float * lattice_table,uint gindex)
 }                                                                                                                                                
 
 
-                 __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_store_o_1(__global hgpu_float * lattice_table,gpu_o_1* m,uint gindex){
     lattice_table[gindex] = (*m).uv1;
 }  

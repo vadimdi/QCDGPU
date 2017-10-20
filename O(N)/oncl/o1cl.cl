@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017, Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,13 +38,13 @@
 #ifndef O1CL_CL
 #define O1CL_CL
 
-                    __attribute__((always_inline)) hgpu_float
+                    HGPU_INLINE_PREFIX hgpu_float
 o1_log_one_m_Ux(hgpu_float* Ux){
     hgpu_float log_one_m_Ux = log(1.0-(*Ux));
     return log_one_m_Ux;
 }
 
-                    __attribute__((always_inline)) hgpu_float
+                    HGPU_INLINE_PREFIX hgpu_float
 o1_Phi(hgpu_float* log_one_m_Ux,hgpu_float* b,hgpu_float* eta){
     hgpu_float a = (-1.0+0.5*(*eta)*(*log_one_m_Ux))*(*log_one_m_Ux);
     hgpu_float result = 0.5*a*a*(*b);
@@ -53,10 +53,10 @@ o1_Phi(hgpu_float* log_one_m_Ux,hgpu_float* b,hgpu_float* eta){
 }
 
 #ifdef ON_SUB_SCHEME
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 o1_action(hgpu_float* S,hgpu_float* Ux,hgpu_float4* Uxmu,hgpu_float4* Uxmu_minus, __global const hgpu_float *  lattice_parameters){
 #else
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 o1_action(hgpu_float* S,hgpu_float* Ux,hgpu_float4* Uxmu, __global const hgpu_float *  lattice_parameters){
 #endif
     hgpu_float z      = lattice_parameters[16];
@@ -143,7 +143,7 @@ o1_action(hgpu_float* S,hgpu_float* Ux,hgpu_float4* Uxmu, __global const hgpu_fl
             )/z;
 }
 
-                    __attribute__((always_inline)) hgpu_float
+                    HGPU_INLINE_PREFIX hgpu_float
 o1_to_physical_field(gpu_o_1* Ux,hgpu_float* b,hgpu_float* eta){
         hgpu_float oU0 = (*Ux).uv1;
 
@@ -153,7 +153,7 @@ o1_to_physical_field(gpu_o_1* Ux,hgpu_float* b,hgpu_float* eta){
     return Phi;
 }
 
-                    __attribute__((always_inline)) hgpu_float
+                    HGPU_INLINE_PREFIX hgpu_float
 o1_correlator(gpu_o_1* Ux,gpu_o_1* Uy,hgpu_float* b,hgpu_float* eta){
     hgpu_float result = o1_to_physical_field(Ux,b,eta) * o1_to_physical_field(Uy,b,eta);
     return result;

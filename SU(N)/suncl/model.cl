@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013-2016 Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017 Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -56,14 +56,15 @@
 #endif
 
 #if !defined(HGPU_INLINE_PREFIX)
-#define HGPU_INLINE_PREFIX_VOID  __attribute__((always_inline)) // the list of modifiers for void  inline functions
-#define HGPU_INLINE_PREFIX       __attribute__((always_inline)) // the list of modifiers for typed inline functions
+#undef  HGPU_INLINE_PREFIX_VOID
+#define HGPU_INLINE_PREFIX_VOID  __attribute__((always_inline)) // the list of qualifiers for void  inline functions
+#define HGPU_INLINE_PREFIX       __attribute__((always_inline)) // the list of qualifiers for typed inline functions
 #endif
 
 // ________________ additional functions
 #define MIN(a,b) ((a) < (b)) ? (a) : (b)
 #define MAX(a,b) ((a) > (b)) ? (a) : (b)
-#define CEIL(a) ((a - (int)a)==0 ? (int)a : (int)a+1)
+#define CEIL(a)  ((a - (int)a)==0 ? (int)a : (int)a+1)
 
 #define GID_SIZE    (get_global_size(0) * get_global_size(1) * get_global_size(2))
 #define GID         (get_global_id(0) + get_global_id(1) * get_global_size(0) + get_global_id(2) * get_global_size(0) * get_global_size(1))

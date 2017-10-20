@@ -9,7 +9,7 @@
  *
  * @section  LICENSE
  *
- * Copyright (c) 2013, Vadim Demchik, Natalia Kolomoyets
+ * Copyright (c) 2013-2017, Vadim Demchik, Natalia Kolomoyets
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,19 +38,19 @@
 #ifndef O1UPDATECL_CL
 #define O1UPDATECL_CL
 
-                  __attribute__((always_inline)) void
+                  HGPU_INLINE_PREFIX_VOID void
 lattice_unity_o_1(gpu_o_1* matrix)
 {
     (*matrix).uv1 = 1.0;
 }
 
-                  __attribute__((always_inline)) void
+                  HGPU_INLINE_PREFIX_VOID void
 lattice_ground_o_1(gpu_o_1* matrix)
 {
     (*matrix).uv1 = 0.25;
 }
 
-                    __attribute__((always_inline)) void
+                    HGPU_INLINE_PREFIX_VOID void
 lattice_random_o_1(gpu_o_1* matrix,
                    __global const hgpu_single4 * prns,
                        uint gidprn1,
